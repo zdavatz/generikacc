@@ -15,7 +15,6 @@
 
 @implementation MasterViewController
 
-@synthesize resultText, resultImage;
 @synthesize detailViewController = _detailViewController;
 
 - (void)loadView
@@ -128,11 +127,11 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   for (symbol in results) {
     break;
   }
-  resultText.text = symbol.data;
-  //resultImage.image = [info objectForKey: UIImagePickerControllerOriginalImage];
-  //DLog(@"image = %@", resultImage.image);
-  DLog(@"text: %@", symbol.data);
+  DLog(@"info: %@", info);
   NSString *ean = [NSString stringWithString:symbol.data];
+  UIImageView *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
+  DLog(@"ean: %@", ean);
+  DLog(@"barcode: %@", barcode);
 
   //http://ch.oddb.org/de/gcc/api_search/ean/7680317060176
   /* Stub
@@ -156,7 +155,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
     success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
       //NSLog(@"json: %@", JSON);
-      [self didFinishPicking:JSON withEan:ean];
+      [self didFinishPicking:JSON withEan:ean barcode:barcode];
     }
     failure:nil];
   [operation start];
@@ -165,13 +164,8 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   [reader dismissModalViewControllerAnimated: YES];
 }
 
-- (void)didFinishPicking:(id)json withEan:(NSString*)ean
+- (void)didFinishPicking:(id)json withEan:(NSString*)ean barcode:(UIImageView*)barcode
 {
-  _productName = [json valueForKeyPath:@"name"];
-  _productSize = [json valueForKeyPath:@"size"];
-  DLog(@"name: %@", _productName);
-  DLog(@"size: %@", _productSize);
-
   NSString *category = [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "];
   NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
     [json valueForKeyPath:@"reg"],       @"reg",
@@ -182,7 +176,8 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
     [json valueForKeyPath:@"price"],     @"price",
     [json valueForKeyPath:@"deduction"], @"deduction",
     category, @"category",
-    ean, @"ean",
+    barcode,  @"barcode",
+    ean,      @"ean",
     nil];
   [_objects addObject:product];
   DLog(@"objects: %@", _objects);
@@ -275,6 +270,18 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
 
   UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cell.frame.size.width, cell.frame.size.height)];
   [cell.contentView addSubview:productView];
+
+  if ([product objectForKey:@"barcode"]) {
+    CGRect barcodeRect = CGRectMake(0.0, 0.0, 60.0, 70.0);
+    UIGraphicsBeginImageContext(barcodeRect.size);
+    UIImage *barcodeImage = [product objectForKey:@"barcode"];
+    [barcodeImage drawInRect:barcodeRect];
+    barcodeImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    UIImageView *barcodeView = [[[UIImageView alloc] initWithFrame:barcodeRect]
+                                                     initWithImage:barcodeImage];
+    [cell.contentView addSubview:barcodeView];
+  }
 
   // name
   _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 5.0, 180.0, 30.0)];
