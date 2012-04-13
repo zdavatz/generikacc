@@ -1,0 +1,13 @@
+.DS_Store
+*.swp
+*~.nib
+*.mode1
+*.mode1v3
+*.mode2v3
+*.perspective
+*.perspectivev3
+*.pbxuser
+*.xcworkspace
+build/*
+generika.xcodeproj/xcuserdata/*
+generika.xcodeproj/project.xcworkspace/xcuserdata/*
