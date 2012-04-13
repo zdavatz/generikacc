@@ -44,6 +44,7 @@
 		819273CD1535D74A0060859C /* zbar-helpicons.png in Resources */ = {isa = PBXBuildFile; fileRef = 819273C81535D74A0060859C /* zbar-helpicons.png */; };
 		819273CE1535D74A0060859C /* zbar-samples.png in Resources */ = {isa = PBXBuildFile; fileRef = 819273C91535D74A0060859C /* zbar-samples.png */; };
 		81B86220153704330054EA0A /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81B8621F153704330054EA0A /* WebViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		81FEDA23153896B200756CAE /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81FEDA22153896B200756CAE /* icon@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,6 +135,7 @@
 		819273C91535D74A0060859C /* zbar-samples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-samples.png"; sourceTree = "<group>"; };
 		81B8621E153704330054EA0A /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
 		81B8621F153704330054EA0A /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
+		81FEDA22153896B200756CAE /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +257,7 @@
 				819273831535D56E0060859C /* DetailViewController.m */,
 				81B8621E153704330054EA0A /* WebViewController.h */,
 				81B8621F153704330054EA0A /* WebViewController.m */,
+				81FEDA1F1538962900756CAE /* Resources */,
 				8192736E1535D56E0060859C /* Supporting Files */,
 			);
 			path = generika;
@@ -354,6 +357,14 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		81FEDA1F1538962900756CAE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				81FEDA22153896B200756CAE /* icon@2x.png */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -432,6 +443,7 @@
 				819273CE1535D74A0060859C /* zbar-samples.png in Resources */,
 				812C922D153880D100B355F9 /* CHANGELOG.md in Resources */,
 				812C922F153880D100B355F9 /* README.md in Resources */,
+				81FEDA23153896B200756CAE /* icon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
