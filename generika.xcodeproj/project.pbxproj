@@ -400,6 +400,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0430;
+				ORGANIZATIONNAME = "ywesee GmbH";
 			};
 			buildConfigurationList = 8192735D1535D56D0060859C /* Build configuration list for PBXProject "generika" */;
 			compatibilityVersion = "Xcode 3.2";
