@@ -7,29 +7,33 @@
 //
 
 #import "AppDelegate.h"
-//#import "MasterViewController.h"
+#import "MasterViewController.h"
 
 @implementation AppDelegate
 
-@synthesize window = _window;
+@synthesize window = _window, navigationController = _navigationController;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   // Override point for customization after application launch.
+  /*
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
     splitViewController.delegate = (id)navigationController.topViewController;
   }
-  /*
-  MasterViewController *masterViewController = [[MasterViewController alloc] init];
-  [_window addSubview:masterViewController.view];
-  // Override point for customization after application launch
-  [_window makeKeyAndVisible];
   */
+  CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  _window = [[UIWindow alloc] initWithFrame:screenBounds];
+
+  MasterViewController *masterViewController = [[MasterViewController alloc] init];
+  _navigationController = [[UINavigationController alloc] initWithRootViewController:masterViewController];
+	[_window addSubview:_navigationController.view];
+	[_window makeKeyAndVisible];
+
   return YES;
 }
-							
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
   // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
