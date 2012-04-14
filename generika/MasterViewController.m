@@ -203,7 +203,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
                         [product objectForKey:@"name"],
                         [product objectForKey:@"size"],
                         [product objectForKey:@"price"]];
-  UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Detected" 
+  UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Generika.cc findet:" 
                                                  message:message
                                                 delegate:self 
                                        cancelButtonTitle:@"OK" 
