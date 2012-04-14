@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@class DetailViewController, WebViewController;
+@class DetailViewController, WebViewController, ZBarReaderViewController;
 
 @interface MasterViewController : UITableViewController < ZBarReaderDelegate >
 {
-    WebViewController *browser;
+
+    ZBarReaderViewController *_reader;
+    WebViewController *_browser;
     UITableView *_tableView;
     NSMutableArray *_objects;
     UILabel *_nameLabel;
@@ -26,6 +28,6 @@
 
 - (IBAction)scanButtonTapped;
 
-- (void)openCamera;
+- (void)openReader;
 - (void)openCompareSearchByEan:(NSString *)ean;
 @end
