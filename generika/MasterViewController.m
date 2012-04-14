@@ -167,14 +167,22 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
 - (void)didFinishPicking:(id)json withEan:(NSString*)ean barcode:(UIImageView*)barcode
 {
   NSString *category = [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "];
+  // FIXME to update server api
+  NSString *price = nil;
+  if ([[json valueForKeyPath:@"price"] isEqual:[NSNull null]]) {
+    price = [NSString stringWithString:@""];
+  } else {
+    price = [json valueForKeyPath:@"price"];
+  }
+  //DLog(@"price: %@", price);
   NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
     [json valueForKeyPath:@"reg"],       @"reg",
     [json valueForKeyPath:@"seq"],       @"seq",
     [json valueForKeyPath:@"pack"],      @"pack",
     [json valueForKeyPath:@"name"],      @"name",
     [json valueForKeyPath:@"size"],      @"size",
-    [json valueForKeyPath:@"price"],     @"price",
     [json valueForKeyPath:@"deduction"], @"deduction",
+    price,    @"price",
     category, @"category",
     barcode,  @"barcode",
     ean,      @"ean",
@@ -198,11 +206,18 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   }
   */
   DLog(@"save: %@", NSHomeDirectory());
-  DLog(@"json: %@", json);
-  NSString *message = [NSString stringWithFormat:@"%@, %@\n%@",
+  //DLog(@"json: %@", json);
+  DLog(@"name length: %d",[[product objectForKey:@"name"] length]);
+  NSString *publicPrice = nil;
+  if ([price isEqualToString:@""]) {
+    publicPrice = price;
+  } else {
+    publicPrice = [NSString stringWithFormat:@"CHF: %@", price];
+  }
+  NSString *message = [NSString stringWithFormat:@"%@,\n%@\n%@",
                         [product objectForKey:@"name"],
                         [product objectForKey:@"size"],
-                        [product objectForKey:@"price"]];
+                        publicPrice];
   UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Generika.cc findet:" 
                                                  message:message
                                                 delegate:self 
