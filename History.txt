@@ -1,3 +1,10 @@
+=== 1.0.2 / 16.04.2012
+
+* Improved TableView
+  - updated orientation handling
+  - improved image resize
+  - added date time label
+
 === 1.0.1 / 13.04.2012
 
 * Updated tableCell layout, alert View.
