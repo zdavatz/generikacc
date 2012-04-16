@@ -93,7 +93,7 @@ static float cellHeight = 83.0;
   }
 }
 
--(void)scanButtonTapped:(UIButton*)button
+- (void)scanButtonTapped:(UIButton*)button
 {
   if (!self.editing) {
     [self openReader];
@@ -111,9 +111,8 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   }
   NSString *ean = [NSString stringWithString:symbol.data];
   UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
-  DLog(@"info: %@", info);
   DLog(@"ean: %@", ean);
-  DLog(@"barcode: %@", barcode);
+  //DLog(@"barcode: %@", barcode);
   NSString *searchURL = [NSString stringWithFormat:@"%@/%@", @"http://ch.oddb.org/de/mobile/api_search/ean", ean];
   NSURL *productSearch = [NSURL URLWithString:searchURL];
   DLog(@"url[productSearch]: %@", productSearch);
@@ -152,6 +151,11 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
     } else {
       price = [json valueForKeyPath:@"price"];
     }
+    NSDate *now = [NSDate date];
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
+    NSString *dateString = [dateFormat stringFromDate:now];
+    DLog(@"date: %@", dateString)
     NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
       [json valueForKeyPath:@"reg"],       @"reg",
       [json valueForKeyPath:@"seq"],       @"seq",
@@ -163,10 +167,11 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
       category,    @"category",
       barcodePath, @"barcode",
       ean,         @"ean",
+      dateString,  @"datetime",
       nil];
     DLog(@"product: %@", product);
     [_objects addObject:product];
-    DLog(@"_objects: %@", _objects);
+    //DLog(@"_objects: %@", _objects);
     NSString *productsPath = [self storeProducts];
     DLog(@"productsPath: %@", productsPath);
     // alert
@@ -221,9 +226,28 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   [scanner setSymbology:ZBAR_ISBN13
                  config:ZBAR_CFG_ENABLE
                      to:0];
+  [scanner setSymbology:ZBAR_QRCODE
+                 config:ZBAR_CFG_ENABLE
+                     to:0];
+  _reader.readerView.zoom = 2.25; //default 1.25
   [self presentModalViewController:_reader
                           animated:YES];
-  //[reader release];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)orient
+                                duration:(NSTimeInterval) duration
+{
+  _reader.readerView.captureReader.enableReader = NO;
+  [_reader.readerView willRotateToInterfaceOrientation:orient
+                                              duration: 0];
+  [super willRotateToInterfaceOrientation:orient
+                                 duration:duration];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)orient
+{
+  [super didRotateFromInterfaceOrientation:orient];
+  _reader.readerView.captureReader.enableReader = YES;
 }
 
 - (void)openCompareSearchByEan:(NSString*)ean
@@ -239,6 +263,13 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
 
 - (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean
 {
+  // resize
+  CGRect barcodeRect = CGRectMake(0.0, 0.0, 66.0, 83.0);
+  UIGraphicsBeginImageContext(barcodeRect.size);
+  [barcode drawInRect:barcodeRect];
+  UIImage *barcodeImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -253,7 +284,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   DLog(@"timestamp, %d", (int)timestamp);
   NSString *fileName = [NSString stringWithFormat:@"%@-%d.png", ean, (int)timestamp];
   NSString *filePath = [path stringByAppendingPathComponent:fileName];
-  NSData *barcodeData = UIImagePNGRepresentation(barcode);
+  NSData *barcodeData = UIImagePNGRepresentation(barcodeImage);
   DLog(@"filePath: %@", filePath);
   BOOL saved = [barcodeData writeToFile:filePath atomically:YES];
   DLog(@"image saved: %d", saved);
@@ -316,14 +347,8 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
     BOOL exist = [fileManager fileExistsAtPath:[product objectForKey:@"barcode"] isDirectory:NO];
     //DLog(@"image exist: %d", exist);
     if (exist) {
-      CGRect barcodeRect = CGRectMake(0.0, 0.0, 63.0, 83.0);
-      UIGraphicsBeginImageContext(barcodeRect.size);
       UIImage *barcodeImage = [[UIImage alloc] initWithContentsOfFile:[product objectForKey:@"barcode"]];
-      [barcodeImage drawInRect:barcodeRect];
-      barcodeImage = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
-      UIImageView *barcodeView = [[[UIImageView alloc] initWithFrame:barcodeRect]
-                                                       initWithImage:barcodeImage];
+      UIImageView *barcodeView = [[UIImageView alloc] initWithImage:barcodeImage];
       [cell.contentView addSubview:barcodeView];
     }
   }
@@ -343,12 +368,21 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   }
   */
   //DLog(@"nameSize = %f", nameSize.width);
-  _sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 26.0, 100.0, 16.0)];
+  _sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 26.0, 120.0, 16.0)];
   _sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
   _sizeLabel.textAlignment = UITextAlignmentLeft;
   _sizeLabel.textColor = [UIColor blackColor];
   _sizeLabel.text = [NSString stringWithString:[product objectForKey:@"size"]];
   [cell.contentView addSubview:_sizeLabel];
+  // datetime
+  if ([product objectForKey:@"datetime"]) {
+    _dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(190.0, 26.0, 100.0, 16.0)];
+    _dateLabel.font = [UIFont systemFontOfSize:12.0];
+    _dateLabel.textAlignment = UITextAlignmentLeft;
+    _dateLabel.textColor = [UIColor blackColor];
+    _dateLabel.text = [NSString stringWithString:[product objectForKey:@"datetime"]];
+    [cell.contentView addSubview:_dateLabel];
+  }
   // price
   _priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 45.0, 60.0, 16.0)];
   _priceLabel.font = [UIFont systemFontOfSize:12.0];

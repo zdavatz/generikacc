@@ -18,6 +18,7 @@
     NSMutableArray *_objects;
     UILabel *_nameLabel;
     UILabel *_sizeLabel;
+    UILabel *_dateLabel;
     UILabel *_priceLabel;
     UILabel *_deductionLabel;
     UILabel *_categoryLabel;
