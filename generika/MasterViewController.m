@@ -180,7 +180,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
                           [product objectForKey:@"name"],
                           [product objectForKey:@"size"],
                           publicPrice];
-    UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Generika.cc findet:"
+    UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Generika.cc sagt:"
                                                    message:message
                                                   delegate:self
                                          cancelButtonTitle:@"OK"
@@ -192,7 +192,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
 - (void)notFoundEan:(NSString*)ean
 {
   NSString *message = [NSString stringWithFormat:@"\"%@\"", ean];
-  UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Kein Medikament mit dem folgenden EAN-Code gefunden auf Generika.cc:"
+  UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Kein Medikament gefunden auf Generika.cc mit dem folgenden EAN-Code:"
                                                  message:message
                                                 delegate:self 
                                        cancelButtonTitle:@"OK" 

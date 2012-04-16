@@ -1,3 +1,9 @@
+=== 1.0.1 / 13.04.2012
+
+* Updated tableCell layout, alert View.
+* Fixed null handling in price.
+* Updated some text.
+
 === 1.0.0 / 13.04.2012
 
 * Releasing History File, V1.0 ;)
