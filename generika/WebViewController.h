@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface WebViewController : UIViewController < UIWebViewDelegate, UIActionSheetDelegate > {
+@interface WebViewController : UIViewController < UIWebViewDelegate, UIActionSheetDelegate >
+{
   UIBarButtonItem *_backBtn;
   NSString        *_history;
   UIWebView       *_webview;

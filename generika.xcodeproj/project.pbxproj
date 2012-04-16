@@ -27,7 +27,6 @@
 		819273741535D56E0060859C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 819273731535D56E0060859C /* main.m */; };
 		819273781535D56E0060859C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 819273771535D56E0060859C /* AppDelegate.m */; };
 		819273811535D56E0060859C /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 819273801535D56E0060859C /* MasterViewController.m */; };
-		819273841535D56E0060859C /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 819273831535D56E0060859C /* DetailViewController.m */; };
 		8192738C1535D56E0060859C /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8192738B1535D56E0060859C /* SenTestingKit.framework */; };
 		8192738D1535D56E0060859C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273671535D56E0060859C /* UIKit.framework */; };
 		8192738E1535D56E0060859C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273691535D56E0060859C /* Foundation.framework */; };
@@ -95,8 +94,6 @@
 		819273771535D56E0060859C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8192737F1535D56E0060859C /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
 		819273801535D56E0060859C /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
-		819273821535D56E0060859C /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		819273831535D56E0060859C /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		8192738A1535D56E0060859C /* generikaTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = generikaTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8192738B1535D56E0060859C /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		819273931535D56E0060859C /* generikaTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "generikaTests-Info.plist"; sourceTree = "<group>"; };
@@ -253,8 +250,6 @@
 				819273771535D56E0060859C /* AppDelegate.m */,
 				8192737F1535D56E0060859C /* MasterViewController.h */,
 				819273801535D56E0060859C /* MasterViewController.m */,
-				819273821535D56E0060859C /* DetailViewController.h */,
-				819273831535D56E0060859C /* DetailViewController.m */,
 				81B8621E153704330054EA0A /* WebViewController.h */,
 				81B8621F153704330054EA0A /* WebViewController.m */,
 				81FEDA1F1538962900756CAE /* Resources */,
@@ -481,7 +476,6 @@
 				819273741535D56E0060859C /* main.m in Sources */,
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
-				819273841535D56E0060859C /* DetailViewController.m in Sources */,
 				81277E481536EE380001DC1A /* AFHTTPClient.m in Sources */,
 				81277E491536EE380001DC1A /* AFHTTPRequestOperation.m in Sources */,
 				81277E4A1536EE380001DC1A /* AFImageRequestOperation.m in Sources */,

@@ -10,20 +10,12 @@
 #import "AFJSONRequestOperation.h"
 
 #import "MasterViewController.h"
-#import "DetailViewController.h"
 #import "WebViewController.h"
 
 @implementation MasterViewController
 
-@synthesize detailViewController = _detailViewController;
+static float cellHeight = 83.0;
 
-- (id)init
-{
-  if (self = [super init]) {
-    _reader = [[ZBarReaderViewController alloc] init];
-  }
-  return self;
-}
 - (void)loadView
 {
   [super loadView];
@@ -31,26 +23,39 @@
   _tableView = [[UITableView alloc] initWithFrame:screenBounds];
   _tableView.delegate = self;
   _tableView.dataSource = self;	
-  [self.view addSubview:_tableView];
-  _objects = [[NSMutableArray alloc] init];
+  _tableView.rowHeight = cellHeight;
+  self.view = _tableView;
 
-  // default
-  NSDictionary *product  = [NSDictionary dictionaryWithObjectsAndKeys:
-    @"39354",    @"reg",
-    @"01" ,      @"seq", 
-    @"020",      @"pack",
-    @"Bricanyl", @"name",
-    @"100 ml" ,  @"size",
-    @"6.80" ,    @"price",
-    @"B" ,       @"category",
-    @"k.A.",     @"deduction",
-    @"7680317060176", @"ean",
-    nil];
-  [_objects addObject:product];
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *path = [paths objectAtIndex:0];
+  NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  BOOL exist = [fileManager fileExistsAtPath:filePath isDirectory:NO];
+  DLog(@"products.plist exist: %d", exist);
+  if (exist) {
+    _objects = [[NSMutableArray alloc] initWithContentsOfFile:filePath];
+  } else {
+    _objects = [[NSMutableArray alloc] init];
+  }
+  _reader = [[ZBarReaderViewController alloc] init];
 }
 
-- (void)dealloc
+- (void)viewDidLoad
 {
+  [super viewDidLoad];
+
+  self.navigationItem.leftBarButtonItem = self.editButtonItem;
+
+  UIBarButtonItem *scanButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                                              target:self
+                                                                              action:@selector(scanButtonTapped:)];
+  self.navigationItem.rightBarButtonItem = scanButton;
+  [self openReader];
+}
+
+- (void)viewDidUnload
+{
+  [super viewDidUnload];
   _tableView      = nil;
   _objects        = nil;
   _nameLabel      = nil;
@@ -63,34 +68,8 @@
   _browser = nil;
 }
 
-- (void)viewDidLoad
+- (void)viewWillAppear:(BOOL)animated
 {
-  [super viewDidLoad];
-
-  self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
-  UIBarButtonItem *scanButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                              target:self
-                                                                              action:@selector(scanButtonTapped:)];
-  //UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-  self.navigationItem.rightBarButtonItem = scanButton;
-  //self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
-
-  //UIButton *btn = [[UIBarButton alloc] buttonWithType:UIButtonTypeRoundedRect];
-  //btn.frame = CGRectMake(10, 200, 300, 30);
-  //[btn setTitle:@"scan" forState:UIControlStateNormal];
-  //[btn addTarget:self action:@selector(scanButtonTapped:)forControlEvents:UIControlEventTouchDown];
-  //[self.view addSubview:btn];
-  [self openReader];
-}
-
-- (void)viewDidUnload
-{
-  [super viewDidUnload];
-  // Release any retained subviews of the main view.
-}
-
-- (void)viewWillAppear:(BOOL)animated {
   NSIndexPath* selection = [_tableView indexPathForSelectedRow];
   if (selection) {
     [_tableView deselectRowAtIndexPath:selection animated:YES];
@@ -99,7 +78,8 @@
   [super viewWillAppear:animated];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
   [_tableView flashScrollIndicators];
   [super viewDidAppear:animated];
 }
@@ -129,65 +109,49 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   for (symbol in results) {
     break;
   }
-  DLog(@"info: %@", info);
   NSString *ean = [NSString stringWithString:symbol.data];
-  UIImageView *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
+  UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
+  DLog(@"info: %@", info);
   DLog(@"ean: %@", ean);
   DLog(@"barcode: %@", barcode);
-
-  //http://ch.oddb.org/de/gcc/api_search/ean/7680317060176
-  /* Stub
-  NSDictionary *product  = [NSDictionary dictionaryWithObjectsAndKeys:
-    @"39354",     @"reg",
-    @"01," ,      @"seq", 
-    @"020,",      @"pack",
-    @"Bricanyl,", @"name",
-    @"100 ml," ,  @"size",
-    @"6.80," ,    @"price",
-    @"B," ,       @"category",
-    @"k.A.",      @"deduction",
-    nil];
-  DLog(@"%@", [product JSONString]);
-  [self didFinishPicking:[product JSONData]];
-  (*/
   NSString *searchURL = [NSString stringWithFormat:@"%@/%@", @"http://ch.oddb.org/de/mobile/api_search/ean", ean];
   NSURL *productSearch = [NSURL URLWithString:searchURL];
   DLog(@"url[productSearch]: %@", productSearch);
   NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
   AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
     success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-      //NSLog(@"json: %@", JSON);
       [self didFinishPicking:JSON withEan:ean barcode:barcode];
     }
     failure:^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) {
-      NSLog(@"-----");
+      // FIXME
       NSLog(@"error: %@", error);
       NSLog(@"response: %@", response);
-      NSLog(@"-----");
     }];
   [operation start];
-  // open oddb.org
   if ([ean length] == 13) {
+    // open oddb.org
     [self openCompareSearchByEan:ean];
   }
   [_reader dismissModalViewControllerAnimated: YES];
 }
 
-- (void)didFinishPicking:(id)json withEan:(NSString*)ean barcode:(UIImageView*)barcode
+- (void)didFinishPicking:(id)json withEan:(NSString*)ean barcode:(UIImage*)barcode
 {
-  DLog(@"json: %@", json);
+  //DLog(@"json: %@", json);
   if (json == nil || [json count] == 0) {
     [self notFoundEan:ean];
   } else {
+    // image
+    NSString *barcodePath = [self storeBarcode:barcode ofEan:ean];
+    DLog(@"barcodePath: %@", barcodePath);
+    // text
     NSString *category = [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "];
-    // FIXME to update server api
     NSString *price = nil;
     if ([[json valueForKeyPath:@"price"] isEqual:[NSNull null]]) {
       price = [NSString stringWithString:@""];
     } else {
       price = [json valueForKeyPath:@"price"];
     }
-    //DLog(@"price: %@", price);
     NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
       [json valueForKeyPath:@"reg"],       @"reg",
       [json valueForKeyPath:@"seq"],       @"seq",
@@ -195,32 +159,17 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
       [json valueForKeyPath:@"name"],      @"name",
       [json valueForKeyPath:@"size"],      @"size",
       [json valueForKeyPath:@"deduction"], @"deduction",
-      price,    @"price",
-      category, @"category",
-      barcode,  @"barcode",
-      ean,      @"ean",
+      price,       @"price",
+      category,    @"category",
+      barcodePath, @"barcode",
+      ean,         @"ean",
       nil];
+    DLog(@"product: %@", product);
     [_objects addObject:product];
-    DLog(@"objects: %@", _objects);
-    // TODO store json
-    //DLog(@"json: %@", [[product JSONString] class]);
-    //DLog(@"json class: %@", [product JSONString]);
-    /*
-    NSString* emptyText = [json text];
-    NSError* error;
-    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    if([paths count] > 0){
-      NSString* dirPath = [paths objectAtIndex:0];
-      NSString* path = [dirPath stringByAppendingPathComponent:@"products.json"];
-      BOOL result = [emptyText writeToFile:path
-                                atomically:YES
-                                  encoding:NSUTF8StringEncoding
-                                     error:&error];
-    }
-    */
-    DLog(@"save: %@", NSHomeDirectory());
-    //DLog(@"json: %@", json);
-    //DLog(@"name length: %d",[[product objectForKey:@"name"] length]);
+    DLog(@"_objects: %@", _objects);
+    NSString *productsPath = [self storeProducts];
+    DLog(@"productsPath: %@", productsPath);
+    // alert
     NSString *publicPrice = nil;
     if ([price isEqualToString:@""]) {
       publicPrice = price;
@@ -288,6 +237,49 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
                                        animated: YES];
 }
 
+- (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean
+{
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *documentsDirectory = [paths objectAtIndex:0];
+  NSString *path = [documentsDirectory stringByAppendingPathComponent:@"barcodes"];
+  NSError *error;
+  [fileManager createDirectoryAtPath:path
+         withIntermediateDirectories:YES
+                          attributes:nil
+                               error:&error];  
+  //DLog(@"error: %@", error);
+  time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
+  DLog(@"timestamp, %d", (int)timestamp);
+  NSString *fileName = [NSString stringWithFormat:@"%@-%d.png", ean, (int)timestamp];
+  NSString *filePath = [path stringByAppendingPathComponent:fileName];
+  NSData *barcodeData = UIImagePNGRepresentation(barcode);
+  DLog(@"filePath: %@", filePath);
+  BOOL saved = [barcodeData writeToFile:filePath atomically:YES];
+  DLog(@"image saved: %d", saved);
+  if (saved) {
+    return filePath;
+  } else {
+    return nil;
+  }
+}
+
+- (NSString *)storeProducts
+{
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *path = [paths objectAtIndex:0];
+  NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
+  DLog(@"filePath: %@", filePath);
+  //DLog(@"_objects: %@", _objects);
+  BOOL saved = [_objects writeToFile:filePath atomically:YES];
+  DLog(@"plist saved: %d", saved);
+  if (saved) {
+    return filePath;
+  } else {
+    return nil;
+  }
+}
+
 #pragma mark - Table View
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -302,37 +294,38 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-  //NSDictionary *product = [_objects objectAtIndex:indexPath.row];
-  return 83;
+  return cellHeight;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+  //DLog(@"indexPath: %@", indexPath);
   static NSString *cellIdentifier = @"Cell";
   CGRect cellFrame = CGRectMake(0, 0, tableView.frame.size.width, 100);
-  UITableViewCell *cell = [[UITableViewCell alloc] initWithFrame:cellFrame
+  UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                  reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-  NSDictionary *product = [_objects objectAtIndex:indexPath.row];
-  //DLog(@"product %@", product);
-  UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cell.frame.size.width, cell.frame.size.height)];
+  UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:productView];
 
-  //DLog(@"indexPath: %@", indexPath);
-  if ([product isEqual:[NSNull null]]) {
-    return cell;
-  }
+  NSDictionary *product = [_objects objectAtIndex:indexPath.row];
+  //DLog(@"product %@", product);
   if ([product objectForKey:@"barcode"]) {
-    CGRect barcodeRect = CGRectMake(0.0, 0.0, 65.0, 82.0);
-    UIGraphicsBeginImageContext(barcodeRect.size);
-    UIImage *barcodeImage = [product objectForKey:@"barcode"];
-    [barcodeImage drawInRect:barcodeRect];
-    barcodeImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    UIImageView *barcodeView = [[[UIImageView alloc] initWithFrame:barcodeRect]
-                                                     initWithImage:barcodeImage];
-    [cell.contentView addSubview:barcodeView];
+    //DLog(@"barcode: %@", [product objectForKey:@"barcode"]);
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL exist = [fileManager fileExistsAtPath:[product objectForKey:@"barcode"] isDirectory:NO];
+    //DLog(@"image exist: %d", exist);
+    if (exist) {
+      CGRect barcodeRect = CGRectMake(0.0, 0.0, 63.0, 83.0);
+      UIGraphicsBeginImageContext(barcodeRect.size);
+      UIImage *barcodeImage = [[UIImage alloc] initWithContentsOfFile:[product objectForKey:@"barcode"]];
+      [barcodeImage drawInRect:barcodeRect];
+      barcodeImage = UIGraphicsGetImageFromCurrentImageContext();
+      UIGraphicsEndImageContext();
+      UIImageView *barcodeView = [[[UIImageView alloc] initWithFrame:barcodeRect]
+                                                       initWithImage:barcodeImage];
+      [cell.contentView addSubview:barcodeView];
+    }
   }
   // name
   _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 2.0, 230.0, 25.0)];
@@ -403,10 +396,18 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   return YES;
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+                                            forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
+    NSDictionary *product = [_objects objectAtIndex:indexPath.row];
+    NSString *barcodePath = [product objectForKey:@"barcode"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    [fileManager removeItemAtPath:barcodePath error:&error];
+    DLog(@"remove image error: %@", error);
     [_objects removeObjectAtIndex:indexPath.row];
+    [self storeProducts];
     [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
   }
 }
@@ -442,16 +443,5 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   [self openCompareSearchByEan:[NSString stringWithString:[object objectForKey:@"ean"]]];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
-
-/*
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-  if ([[segue identifier] isEqualToString:@"showDetail"]) {
-    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-    NSDate *object = [_objects objectAtIndex:indexPath.row];
-    [[segue destinationViewController] setDetailItem:object];
-  }
-}
-*/
 
 @end

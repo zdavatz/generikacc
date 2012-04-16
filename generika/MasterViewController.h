@@ -8,11 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@class DetailViewController, WebViewController, ZBarReaderViewController;
+@class WebViewController, ZBarReaderViewController;
 
-@interface MasterViewController : UITableViewController < ZBarReaderDelegate >
+@interface MasterViewController : UITableViewController <ZBarReaderDelegate>
 {
-
     ZBarReaderViewController *_reader;
     WebViewController *_browser;
     UITableView *_tableView;
@@ -24,9 +23,8 @@
     UILabel *_categoryLabel;
     UILabel *_eanLabel;
 }
-@property (strong, nonatomic) DetailViewController *detailViewController;
 
-- (IBAction)scanButtonTapped;
+- (IBAction)scanButtonTapped:(UIButton*)button;
 
 - (void)openReader;
 - (void)openCompareSearchByEan:(NSString *)ean;
