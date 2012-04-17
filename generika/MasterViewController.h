@@ -8,21 +8,22 @@
 
 #import <UIKit/UIKit.h>
 
-@class WebViewController, ZBarReaderViewController;
+@class Reachability, WebViewController, ZBarReaderViewController;
 
 @interface MasterViewController : UITableViewController <ZBarReaderDelegate>
 {
-    ZBarReaderViewController *_reader;
-    WebViewController *_browser;
-    UITableView *_tableView;
-    NSMutableArray *_objects;
-    UILabel *_nameLabel;
-    UILabel *_sizeLabel;
-    UILabel *_dateLabel;
-    UILabel *_priceLabel;
-    UILabel *_deductionLabel;
-    UILabel *_categoryLabel;
-    UILabel *_eanLabel;
+  Reachability *_reachability;
+  ZBarReaderViewController *_reader;
+  WebViewController *_browser;
+  UITableView *_tableView;
+  NSMutableArray *_objects;
+  UILabel *_nameLabel;
+  UILabel *_sizeLabel;
+  UILabel *_dateLabel;
+  UILabel *_priceLabel;
+  UILabel *_deductionLabel;
+  UILabel *_categoryLabel;
+  UILabel *_eanLabel;
 }
 
 - (IBAction)scanButtonTapped:(UIButton*)button;

@@ -17,6 +17,8 @@
 		81277E4F1536EE380001DC1A /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 81277E431536EE380001DC1A /* AFURLConnectionOperation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		81277E501536EE380001DC1A /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 81277E451536EE380001DC1A /* AFXMLRequestOperation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		81277E511536EE380001DC1A /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 81277E471536EE380001DC1A /* UIImageView+AFNetworking.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8129BA56153D46F100CB5896 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8129BA55153D46F100CB5896 /* Reachability.m */; };
+		8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8129BA58153D480100CB5896 /* SystemConfiguration.framework */; };
 		812C922D153880D100B355F9 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 812C9229153880D100B355F9 /* CHANGELOG.md */; };
 		812C922E153880D100B355F9 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 812C922B153880D100B355F9 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		812C922F153880D100B355F9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 812C922C153880D100B355F9 /* README.md */; };
@@ -78,6 +80,9 @@
 		81277E451536EE380001DC1A /* AFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFXMLRequestOperation.m; sourceTree = "<group>"; };
 		81277E461536EE380001DC1A /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		81277E471536EE380001DC1A /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
+		8129BA54153D46F100CB5896 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		8129BA55153D46F100CB5896 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		8129BA58153D480100CB5896 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		812C9229153880D100B355F9 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
 		812C922A153880D100B355F9 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
 		812C922B153880D100B355F9 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
@@ -140,6 +145,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */,
 				819273AB1535D6B00060859C /* libiconv.dylib in Frameworks */,
 				819273A91535D6990060859C /* QuartzCore.framework in Frameworks */,
 				819273A71535D6870060859C /* CoreVideo.framework in Frameworks */,
@@ -208,6 +214,7 @@
 		819273581535D56D0060859C = {
 			isa = PBXGroup;
 			children = (
+				8129BA58153D480100CB5896 /* SystemConfiguration.framework */,
 				8192736D1535D56E0060859C /* generika */,
 				819273911535D56E0060859C /* generikaTests */,
 				819273661535D56E0060859C /* Frameworks */,
@@ -252,6 +259,8 @@
 				819273801535D56E0060859C /* MasterViewController.m */,
 				81B8621E153704330054EA0A /* WebViewController.h */,
 				81B8621F153704330054EA0A /* WebViewController.m */,
+				8129BA54153D46F100CB5896 /* Reachability.h */,
+				8129BA55153D46F100CB5896 /* Reachability.m */,
 				81FEDA1F1538962900756CAE /* Resources */,
 				8192736E1535D56E0060859C /* Supporting Files */,
 			);
@@ -488,6 +497,7 @@
 				81277E511536EE380001DC1A /* UIImageView+AFNetworking.m in Sources */,
 				81B86220153704330054EA0A /* WebViewController.m in Sources */,
 				812C922E153880D100B355F9 /* JSONKit.m in Sources */,
+				8129BA56153D46F100CB5896 /* Reachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

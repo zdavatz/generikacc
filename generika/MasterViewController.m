@@ -8,6 +8,7 @@
 
 #import "JSONKit.h"
 #import "AFJSONRequestOperation.h"
+#import "Reachability.h"
 
 #import "MasterViewController.h"
 #import "WebViewController.h"
@@ -38,6 +39,7 @@ static float cellHeight = 83.0;
     _objects = [[NSMutableArray alloc] init];
   }
   _reader = [[ZBarReaderViewController alloc] init];
+  _reachability = [Reachability reachabilityForInternetConnection];
 }
 
 - (void)viewDidLoad
@@ -93,6 +95,26 @@ static float cellHeight = 83.0;
   }
 }
 
+- (BOOL)isReachable
+{
+  NetworkStatus status = [_reachability currentReachabilityStatus];
+  switch (status) {
+    case NotReachable:
+      DLog(@"Reachable: No");
+      return NO;
+      break;
+    case ReachableViaWWAN:
+      DLog(@"Reachable: WWAN");
+      return YES;
+      break;
+    case ReachableViaWiFi:
+      DLog(@"Reachable: WiFi");
+      return YES;
+      break;
+  }
+  return NO;
+}
+
 - (void)scanButtonTapped:(UIButton*)button
 {
   if (!self.editing) {
@@ -103,6 +125,15 @@ static float cellHeight = 83.0;
 - (void)imagePickerController:(UIImagePickerController*)reader
 didFinishPickingMediaWithInfo:(NSDictionary*)info
 {
+  if (![self isReachable]) {
+    UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Keine Verbindung zum Internet!"
+                                                   message:nil
+                                                  delegate:self
+                                         cancelButtonTitle:@"OK"
+                                         otherButtonTitles:nil];
+    [alert show];
+    return;
+  }
   id<NSFastEnumeration> results =
   [info objectForKey: ZBarReaderControllerResults];
   ZBarSymbol *symbol = nil;
@@ -110,24 +141,27 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
     break;
   }
   NSString *ean = [NSString stringWithString:symbol.data];
-  UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
   DLog(@"ean: %@", ean);
-  //DLog(@"barcode: %@", barcode);
-  NSString *searchURL = [NSString stringWithFormat:@"%@/%@", @"http://ch.oddb.org/de/mobile/api_search/ean", ean];
-  NSURL *productSearch = [NSURL URLWithString:searchURL];
-  DLog(@"url[productSearch]: %@", productSearch);
-  NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
-  AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-    success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-      [self didFinishPicking:JSON withEan:ean barcode:barcode];
-    }
-    failure:^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) {
-      // FIXME
-      NSLog(@"error: %@", error);
-      NSLog(@"response: %@", response);
-    }];
-  [operation start];
-  if ([ean length] == 13) {
+  if ([ean length] != 13) {
+    // FIXME Not EAN
+    [self notFoundEan:ean];
+  } else {
+    // API Request
+    UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
+    NSString *searchURL = [NSString stringWithFormat:@"%@/%@", @"http://ch.oddb.org/de/mobile/api_search/ean", ean];
+    NSURL *productSearch = [NSURL URLWithString:searchURL];
+    DLog(@"url[productSearch]: %@", productSearch);
+    NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+      success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        [self didFinishPicking:JSON withEan:ean barcode:barcode];
+      }
+      failure:^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) {
+        // FIXME
+        NSLog(@"error: %@", error);
+        NSLog(@"response: %@", response);
+      }];
+    [operation start];
     // open oddb.org
     [self openCompareSearchByEan:ean];
   }
@@ -173,24 +207,26 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
     [_objects insertObject:product atIndex:0];
     //DLog(@"_objects: %@", _objects);
     NSString *productsPath = [self storeProducts];
-    DLog(@"productsPath: %@", productsPath);
-    // alert
-    NSString *publicPrice = nil;
-    if ([price isEqualToString:@""]) {
-      publicPrice = price;
-    } else {
-      publicPrice = [NSString stringWithFormat:@"CHF: %@", price];
+    //DLog(@"productsPath: %@", productsPath);
+    if (productsPath) {
+      // alert
+      NSString *publicPrice = nil;
+      if ([price isEqualToString:@""]) {
+        publicPrice = price;
+      } else {
+        publicPrice = [NSString stringWithFormat:@"CHF: %@", price];
+      }
+      NSString *message = [NSString stringWithFormat:@"%@,\n%@\n%@",
+                            [product objectForKey:@"name"],
+                            [product objectForKey:@"size"],
+                            publicPrice];
+      UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Generika.cc sagt:"
+                                                     message:message
+                                                    delegate:self
+                                           cancelButtonTitle:@"OK"
+                                           otherButtonTitles:nil];
+      [alert show];
     }
-    NSString *message = [NSString stringWithFormat:@"%@,\n%@\n%@",
-                          [product objectForKey:@"name"],
-                          [product objectForKey:@"size"],
-                          publicPrice];
-    UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Generika.cc sagt:"
-                                                   message:message
-                                                  delegate:self
-                                         cancelButtonTitle:@"OK"
-                                         otherButtonTitles:nil];
-    [alert show];
   }
 }
 
