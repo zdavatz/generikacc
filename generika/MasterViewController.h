@@ -26,7 +26,7 @@
   UILabel *_eanLabel;
 }
 
-- (IBAction)scanButtonTapped:(UIButton*)button;
+- (IBAction)scanButtonTapped:(UIButton *)button;
 
 - (void)openReader;
 - (void)openCompareSearchByEan:(NSString *)ean;

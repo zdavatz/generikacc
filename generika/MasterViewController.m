@@ -15,7 +15,10 @@
 
 @implementation MasterViewController
 
-static float cellHeight = 83.0;
+static NSString *const kOddbProductSearchBaseURL  = @"http://ch.oddb.org/de/mobile/api_search/ean";
+static NSString *const kOddbCompareSearchBaseURL  = @"http://ch.oddb.org/de/mobile/compare/ean13";
+static NSString *const kOddbMobileFlavorUserAgent = @"org.oddb.generikacc";
+static const float kCellHeight = 83.0;
 
 - (void)loadView
 {
@@ -24,7 +27,7 @@ static float cellHeight = 83.0;
   _tableView = [[UITableView alloc] initWithFrame:screenBounds];
   _tableView.delegate = self;
   _tableView.dataSource = self;	
-  _tableView.rowHeight = cellHeight;
+  _tableView.rowHeight = kCellHeight;
   self.view = _tableView;
 
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -95,6 +98,22 @@ static float cellHeight = 83.0;
   }
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)orient
+                                duration:(NSTimeInterval) duration
+{
+  _reader.readerView.captureReader.enableReader = NO;
+  [_reader.readerView willRotateToInterfaceOrientation:orient
+                                              duration:0];
+  [super willRotateToInterfaceOrientation:orient
+                                 duration:duration];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)orient
+{
+  [super didRotateFromInterfaceOrientation:orient];
+  _reader.readerView.captureReader.enableReader = YES;
+}
+
 - (BOOL)isReachable
 {
   NetworkStatus status = [_reachability currentReachabilityStatus];
@@ -115,15 +134,15 @@ static float cellHeight = 83.0;
   return NO;
 }
 
-- (void)scanButtonTapped:(UIButton*)button
+- (void)scanButtonTapped:(UIButton *)button
 {
   if (!self.editing) {
     [self openReader];
   }
 }
 
-- (void)imagePickerController:(UIImagePickerController*)reader
-didFinishPickingMediaWithInfo:(NSDictionary*)info
+- (void)imagePickerController:(UIImagePickerController *)reader
+didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   if (![self isReachable]) {
     UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Keine Verbindung zum Internet!"
@@ -148,7 +167,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   } else {
     // API Request
     UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
-    NSString *searchURL = [NSString stringWithFormat:@"%@/%@", @"http://ch.oddb.org/de/mobile/api_search/ean", ean];
+    NSString *searchURL = [NSString stringWithFormat:@"%@/%@", kOddbProductSearchBaseURL, ean];
     NSURL *productSearch = [NSURL URLWithString:searchURL];
     DLog(@"url[productSearch]: %@", productSearch);
     NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
@@ -168,7 +187,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   [_reader dismissModalViewControllerAnimated: YES];
 }
 
-- (void)didFinishPicking:(id)json withEan:(NSString*)ean barcode:(UIImage*)barcode
+- (void)didFinishPicking:(id)json withEan:(NSString *)ean barcode:(UIImage *)barcode
 {
   //DLog(@"json: %@", json);
   if (json == nil || [json count] == 0) {
@@ -230,7 +249,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   }
 }
 
-- (void)notFoundEan:(NSString*)ean
+- (void)notFoundEan:(NSString *)ean
 {
   NSString *message = [NSString stringWithFormat:@"\"%@\"", ean];
   UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Kein Medikament gefunden auf Generika.cc mit dem folgenden EAN-Code:"
@@ -270,31 +289,21 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
                           animated:YES];
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)orient
-                                duration:(NSTimeInterval) duration
-{
-  _reader.readerView.captureReader.enableReader = NO;
-  [_reader.readerView willRotateToInterfaceOrientation:orient
-                                              duration: 0];
-  [super willRotateToInterfaceOrientation:orient
-                                 duration:duration];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)orient
-{
-  [super didRotateFromInterfaceOrientation:orient];
-  _reader.readerView.captureReader.enableReader = YES;
-}
-
 - (void)openCompareSearchByEan:(NSString*)ean
 {
-  NSString *webURL = [NSString stringWithFormat:@"%@/%@", @"http://ch.oddb.org/de/mobile/compare/ean13", ean];
+  NSString *webURL = [NSString stringWithFormat:@"%@/%@", kOddbCompareSearchBaseURL, ean];
   NSURL *compareSearch = [NSURL URLWithString:webURL];
   DLog(@"url[compareSearch]: %@", compareSearch);
+  // User-Agent
+  NSString *originAgent = [[NSURLRequest requestWithURL:compareSearch] valueForHTTPHeaderField:@"User-Agent"];
+  NSString *userAgent = [NSString stringWithFormat:@"%@ %@", originAgent, kOddbMobileFlavorUserAgent];
+  DLog(@"userAgent: %@", userAgent);
+  NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:userAgent, @"UserAgent", nil];
+  [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
   _browser = [[WebViewController alloc] init];
   [_browser loadURL:compareSearch];
-  [self.navigationController pushViewController: _browser
-                                       animated: YES];
+  [self.navigationController pushViewController:_browser
+                                       animated:YES];
 }
 
 - (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean
@@ -318,7 +327,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   //DLog(@"error: %@", error);
   time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
   DLog(@"timestamp, %d", (int)timestamp);
-  NSString *fileName = [NSString stringWithFormat:@"%@-%d.png", ean, (int)timestamp];
+  NSString *fileName = [NSString stringWithFormat:@"%@_%d.png", ean, (int)timestamp];
   NSString *filePath = [path stringByAppendingPathComponent:fileName];
   NSData *barcodeData = UIImagePNGRepresentation(barcodeImage);
   DLog(@"filePath: %@", filePath);
@@ -361,7 +370,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-  return cellHeight;
+  return kCellHeight;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

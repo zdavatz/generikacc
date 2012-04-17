@@ -62,7 +62,7 @@
 
 # pragma mark - Action
 
-- (void)loadURL:(NSURL*)url
+- (void)loadURL:(NSURL *)url
 {
   url = [url standardizedURL];
   _history = [url absoluteString];
@@ -107,7 +107,7 @@
 
 #pragma mark - ActionSheet
 
-- (void)actionSheet:(UIActionSheet*)sheet clickedButtonAtIndex:(NSInteger)index
+- (void)actionSheet:(UIActionSheet *)sheet clickedButtonAtIndex:(NSInteger)index
 {
   DLog(@"sheet button index: %d", index);
   if (index == sheet.destructiveButtonIndex) {
@@ -121,12 +121,12 @@
 
 #pragma mark - Webview
 
-- (void)webViewDidStartLoad:(UIWebView*)view
+- (void)webViewDidStartLoad:(UIWebView *)view
 {
   [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 }
 
-- (void)webViewDidFinishLoad:(UIWebView*)view
+- (void)webViewDidFinishLoad:(UIWebView *)view
 {
   [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
   NSString *title = [view stringByEvaluatingJavaScriptFromString:@"document.title"];
@@ -135,7 +135,7 @@
   }
 }
 
-- (void)webView:(UIWebView*)view didFailLoadWithError:(NSError*)err
+- (void)webView:(UIWebView *)view didFailLoadWithError:(NSError *)err
 {
   [_requests removeObjectAtIndex:0];
   //DLog(@"loading: %d", view.loading);
@@ -147,7 +147,7 @@
   [alert show];
 }
 
-- (BOOL)webView:(UIWebView*)view shouldStartLoadWithRequest:(NSURLRequest*)req
+- (BOOL)webView:(UIWebView *)view shouldStartLoadWithRequest:(NSURLRequest *)req
                                              navigationType:(UIWebViewNavigationType) type
 {
   if (view.loading) {
@@ -170,7 +170,6 @@
   default:
     break;
   }
-
   if (result) {
     self.title = [url absoluteString];
   }
