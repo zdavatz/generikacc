@@ -1,3 +1,11 @@
+=== 1.0.4 / 17.04.2012
+
+* Updated User-Agent in WebView
+* Updated generika.xcodeproj/project.pbxproj
+* Updated info plist for icon images
+* Added 2 icon images (57x57, 72x72)
+* Updated actionsheet
+
 === 1.0.3 / 17.04.2012
 
 * Updated network error handling
