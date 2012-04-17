@@ -170,7 +170,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
       dateString,  @"datetime",
       nil];
     DLog(@"product: %@", product);
-    [_objects addObject:product];
+    [_objects insertObject:product atIndex:0];
     //DLog(@"_objects: %@", _objects);
     NSString *productsPath = [self storeProducts];
     DLog(@"productsPath: %@", productsPath);
