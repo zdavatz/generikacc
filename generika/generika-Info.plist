@@ -10,7 +10,9 @@
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
 	<array>
+		<string>icon.png</string>
 		<string>icon@2x.png</string>
+		<string>icon-72.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
 	<string>org.oddb.${PRODUCT_NAME:rfc1034identifier}</string>
