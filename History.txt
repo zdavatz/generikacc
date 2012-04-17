@@ -1,3 +1,9 @@
+=== 1.0.3 / 17.04.2012
+
+* Updated network error handling
+* Fixed product insert order
+* Added moving of TableViewCell
+
 === 1.0.2 / 16.04.2012
 
 * Improved TableView
