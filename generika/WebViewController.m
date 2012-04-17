@@ -8,57 +8,40 @@
 
 #import "WebViewController.h"
 
+@class MasterViewController;
 @implementation WebViewController
 
 - (id)init
 {
-  self = [super initWithNibName: nil
-                         bundle: nil];
+  self = [super initWithNibName:nil
+                         bundle:nil];
   return self;
 }
 
 - (void)loadView
 {
   [super loadView];
+  _requests = [[NSMutableArray alloc] init];
 }
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  _webview = [[UIWebView alloc] init];
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  _webview = [[UIWebView alloc] init];
   _webview.frame = screenBounds;
   _webview.scalesPageToFit = YES;
   _webview.delegate = self;
   self.view = _webview;
-
-  _backBtn = 
-    [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem: UIBarButtonSystemItemAction
-                           target: self
-                           action: @selector(goBack)];
-  _backBtn.enabled = NO;
-
-  CGRect frame = self.view.bounds;
-  UIToolbar *toolBar = [[UIToolbar alloc] initWithFrame:frame];
-  frame.size = [toolBar sizeThatFits:frame.size];
-  frame.origin.y = self.view.bounds.size.height - frame.size.height;
-  [toolBar setFrame:frame];
-  [toolBar setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-
-  [toolBar setItems:
-    [NSArray arrayWithObjects:
-        _backBtn,
-        [[UIBarButtonItem alloc]
-          initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace
-                               target: nil
-                               action: nil] ,
-        [[UIBarButtonItem alloc]
-          initWithBarButtonSystemItem: UIBarButtonSystemItemAction
-                               target: self
-                               action: @selector(showActions)],
-        nil]];
-  [self.view addSubview:toolBar];
+  UIBarButtonItem *actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                                target:self
+                                                                                action:@selector(showActions)];
+  self.navigationItem.rightBarButtonItem = actionButton;
+  UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"back"
+                                                                 style:UIBarButtonItemStylePlain
+                                                                target:self
+                                                                action:@selector(goBack)];
+  self.navigationItem.leftBarButtonItem = backButton;
 }
 
 - (void)viewDidUnload
@@ -84,19 +67,53 @@
   url = [url standardizedURL];
   _history = [url absoluteString];
   DLog(@"load: %@", _history);
-  _backBtn.enabled = NO;
   [self refresh];
+}
+
+- (void)goBack {
+  int requests = [_requests count] - 1;
+  DLog(@"history counts: %d", requests);
+  if (requests > 0) {
+    [_requests removeObjectAtIndex:0];
+    [_webview goBack];
+  } else {
+    MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
+    [self.navigationController popToViewController:(UIViewController *)parent animated:YES];
+  }
 }
 
 - (void)refresh
 {
-  // TODO reachable check
   NSURL *url = [NSURL URLWithString: _history];
   NSURLRequest *request = [NSURLRequest requestWithURL: url];
   //DLog(@"request: %@", request);
   UIWebView *view = (UIWebView*)self.view;
   [view loadRequest:request];
 }
+
+- (void)showActions
+{
+  UIActionSheet *sheet = [[UIActionSheet alloc] init];
+  sheet.delegate = self;
+  sheet.title = @"";
+  [sheet addButtonWithTitle:@"Open in Safari"];
+  [sheet addButtonWithTitle:@"Cancel"];
+  sheet.destructiveButtonIndex = 0;
+  sheet.cancelButtonIndex      = 1;
+  [sheet showInView:_webview];
+}
+
+
+#pragma mark - ActionSheet
+
+- (void)actionSheet:(UIActionSheet*)sheet clickedButtonAtIndex:(NSInteger)index
+{
+  if (index == sheet.destructiveButtonIndex) {
+    DLog(@"sheet button index: %d", index);
+    [[UIApplication sharedApplication] openURL:[_webview.request URL]];
+  }
+}
+
 
 #pragma mark - Webview
 
@@ -108,18 +125,15 @@
 - (void)webViewDidFinishLoad:(UIWebView*)view
 {
   [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-  _backBtn.enabled = view.canGoBack;
   NSString *title = [view stringByEvaluatingJavaScriptFromString:@"document.title"];
   if (title) {
     self.title = title;
   }
-  //DLog(@"canGoBack: %d", view.canGoBack);
 }
 
 - (void)webView:(UIWebView*)view didFailLoadWithError:(NSError*)err
 {
   //DLog(@"loading: %d", view.loading);
-  //DLog(@"canGoBack: %d", view.canGoBack);
   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Failed to open"
                                                   message:@"Error"
                                                  delegate:nil
@@ -140,15 +154,14 @@
   BOOL result = YES;
   switch(type)
   {
-  case UIWebViewNavigationTypeLinkClicked:
-    break;
   case UIWebViewNavigationTypeBackForward:
-    _backBtn.enabled = view.canGoBack;
-    break;
   case UIWebViewNavigationTypeReload:
+    break;
+  case UIWebViewNavigationTypeLinkClicked:
   case UIWebViewNavigationTypeFormSubmitted:
   case UIWebViewNavigationTypeFormResubmitted:
   case UIWebViewNavigationTypeOther:
+    [_requests insertObject:url atIndex:0];
   default:
     break;
   }

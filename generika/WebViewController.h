@@ -8,12 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface WebViewController : UIViewController < UIWebViewDelegate, UIActionSheetDelegate >
+@interface WebViewController : UIViewController <UIWebViewDelegate, UIActionSheetDelegate>
 {
-  UIBarButtonItem *_backBtn;
-  NSString        *_history;
-  UIWebView       *_webview;
+  NSMutableArray *_requests;
+  NSString  *_history;
+  UIWebView *_webview;
 }
 - (void)loadURL:(NSURL*)url;
-- (void)refresh;
 @end
