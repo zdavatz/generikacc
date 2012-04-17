@@ -354,7 +354,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   }
   // name
   _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 2.0, 230.0, 25.0)];
-  _nameLabel.font = [UIFont boldSystemFontOfSize:15.0];
+  _nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
   _nameLabel.textAlignment = UITextAlignmentLeft;
   _nameLabel.textColor = [UIColor blackColor];
   _nameLabel.text = [NSString stringWithString:[product objectForKey:@"name"]];
@@ -368,7 +368,7 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   }
   */
   //DLog(@"nameSize = %f", nameSize.width);
-  _sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 26.0, 120.0, 16.0)];
+  _sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 27.0, 110.0, 16.0)];
   _sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
   _sizeLabel.textAlignment = UITextAlignmentLeft;
   _sizeLabel.textColor = [UIColor blackColor];
@@ -376,10 +376,10 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   [cell.contentView addSubview:_sizeLabel];
   // datetime
   if ([product objectForKey:@"datetime"]) {
-    _dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(190.0, 26.0, 100.0, 16.0)];
+    _dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(170.0, 27.0, 100.0, 16.0)];
     _dateLabel.font = [UIFont systemFontOfSize:12.0];
     _dateLabel.textAlignment = UITextAlignmentLeft;
-    _dateLabel.textColor = [UIColor blackColor];
+    _dateLabel.textColor = [UIColor grayColor];
     _dateLabel.text = [NSString stringWithString:[product objectForKey:@"datetime"]];
     [cell.contentView addSubview:_dateLabel];
   }
@@ -406,14 +406,14 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   }
   [cell.contentView addSubview:_deductionLabel];
   // category
-  _categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(170.0, 45.0, 190.0, 16.0)];
+  _categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(171.0, 45.0, 190.0, 16.0)];
   _categoryLabel.font = [UIFont systemFontOfSize:12.0];
   _categoryLabel.textAlignment = UITextAlignmentLeft;
   _categoryLabel.textColor = [UIColor grayColor];
   _categoryLabel.text = [NSString stringWithString:[product objectForKey:@"category"]];
   [cell.contentView addSubview:_categoryLabel];
   // ean
-  _eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 60.0, 260.0, 16.0)];
+  _eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 62.0, 260.0, 16.0)];
   _eanLabel.font = [UIFont systemFontOfSize:12.0];
   _eanLabel.textAlignment = UITextAlignmentLeft;
   _eanLabel.textColor = [UIColor grayColor];
@@ -453,25 +453,25 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info
   [_tableView setEditing:editing animated:YES];
 }
 
-/*
-// Override to support rearranging the table view.
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
+  if (fromIndexPath.section == toIndexPath.section) {
+    if (_objects && toIndexPath.row < [_objects count]) {
+      NSDictionary  *product = [_objects objectAtIndex:fromIndexPath.row];
+      [_objects removeObject:product];
+      [_objects insertObject:product atIndex:toIndexPath.row];
+      [self storeProducts];
+    }
+  }
 }
-*/
 
-/*
-// Override to support conditional rearranging of the table view.
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
+  return YES;
 }
-*/
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  //self.detailViewController.detailItem = object;
   // open browser
   NSDictionary *object = [_objects objectAtIndex:indexPath.row];
   [self openCompareSearchByEan:[NSString stringWithString:[object objectForKey:@"ean"]]];
