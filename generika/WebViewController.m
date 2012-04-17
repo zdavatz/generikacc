@@ -95,11 +95,12 @@
 {
   UIActionSheet *sheet = [[UIActionSheet alloc] init];
   sheet.delegate = self;
-  sheet.title = @"";
+  sheet.title = [[_webview.request URL] absoluteString];
   [sheet addButtonWithTitle:@"Open in Safari"];
+  [sheet addButtonWithTitle:@"Back to List"];
   [sheet addButtonWithTitle:@"Cancel"];
   sheet.destructiveButtonIndex = 0;
-  sheet.cancelButtonIndex      = 1;
+  sheet.cancelButtonIndex      = 2;
   [sheet showInView:_webview];
 }
 
@@ -108,9 +109,12 @@
 
 - (void)actionSheet:(UIActionSheet*)sheet clickedButtonAtIndex:(NSInteger)index
 {
+  DLog(@"sheet button index: %d", index);
   if (index == sheet.destructiveButtonIndex) {
-    DLog(@"sheet button index: %d", index);
     [[UIApplication sharedApplication] openURL:[_webview.request URL]];
+  } else if (index == 1) { //back to list
+    MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
+    [self.navigationController popToViewController:(UIViewController *)parent animated:YES];
   }
 }
 
@@ -133,6 +137,7 @@
 
 - (void)webView:(UIWebView*)view didFailLoadWithError:(NSError*)err
 {
+  [_requests removeObjectAtIndex:0];
   //DLog(@"loading: %d", view.loading);
   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Failed to open"
                                                   message:@"Error"
