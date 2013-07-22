@@ -66,13 +66,13 @@
 {
   url = [url standardizedURL];
   _history = [url absoluteString];
-  DLog(@"load: %@", _history);
+  //DLog(@"load: %@", _history);
   [self refresh];
 }
 
 - (void)goBack {
   int requests = [_requests count] - 1;
-  DLog(@"history counts: %d", requests);
+  //DLog(@"history counts: %d", requests);
   if (requests > 0) {
     [_requests removeObjectAtIndex:0];
     [_webview goBack];
@@ -109,7 +109,7 @@
 
 - (void)actionSheet:(UIActionSheet *)sheet clickedButtonAtIndex:(NSInteger)index
 {
-  DLog(@"sheet button index: %d", index);
+  //DLog(@"sheet button index: %d", index);
   if (index == sheet.destructiveButtonIndex) {
     [[UIApplication sharedApplication] openURL:[_webview.request URL]];
   } else if (index == 1) { //back to list

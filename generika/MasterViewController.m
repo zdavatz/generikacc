@@ -35,7 +35,7 @@ static const float kCellHeight = 83.0;
   NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
   NSFileManager *fileManager = [NSFileManager defaultManager];
   BOOL exist = [fileManager fileExistsAtPath:filePath isDirectory:NO];
-  DLog(@"products.plist exist: %d", exist);
+  //DLog(@"products.plist exist: %d", exist);
   if (exist) {
     _objects = [[NSMutableArray alloc] initWithContentsOfFile:filePath];
   } else {
@@ -119,15 +119,15 @@ static const float kCellHeight = 83.0;
   NetworkStatus status = [_reachability currentReachabilityStatus];
   switch (status) {
     case NotReachable:
-      DLog(@"Reachable: No");
+      //DLog(@"Reachable: No");
       return NO;
       break;
     case ReachableViaWWAN:
-      DLog(@"Reachable: WWAN");
+      //DLog(@"Reachable: WWAN");
       return YES;
       break;
     case ReachableViaWiFi:
-      DLog(@"Reachable: WiFi");
+      //DLog(@"Reachable: WiFi");
       return YES;
       break;
   }
@@ -160,7 +160,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     break;
   }
   NSString *ean = [NSString stringWithString:symbol.data];
-  DLog(@"ean: %@", ean);
+  //DLog(@"ean: %@", ean);
   if ([ean length] != 13) {
     // FIXME Not EAN
     [self notFoundEan:ean];
@@ -169,7 +169,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
     NSString *searchURL = [NSString stringWithFormat:@"%@/%@", kOddbProductSearchBaseURL, ean];
     NSURL *productSearch = [NSURL URLWithString:searchURL];
-    DLog(@"url[productSearch]: %@", productSearch);
+    //DLog(@"url[productSearch]: %@", productSearch);
     NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
       success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
@@ -195,12 +195,12 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   } else {
     // image
     NSString *barcodePath = [self storeBarcode:barcode ofEan:ean];
-    DLog(@"barcodePath: %@", barcodePath);
+    //DLog(@"barcodePath: %@", barcodePath);
     // text
     NSString *category = [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "];
     NSString *price = nil;
     if ([[json valueForKeyPath:@"price"] isEqual:[NSNull null]]) {
-      price = [NSString stringWithString:@""];
+      price = @"";
     } else {
       price = [json valueForKeyPath:@"price"];
     }
@@ -208,7 +208,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
     NSString *dateString = [dateFormat stringFromDate:now];
-    DLog(@"date: %@", dateString)
+    //DLog(@"date: %@", dateString)
     NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
       [json valueForKeyPath:@"reg"],       @"reg",
       [json valueForKeyPath:@"seq"],       @"seq",
@@ -222,7 +222,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       ean,         @"ean",
       dateString,  @"datetime",
       nil];
-    DLog(@"product: %@", product);
+    //DLog(@"product: %@", product);
     [_objects insertObject:product atIndex:0];
     //DLog(@"_objects: %@", _objects);
     NSString *productsPath = [self storeProducts];
@@ -284,7 +284,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [scanner setSymbology:ZBAR_QRCODE
                  config:ZBAR_CFG_ENABLE
                      to:0];
-  _reader.readerView.zoom = 2.25; //default 1.25
+  //_reader.readerView.zoom = 2.25; //default 1.25
   [self presentModalViewController:_reader
                           animated:YES];
 }
@@ -293,11 +293,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   NSString *webURL = [NSString stringWithFormat:@"%@/%@", kOddbCompareSearchBaseURL, ean];
   NSURL *compareSearch = [NSURL URLWithString:webURL];
-  DLog(@"url[compareSearch]: %@", compareSearch);
+  //DLog(@"url[compareSearch]: %@", compareSearch);
   // User-Agent
   NSString *originAgent = [[NSURLRequest requestWithURL:compareSearch] valueForHTTPHeaderField:@"User-Agent"];
   NSString *userAgent = [NSString stringWithFormat:@"%@ %@", originAgent, kOddbMobileFlavorUserAgent];
-  DLog(@"userAgent: %@", userAgent);
+  //DLog(@"userAgent: %@", userAgent);
   NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:userAgent, @"UserAgent", nil];
   [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
   _browser = [[WebViewController alloc] init];
@@ -326,13 +326,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                                error:&error];  
   //DLog(@"error: %@", error);
   time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
-  DLog(@"timestamp, %d", (int)timestamp);
+  //DLog(@"timestamp, %d", (int)timestamp);
   NSString *fileName = [NSString stringWithFormat:@"%@_%d.png", ean, (int)timestamp];
   NSString *filePath = [path stringByAppendingPathComponent:fileName];
   NSData *barcodeData = UIImagePNGRepresentation(barcodeImage);
-  DLog(@"filePath: %@", filePath);
+  //DLog(@"filePath: %@", filePath);
   BOOL saved = [barcodeData writeToFile:filePath atomically:YES];
-  DLog(@"image saved: %d", saved);
+  //DLog(@"image saved: %d", saved);
   if (saved) {
     return filePath;
   } else {
@@ -345,10 +345,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   NSString *path = [paths objectAtIndex:0];
   NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
-  DLog(@"filePath: %@", filePath);
+  //DLog(@"filePath: %@", filePath);
   //DLog(@"_objects: %@", _objects);
   BOOL saved = [_objects writeToFile:filePath atomically:YES];
-  DLog(@"plist saved: %d", saved);
+  //DLog(@"plist saved: %d", saved);
   if (saved) {
     return filePath;
   } else {
@@ -365,7 +365,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  DLog(@"objects count: %d", _objects.count);
+  //DLog(@"objects count: %d", _objects.count);
   return _objects.count;
 }
 
@@ -484,7 +484,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
     [fileManager removeItemAtPath:barcodePath error:&error];
-    DLog(@"remove image error: %@", error);
+    //DLog(@"remove image error: %@", error);
     [_objects removeObjectAtIndex:indexPath.row];
     [self storeProducts];
     [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -493,7 +493,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated
 {
-  DLog(@"editing: %d", editing);
+  //DLog(@"editing: %d", editing);
   [super setEditing:editing animated:YES];
   [_tableView setEditing:editing animated:YES];
 }
