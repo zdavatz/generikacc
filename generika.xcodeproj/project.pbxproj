@@ -36,6 +36,7 @@
 		810A927C179CD1C500DAA963 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 810A926B179CD1C500DAA963 /* UIImageView+AFNetworking.m */; };
 		810A927D179CD1C500DAA963 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 810A926B179CD1C500DAA963 /* UIImageView+AFNetworking.m */; };
 		810A928D179CD50A00DAA963 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 810A928C179CD50A00DAA963 /* Security.framework */; };
+		810A928F179CFED900DAA963 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810A928E179CFED900DAA963 /* Default-568h@2x.png */; };
 		8129BA56153D46F100CB5896 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8129BA55153D46F100CB5896 /* Reachability.m */; };
 		8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8129BA58153D480100CB5896 /* SystemConfiguration.framework */; };
 		812C922D153880D100B355F9 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 812C9229153880D100B355F9 /* CHANGELOG.md */; };
@@ -120,6 +121,7 @@
 		810A926A179CD1C500DAA963 /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		810A926B179CD1C500DAA963 /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
 		810A928C179CD50A00DAA963 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		810A928E179CFED900DAA963 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		8129BA54153D46F100CB5896 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8129BA55153D46F100CB5896 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8129BA58153D480100CB5896 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -294,6 +296,7 @@
 		819273581535D56D0060859C = {
 			isa = PBXGroup;
 			children = (
+				810A928E179CFED900DAA963 /* Default-568h@2x.png */,
 				810A928C179CD50A00DAA963 /* Security.framework */,
 				810A9258179CD1C500DAA963 /* AFNetworking */,
 				8129BA58153D480100CB5896 /* SystemConfiguration.framework */,
@@ -469,6 +472,7 @@
 				810A9251179CCEC800DAA963 /* zbar-help.html in Resources */,
 				810A9253179CCEC800DAA963 /* zbar-helpicons.png in Resources */,
 				810A9255179CCEC800DAA963 /* zbar-samples.png in Resources */,
+				810A928F179CFED900DAA963 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
