@@ -28,6 +28,7 @@
 
   MasterViewController *masterViewController = [[MasterViewController alloc] init];
   _navigationController = [[UINavigationController alloc] initWithRootViewController:masterViewController];
+  _navigationController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	//[_window addSubview:_navigationController.view]; does not work for auto rotation
   _window.rootViewController = _navigationController;
 	[_window makeKeyAndVisible];
