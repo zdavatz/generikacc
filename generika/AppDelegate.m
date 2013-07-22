@@ -28,7 +28,8 @@
 
   MasterViewController *masterViewController = [[MasterViewController alloc] init];
   _navigationController = [[UINavigationController alloc] initWithRootViewController:masterViewController];
-	[_window addSubview:_navigationController.view];
+	//[_window addSubview:_navigationController.view]; does not work for auto rotation
+  _window.rootViewController = _navigationController;
 	[_window makeKeyAndVisible];
 
   return YES;

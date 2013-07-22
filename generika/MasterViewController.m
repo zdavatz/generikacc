@@ -26,7 +26,7 @@ static const float kCellHeight = 83.0;
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   _tableView = [[UITableView alloc] initWithFrame:screenBounds];
   _tableView.delegate = self;
-  _tableView.dataSource = self;	
+  _tableView.dataSource = self;
   _tableView.rowHeight = kCellHeight;
   self.view = _tableView;
 
@@ -89,6 +89,17 @@ static const float kCellHeight = 83.0;
   [super viewDidAppear:animated];
 }
 
+- (BOOL)shouldAutorotate
+{
+  return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+  return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+// iOS <= 5
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
@@ -254,8 +265,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   NSString *message = [NSString stringWithFormat:@"\"%@\"", ean];
   UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Kein Medikament gefunden auf Generika.cc mit dem folgenden EAN-Code:"
                                                  message:message
-                                                delegate:self 
-                                       cancelButtonTitle:@"OK" 
+                                                delegate:self
+                                       cancelButtonTitle:@"OK"
                                        otherButtonTitles:nil];
   [alert show];
 }
@@ -275,7 +286,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [scanner setSymbology:ZBAR_UPCE
                  config:ZBAR_CFG_ENABLE
                      to:0];
-  [scanner setSymbology:ZBAR_ISBN10 
+  [scanner setSymbology:ZBAR_ISBN10
                  config:ZBAR_CFG_ENABLE
                      to:0];
   [scanner setSymbology:ZBAR_ISBN13
@@ -323,7 +334,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [fileManager createDirectoryAtPath:path
          withIntermediateDirectories:YES
                           attributes:nil
-                               error:&error];  
+                               error:&error];
   //DLog(@"error: %@", error);
   time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
   //DLog(@"timestamp, %d", (int)timestamp);
