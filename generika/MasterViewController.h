@@ -8,13 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@class Reachability, WebViewController, ZBarReaderViewController;
+@class Reachability, WebViewController, SettingsViewController, ZBarReaderViewController;
 
 @interface MasterViewController : UITableViewController <ZBarReaderDelegate>
 {
   Reachability *_reachability;
   ZBarReaderViewController *_reader;
   WebViewController *_browser;
+  SettingsViewController *_settings;
   UITableView *_tableView;
   NSMutableArray *_objects;
   UILabel *_nameLabel;
@@ -27,6 +28,7 @@
 }
 
 - (IBAction)scanButtonTapped:(UIButton *)button;
+- (IBAction)settingsButtonTapped:(UIButton *)button;
 
 - (void)openReader;
 - (void)openCompareSearchByEan:(NSString *)ean;

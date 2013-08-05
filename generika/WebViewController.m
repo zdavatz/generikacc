@@ -70,7 +70,8 @@
   [self refresh];
 }
 
-- (void)goBack {
+- (void)goBack
+{
   int requests = [_requests count] - 1;
   //DLog(@"history counts: %d", requests);
   if (requests > 0) {

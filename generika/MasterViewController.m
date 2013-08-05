@@ -12,6 +12,7 @@
 
 #import "MasterViewController.h"
 #import "WebViewController.h"
+#import "SettingsViewController.h"
 
 @implementation MasterViewController
 
@@ -48,13 +49,16 @@ static const float kCellHeight = 83.0;
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-
+  // navigation item
   self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
   UIBarButtonItem *scanButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                               target:self
                                                                               action:@selector(scanButtonTapped:)];
   self.navigationItem.rightBarButtonItem = scanButton;
+  // tool bar
+  [self layoutToolbar];
+
   [self openReader];
 }
 
@@ -71,6 +75,7 @@ static const float kCellHeight = 83.0;
   _eanLabel       = nil;
   _reader = nil;
   _browser = nil;
+  _settings = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -87,6 +92,28 @@ static const float kCellHeight = 83.0;
 {
   [_tableView flashScrollIndicators];
   [super viewDidAppear:animated];
+}
+
+- (void)layoutToolbar
+{
+  [self.navigationController setToolbarHidden:NO animated:YES];
+  UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+  button.frame = CGRectMake(0, 0, 40, 40);
+  UIFont *font = [UIFont fontWithName:@"FontAwesome" size:20.0];
+  [button.titleLabel setFont:font];
+  [button setTitle:@"\uF013" forState:UIControlStateNormal];
+  [button addTarget:self
+             action:@selector(settingsButtonTapped:)
+   forControlEvents:UIControlEventTouchUpInside];
+  UIBarButtonItem *settingsBarButton = [[UIBarButtonItem alloc] initWithCustomView:button];
+  UIBarButtonItem *space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                         target:nil
+                                                                         action:nil];
+  UIBarButtonItem *margin = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                          target:nil
+                                                                          action:nil];
+  margin.width = -12;
+  self.toolbarItems = [NSArray arrayWithObjects:space, settingsBarButton, margin, nil];
 }
 
 - (BOOL)shouldAutorotate
@@ -144,6 +171,27 @@ static const float kCellHeight = 83.0;
   }
   return NO;
 }
+
+
+#pragma mark - Settings View
+
+- (void)settingsButtonTapped:(UIButton *)button
+{
+  if (!self.editing) {
+    [self openSettings];
+  }
+}
+
+- (void)openSettings
+{
+  _settings = [[SettingsViewController alloc] init];
+  _settings.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  UINavigationController *settingsNavigation = [[UINavigationController alloc] initWithRootViewController: _settings];
+  [self presentModalViewController:settingsNavigation animated:YES];
+  //[self.navigationController pushViewController:_settings animated:YES];
+}
+
+#pragma mark - Scan View
 
 - (void)scanButtonTapped:(UIButton *)button
 {
