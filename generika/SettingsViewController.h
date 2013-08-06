@@ -8,9 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+@class SettingsDetailViewController;
+
 @interface SettingsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
-  UITableView *_optionsView;
+  SettingsDetailViewController *_settingsDetail;
+  NSArray *_settings;
+  UITableView *_settingsView;
   UILabel *_sectionLabel;
   UILabel *_nameLabel;
 }

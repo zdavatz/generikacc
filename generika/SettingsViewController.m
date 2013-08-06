@@ -7,10 +7,10 @@
 //
 
 #import "SettingsViewController.h"
+#import "SettingsDetailViewController.h"
 
 static const float kCellHeight = 44.0; // default = 44.0
 
-@class MasterViewController;
 @interface SettingsViewController ()
 
 @end
@@ -30,23 +30,26 @@ static const float kCellHeight = 44.0; // default = 44.0
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(updateSettings)
                                                name:UIApplicationDidFinishLaunchingNotification object:nil];
-  UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"back"
-                                                                 style:UIBarButtonItemStylePlain
-                                                                target:self
-                                                                action:@selector(goBack)];
-  self.navigationItem.leftBarButtonItem = backButton;
-  // table view 
+  UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"close"
+                                                                  style:UIBarButtonItemStylePlain
+                                                                 target:self
+                                                                 action:@selector(closeSettings)];
+  self.navigationItem.leftBarButtonItem = closeButton;
+  _settings = [NSArray arrayWithObjects:@"Type", @"Language", nil];
+  // table view
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  _optionsView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
-  _optionsView.delegate = self;
-  _optionsView.dataSource = self;
-  _optionsView.rowHeight = kCellHeight;
-  self.view = _optionsView;
+  _settingsView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
+  _settingsView.delegate = self;
+  _settingsView.dataSource = self;
+  _settingsView.rowHeight = kCellHeight;
+  self.view = _settingsView;
 }
 
 - (void)viewDidUnload
 {
-  _optionsView = nil;
+  _settingsDetail = nil;
+  _settingsView = nil;
+  _settings = nil;
   _sectionLabel = nil;
   _nameLabel = nil;
 }
@@ -58,11 +61,9 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 #pragma mark - Action
 
-- (void)goBack
+- (void)closeSettings
 {
   [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-  //MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
-  //[self.navigationController popToViewController:(UIViewController *)parent animated:YES];
 }
 
 - (void)updateSettings
@@ -99,7 +100,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   _sectionLabel.backgroundColor = [UIColor clearColor];
   switch (section) {
     case 0:
-      _sectionLabel.text = @"Search Option";
+      _sectionLabel.text = @"Search-Result";
       break;
     default:
       _sectionLabel.text = @"";
@@ -128,20 +129,35 @@ static const float kCellHeight = 44.0; // default = 44.0
   _nameLabel.textAlignment = UITextAlignmentLeft;
   _nameLabel.textColor = [UIColor blackColor];
   _nameLabel.backgroundColor = [UIColor clearColor];
+  _nameLabel.text = [_settings objectAtIndex:indexPath.row];
+  [cell.contentView addSubview:_nameLabel];
+  return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+  
+  // next
+  _settingsDetail = [[SettingsDetailViewController alloc] init];
+  _settingsDetail.title = [_settings objectAtIndex:indexPath.row];
+  //DLog(@"indexPath.row = %i", indexPath.row);
   switch (indexPath.row) {
     case 0:
-      _nameLabel.text = @"Type";
+      _settingsDetail.options = [NSArray arrayWithObjects:@"Preisvergleich", @"PI", @"FI", nil];
+      _settingsDetail.defaultKey = @"search.result.type";
       break;
     case 1:
-      _nameLabel.text = @"Language";
+      _settingsDetail.options = [NSArray arrayWithObjects:@"Deutsch", @"français", nil];
+      _settingsDetail.defaultKey = @"search.result.lang";
       break;
     default:
-      _nameLabel.text = @"";
+      // unexpected
+      _settingsDetail.options = [NSArray arrayWithObjects:nil];
+      _settingsDetail.defaultKey = @"";
       break;
   }
-  [cell.contentView addSubview:_nameLabel];
-  DLog(@"cell %@", cell);
-  return cell;
+  [self.navigationController pushViewController:_settingsDetail animated:YES];
 }
 
 @end

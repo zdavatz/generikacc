@@ -49,6 +49,8 @@
 		812E6F19153DB7E500009A04 /* icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 812E6F16153DB7E500009A04 /* icon-72.png */; };
 		812E6F1A153DB7E500009A04 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 812E6F17153DB7E500009A04 /* icon.png */; };
 		812E6F1B153DB7E500009A04 /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 812E6F18153DB7E500009A04 /* icon@2x.png */; };
+		8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
+		8148C65C17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
 		819273681535D56E0060859C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273671535D56E0060859C /* UIKit.framework */; };
 		8192736A1535D56E0060859C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273691535D56E0060859C /* Foundation.framework */; };
 		8192736C1535D56E0060859C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8192736B1535D56E0060859C /* CoreGraphics.framework */; };
@@ -139,6 +141,8 @@
 		812E6F16153DB7E500009A04 /* icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-72.png"; path = "resources/icon-72.png"; sourceTree = "<group>"; };
 		812E6F17153DB7E500009A04 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = resources/icon.png; sourceTree = "<group>"; };
 		812E6F18153DB7E500009A04 /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon@2x.png"; path = "resources/icon@2x.png"; sourceTree = "<group>"; };
+		8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsDetailViewController.h; sourceTree = "<group>"; };
+		8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsDetailViewController.m; sourceTree = "<group>"; };
 		819273631535D56E0060859C /* generika.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = generika.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		819273671535D56E0060859C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		819273691535D56E0060859C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -351,6 +355,8 @@
 				81B8621E153704330054EA0A /* WebViewController.h */,
 				81B8621F153704330054EA0A /* WebViewController.m */,
 				812B9A4B17AF7DF50001A5A8 /* SettingsViewController.h */,
+				8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */,
+				8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */,
 				812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */,
 				8129BA54153D46F100CB5896 /* Reachability.h */,
 				8129BA55153D46F100CB5896 /* Reachability.m */,
@@ -528,6 +534,7 @@
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
 				81B86220153704330054EA0A /* WebViewController.m in Sources */,
 				812C922E153880D100B355F9 /* JSONKit.m in Sources */,
+				8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */,
 				8129BA56153D46F100CB5896 /* Reachability.m in Sources */,
 				810A926C179CD1C500DAA963 /* AFHTTPClient.m in Sources */,
 				810A926E179CD1C500DAA963 /* AFHTTPRequestOperation.m in Sources */,
@@ -546,6 +553,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8148C65C17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */,
 				819273991535D56E0060859C /* generikaTests.m in Sources */,
 				810A926D179CD1C500DAA963 /* AFHTTPClient.m in Sources */,
 				810A926F179CD1C500DAA963 /* AFHTTPRequestOperation.m in Sources */,
@@ -601,8 +609,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Yasuhiro Asaka (DY6SVK3V63)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Yasuhiro Asaka (DY6SVK3V63)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -637,8 +645,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Yasuhiro Asaka (DY6SVK3V63)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Yasuhiro Asaka (DY6SVK3V63)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -762,8 +770,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: ywesee GmbH (4B37356EGR)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zeno Davatz (55PL2AY2MY)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;

@@ -23,6 +23,13 @@
     splitViewController.delegate = (id)navigationController.topViewController;
   }
   */
+  // defaults
+  NSDictionary *userDefaultsDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                         0, @"search.result.type",
+                                                         0, @"search.result.lang",
+                                                         nil];
+  [[NSUserDefaults standardUserDefaults] registerDefaults:userDefaultsDefaults];
+  // view
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   _window = [[UIWindow alloc] initWithFrame:screenBounds];
 
