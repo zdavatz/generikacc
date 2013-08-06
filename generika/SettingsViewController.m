@@ -35,7 +35,7 @@ static const float kCellHeight = 44.0; // default = 44.0
                                                                  target:self
                                                                  action:@selector(closeSettings)];
   self.navigationItem.leftBarButtonItem = closeButton;
-  _settings = [NSArray arrayWithObjects:@"Type", @"Language", nil];
+  _settings = [NSArray arrayWithObjects:@"Search", @"Language", nil];
   // table view
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   _settingsView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
@@ -100,7 +100,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   _sectionLabel.backgroundColor = [UIColor clearColor];
   switch (section) {
     case 0:
-      _sectionLabel.text = @"Search-Result";
+      _sectionLabel.text = @"Settings";
       break;
     default:
       _sectionLabel.text = @"";
@@ -148,7 +148,7 @@ static const float kCellHeight = 44.0; // default = 44.0
       _settingsDetail.defaultKey = @"search.result.type";
       break;
     case 1:
-      _settingsDetail.options = [NSArray arrayWithObjects:@"Deutsch", @"français", nil];
+      _settingsDetail.options = [NSArray arrayWithObjects:@"Deutsch", @"Français", nil];
       _settingsDetail.defaultKey = @"search.result.lang";
       break;
     default:
