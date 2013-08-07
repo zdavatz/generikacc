@@ -13,10 +13,17 @@
 @interface SettingsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
   SettingsDetailViewController *_settingsDetail;
+
   NSArray *_settings;
+  NSArray *_types;
+  NSArray *_languages;
+
+  NSUserDefaults *_userDefaults;
+
   UITableView *_settingsView;
   UILabel *_sectionLabel;
   UILabel *_nameLabel;
+  UILabel *_optionLabel;
 }
 
 @end

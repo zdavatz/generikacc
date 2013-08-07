@@ -21,7 +21,14 @@ static const float kCellHeight = 44.0; // default = 44.0
 {
   self = [super initWithNibName:nil
                          bundle:nil];
+  _userDefaults = [NSUserDefaults standardUserDefaults];
   return self;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+  [_settingsView reloadData];
+  [super viewWillAppear:animated];
 }
 
 - (void)viewDidLoad
@@ -35,7 +42,10 @@ static const float kCellHeight = 44.0; // default = 44.0
                                                                  target:self
                                                                  action:@selector(closeSettings)];
   self.navigationItem.leftBarButtonItem = closeButton;
+  // contents
   _settings = [NSArray arrayWithObjects:@"Search", @"Language", nil];
+  _types = [NSArray arrayWithObjects:@"Preisvergleich", @"PI", @"FI", nil];
+  _languages = [NSArray arrayWithObjects:@"Deutsch", @"Français", nil];
   // table view
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   _settingsView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
@@ -122,42 +132,64 @@ static const float kCellHeight = 44.0; // default = 44.0
   UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                  reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
   // name
   _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 100.0, 25.0)];
-  _nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
+  _nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
   _nameLabel.textAlignment = UITextAlignmentLeft;
   _nameLabel.textColor = [UIColor blackColor];
   _nameLabel.backgroundColor = [UIColor clearColor];
   _nameLabel.text = [_settings objectAtIndex:indexPath.row];
+  // option
+  _optionLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 8.0, 110.0, 25.0)];
+  _optionLabel.font = [UIFont systemFontOfSize:16.0];
+  _optionLabel.textAlignment = UITextAlignmentRight;
+  _optionLabel.textColor = [UIColor colorWithRed:0.2 green:0.33 blue:0.5 alpha:1.0];
+  _optionLabel.backgroundColor = [UIColor clearColor];
+
+  NSDictionary *context = [self contextFor:indexPath];
+  NSInteger selectedRow = [_userDefaults integerForKey:[context objectForKey:@"key"]];
+  //DLog(@"selectedRow = %i", selectedRow);
+  //DLog(@"options = %@", [context objectForKey:@"options"]);
+  _optionLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
   [cell.contentView addSubview:_nameLabel];
+  [cell.contentView addSubview:_optionLabel];
   return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
-  
   // next
   _settingsDetail = [[SettingsDetailViewController alloc] init];
   _settingsDetail.title = [_settings objectAtIndex:indexPath.row];
   //DLog(@"indexPath.row = %i", indexPath.row);
+  NSDictionary *context = [self contextFor:indexPath];
+  _settingsDetail.options = [context objectForKey:@"options"];
+  _settingsDetail.defaultKey = [context objectForKey:@"key"];
+  [self.navigationController pushViewController:_settingsDetail animated:YES];
+}
+
+- (NSDictionary *)contextFor:(NSIndexPath *)indexPath
+{
+  //DLog(@"indexPath.row = %i", indexPath.row)
   switch (indexPath.row) {
     case 0:
-      _settingsDetail.options = [NSArray arrayWithObjects:@"Preisvergleich", @"PI", @"FI", nil];
-      _settingsDetail.defaultKey = @"search.result.type";
+      return [NSDictionary dictionaryWithObjectsAndKeys:
+                              _types, @"options",
+                              @"search.result.type", @"key",
+                              nil];
       break;
     case 1:
-      _settingsDetail.options = [NSArray arrayWithObjects:@"Deutsch", @"Français", nil];
-      _settingsDetail.defaultKey = @"search.result.lang";
+      return [NSDictionary dictionaryWithObjectsAndKeys:
+                              _languages, @"options",
+                              @"search.result.lang", @"key",
+                              nil];
       break;
     default:
       // unexpected
-      _settingsDetail.options = [NSArray arrayWithObjects:nil];
-      _settingsDetail.defaultKey = @"";
+      return [NSDictionary dictionaryWithObjectsAndKeys:nil];
       break;
   }
-  [self.navigationController pushViewController:_settingsDetail animated:YES];
 }
 
 @end

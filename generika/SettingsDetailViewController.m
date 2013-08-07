@@ -89,8 +89,8 @@ static const float kCellHeight = 44.0; // default = 44.0
     cell.accessoryType = UITableViewCellAccessoryNone;
   }
   // name
-  _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 100.0, 25.0)];
-  _nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
+  _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 120.0, 25.0)];
+  _nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
   _nameLabel.textAlignment = UITextAlignmentLeft;
   _nameLabel.textColor = [UIColor blackColor];
   _nameLabel.backgroundColor = [UIColor clearColor];
@@ -106,9 +106,10 @@ static const float kCellHeight = 44.0; // default = 44.0
   //DLog(@"indexPath.row = %i", indexPath.row);
   //DLog(@"_selectedPath.row = %i", _selectedPath.row);
   if (indexPath.row != _selectedPath.row) {
+    // uncheck
     UITableViewCell *prev = [tableView cellForRowAtIndexPath:_selectedPath];
     prev.accessoryType = UITableViewCellAccessoryNone;
-
+    // check & store
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
     [_userDefaults setInteger:indexPath.row forKey:_defaultKey];

@@ -295,9 +295,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
         publicPrice = [NSString stringWithFormat:@"CHF: %@", price];
       }
       NSString *message = [NSString stringWithFormat:@"%@,\n%@\n%@",
-                            [product objectForKey:@"name"],
-                            [product objectForKey:@"size"],
-                            publicPrice];
+                               [product objectForKey:@"name"],
+                               [product objectForKey:@"size"],
+                               publicPrice];
       UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Generika.cc sagt:"
                                                      message:message
                                                     delegate:self
