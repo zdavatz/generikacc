@@ -68,6 +68,8 @@
 		819273A71535D6870060859C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A61535D6870060859C /* CoreVideo.framework */; };
 		819273A91535D6990060859C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A81535D6990060859C /* QuartzCore.framework */; };
 		819273AB1535D6B00060859C /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273AA1535D6B00060859C /* libiconv.dylib */; };
+		819E165917B20E8B00B315B3 /* Constant.m in Sources */ = {isa = PBXBuildFile; fileRef = 819E165817B20E8B00B315B3 /* Constant.m */; };
+		819E165A17B20E8B00B315B3 /* Constant.m in Sources */ = {isa = PBXBuildFile; fileRef = 819E165817B20E8B00B315B3 /* Constant.m */; };
 		81B86220153704330054EA0A /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81B8621F153704330054EA0A /* WebViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 /* End PBXBuildFile section */
 
@@ -166,6 +168,8 @@
 		819273A61535D6870060859C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		819273A81535D6990060859C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		819273AA1535D6B00060859C /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		819E165717B20E8B00B315B3 /* Constant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constant.h; sourceTree = "<group>"; };
+		819E165817B20E8B00B315B3 /* Constant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constant.m; sourceTree = "<group>"; };
 		81B8621E153704330054EA0A /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
 		81B8621F153704330054EA0A /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -348,6 +352,8 @@
 		8192736D1535D56E0060859C /* generika */ = {
 			isa = PBXGroup;
 			children = (
+				819E165717B20E8B00B315B3 /* Constant.h */,
+				819E165817B20E8B00B315B3 /* Constant.m */,
 				819273761535D56E0060859C /* AppDelegate.h */,
 				819273771535D56E0060859C /* AppDelegate.m */,
 				8192737F1535D56E0060859C /* MasterViewController.h */,
@@ -546,6 +552,7 @@
 				810A927A179CD1C500DAA963 /* AFXMLRequestOperation.m in Sources */,
 				810A927C179CD1C500DAA963 /* UIImageView+AFNetworking.m in Sources */,
 				812B9A4D17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
+				819E165917B20E8B00B315B3 /* Constant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -560,6 +567,7 @@
 				810A9271179CD1C500DAA963 /* AFImageRequestOperation.m in Sources */,
 				810A9273179CD1C500DAA963 /* AFJSONRequestOperation.m in Sources */,
 				810A9275179CD1C500DAA963 /* AFNetworkActivityIndicatorManager.m in Sources */,
+				819E165A17B20E8B00B315B3 /* Constant.m in Sources */,
 				810A9277179CD1C500DAA963 /* AFPropertyListRequestOperation.m in Sources */,
 				810A9279179CD1C500DAA963 /* AFURLConnectionOperation.m in Sources */,
 				810A927B179CD1C500DAA963 /* AFXMLRequestOperation.m in Sources */,

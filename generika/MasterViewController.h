@@ -16,6 +16,9 @@
   ZBarReaderViewController *_reader;
   WebViewController *_browser;
   SettingsViewController *_settings;
+
+  NSUserDefaults *_userDefaults;
+
   UITableView *_tableView;
   NSMutableArray *_objects;
   UILabel *_nameLabel;
@@ -31,5 +34,6 @@
 - (IBAction)settingsButtonTapped:(UIButton *)button;
 
 - (void)openReader;
-- (void)openCompareSearchByEan:(NSString *)ean;
+- (void)searchWebWithEan:(NSString *)ean;
+
 @end

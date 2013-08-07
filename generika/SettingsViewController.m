@@ -44,8 +44,6 @@ static const float kCellHeight = 44.0; // default = 44.0
   self.navigationItem.leftBarButtonItem = closeButton;
   // contents
   _settings = [NSArray arrayWithObjects:@"Search", @"Language", nil];
-  _types = [NSArray arrayWithObjects:@"Preisvergleich", @"PI", @"FI", nil];
-  _languages = [NSArray arrayWithObjects:@"Deutsch", @"Français", nil];
   // table view
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   _settingsView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
@@ -174,14 +172,16 @@ static const float kCellHeight = 44.0; // default = 44.0
   //DLog(@"indexPath.row = %i", indexPath.row)
   switch (indexPath.row) {
     case 0:
+      //DLog("%@", [Constant searchTypes]);
       return [NSDictionary dictionaryWithObjectsAndKeys:
-                              _types, @"options",
+                              [Constant searchTypes], @"options",
                               @"search.result.type", @"key",
                               nil];
       break;
     case 1:
+      //DLog("%@", [Constant searchLanguages]);
       return [NSDictionary dictionaryWithObjectsAndKeys:
-                              _languages, @"options",
+                              [Constant searchLanguages], @"options",
                               @"search.result.lang", @"key",
                               nil];
       break;

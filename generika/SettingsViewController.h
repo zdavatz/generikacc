@@ -15,8 +15,6 @@
   SettingsDetailViewController *_settingsDetail;
 
   NSArray *_settings;
-  NSArray *_types;
-  NSArray *_languages;
 
   NSUserDefaults *_userDefaults;
 

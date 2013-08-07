@@ -14,12 +14,17 @@
 #import "WebViewController.h"
 #import "SettingsViewController.h"
 
+static const float kCellHeight = 83.0;
+
 @implementation MasterViewController
 
-static NSString *const kOddbProductSearchBaseURL  = @"http://ch.oddb.org/de/mobile/api_search/ean";
-static NSString *const kOddbCompareSearchBaseURL  = @"http://ch.oddb.org/de/mobile/compare/ean13";
-static NSString *const kOddbMobileFlavorUserAgent = @"org.oddb.generikacc";
-static const float kCellHeight = 83.0;
+- (id)init
+{
+  self = [super initWithNibName:nil
+                         bundle:nil];
+  _userDefaults = [NSUserDefaults standardUserDefaults];
+  return self;
+}
 
 - (void)loadView
 {
@@ -241,7 +246,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       }];
     [operation start];
     // open oddb.org
-    [self openCompareSearchByEan:ean];
+    [self searchWebWithEan:ean];
   }
   [_reader dismissModalViewControllerAnimated: YES];
 }
@@ -348,22 +353,66 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                           animated:YES];
 }
 
-- (void)openCompareSearchByEan:(NSString*)ean
+- (void)searchWebWithEan:(NSString *)ean
 {
-  NSString *webURL = [NSString stringWithFormat:@"%@/%@", kOddbCompareSearchBaseURL, ean];
-  NSURL *compareSearch = [NSURL URLWithString:webURL];
-  //DLog(@"url[compareSearch]: %@", compareSearch);
+  NSInteger selectedTypeIndex = [_userDefaults integerForKey:@"search.result.type"];
+  NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
+  NSInteger selectedLangIndex = [_userDefaults integerForKey:@"search.result.lang"];
+  NSString *lang = [[Constant searchLangs] objectAtIndex:selectedLangIndex];
+
+  NSString *url;
+  if ([type isEqualToString:@"Preisvergleich"]) {
+    url = [NSString stringWithFormat:@"%@/%@/mobile/compare/ean13/%@", kOddbBaseURL, lang, ean];
+  } else if ([type isEqualToString:@"PI"]) {
+    NSString *reg = [self extractRegistrationNumberFromEan:ean];
+    // always open sequence as 01
+    url = [NSString stringWithFormat:@"%@/%@/mobile/patinfo/reg/%@/seq/01", kOddbBaseURL, lang, reg];
+  } else if ([type isEqualToString:@"FI"]) {
+    NSString *reg = [self extractRegistrationNumberFromEan:ean];
+    url = [NSString stringWithFormat:@"%@/%@/mobile/fachinfo/reg/%@", kOddbBaseURL, lang, reg];
+  }
+  [self openWebViewWithURL:[NSURL URLWithString:url]];
+}
+
+- (NSString *)extractRegistrationNumberFromEan:(NSString *)ean
+{
+  NSError *error = nil;
+  NSRegularExpression *regexp = [NSRegularExpression regularExpressionWithPattern:@"7680(\\d{5}).+"
+                                                                          options:0
+                                                                            error:&error];
+  NSString *registrationNumber;
+  if (error != nil) {
+    DLog(@"error = %@", error);
+    registrationNumber = @"";
+  } else {
+    NSTextCheckingResult *match =
+      [regexp firstMatchInString:ean options:0 range:NSMakeRange(0, ean.length)];
+    //DLog("match count = %i", match.numberOfRanges);
+    if (match.numberOfRanges > 1) {
+      registrationNumber = [ean substringWithRange:[match rangeAtIndex:1]];
+      //DLog("matched text = %@", registrationNumber);
+    } else {
+      registrationNumber = @"";
+    }
+  }
+  return registrationNumber;
+}
+
+- (void)openWebViewWithURL:(NSURL *)url
+{
   // User-Agent
-  NSString *originAgent = [[NSURLRequest requestWithURL:compareSearch] valueForHTTPHeaderField:@"User-Agent"];
+  NSString *originAgent = [[NSURLRequest requestWithURL:url] valueForHTTPHeaderField:@"User-Agent"];
   NSString *userAgent = [NSString stringWithFormat:@"%@ %@", originAgent, kOddbMobileFlavorUserAgent];
   //DLog(@"userAgent: %@", userAgent);
   NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:userAgent, @"UserAgent", nil];
   [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
+
   _browser = [[WebViewController alloc] init];
-  [_browser loadURL:compareSearch];
+  [_browser loadURL:url];
   [self.navigationController pushViewController:_browser
                                        animated:YES];
 }
+
 
 - (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean
 {
@@ -576,9 +625,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  // open browser
   NSDictionary *object = [_objects objectAtIndex:indexPath.row];
-  [self openCompareSearchByEan:[NSString stringWithString:[object objectForKey:@"ean"]]];
+  NSString *ean = [NSString stringWithString:[object objectForKey:@"ean"]];
+  // open oddb.org
+  [self searchWebWithEan:ean];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
