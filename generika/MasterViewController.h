@@ -34,6 +34,6 @@
 - (IBAction)settingsButtonTapped:(UIButton *)button;
 
 - (void)openReader;
-- (void)searchWebWithEan:(NSString *)ean;
+- (void)searchInfoForProduct:(NSDictionary *)product;
 
 @end

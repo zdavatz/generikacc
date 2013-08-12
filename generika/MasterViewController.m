@@ -78,8 +78,8 @@ static const float kCellHeight = 83.0;
   _deductionLabel = nil;
   _categoryLabel  = nil;
   _eanLabel       = nil;
-  _reader = nil;
-  _browser = nil;
+  _reader   = nil;
+  _browser  = nil;
   _settings = nil;
 }
 
@@ -189,7 +189,9 @@ static const float kCellHeight = 83.0;
 
 - (void)openSettings
 {
-  _settings = [[SettingsViewController alloc] init];
+  if (!_settings) {
+    _settings = [[SettingsViewController alloc] init];
+  }
   _settings.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
   UINavigationController *settingsNavigation = [[UINavigationController alloc] initWithRootViewController: _settings];
   [self presentViewController:settingsNavigation animated:YES completion:nil];
@@ -223,6 +225,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     break;
   }
   NSString *ean = [NSString stringWithString:symbol.data];
+  NSInteger selectedTypeIndex = [_userDefaults integerForKey:@"search.result.type"];
+  NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
   //DLog(@"ean: %@", ean);
   if ([ean length] != 13) {
     // FIXME Not EAN
@@ -231,12 +235,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     // API Request
     UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
     NSString *searchURL = [NSString stringWithFormat:@"%@/%@", kOddbProductSearchBaseURL, ean];
+    //DLog(@"searchURL = %@", searchURL);
     NSURL *productSearch = [NSURL URLWithString:searchURL];
     //DLog(@"url[productSearch]: %@", productSearch);
     NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
       success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         [self didFinishPicking:JSON withEan:ean barcode:barcode];
+        //DLog(@"type = %@", type);
+        if ([type isEqualToString:@"PI"]) {
+          NSDictionary *product = [_objects lastObject];
+          //DLog(@"[success] product = %@", product)
+          [self searchInfoForProduct:product];
+        }
       }
       failure:^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) {
         // FIXME
@@ -245,7 +256,15 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       }];
     [operation start];
     // open oddb.org
-    [self searchWebWithEan:ean];
+    if (![type isEqualToString:@"PI"]) {
+      NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
+                                ean, @"ean",
+                                nil];
+      //DLog(@"[main] product = %@", product)
+      [self searchInfoForProduct:product];
+    } else {
+      [operation waitUntilFinished];
+    }
   }
   [_reader dismissViewControllerAnimated:YES completion:nil];
 }
@@ -351,8 +370,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self presentViewController:_reader animated:YES completion:nil];
 }
 
-- (void)searchWebWithEan:(NSString *)ean
+- (void)searchInfoForProduct:(NSDictionary *)product
 {
+  NSString *ean = [NSString stringWithString:[product objectForKey:@"ean"]];
+
   NSInteger selectedTypeIndex = [_userDefaults integerForKey:@"search.result.type"];
   NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
   NSInteger selectedLangIndex = [_userDefaults integerForKey:@"search.result.lang"];
@@ -363,12 +384,14 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     url = [NSString stringWithFormat:@"%@/%@/mobile/compare/ean13/%@", kOddbBaseURL, lang, ean];
   } else if ([type isEqualToString:@"PI"]) {
     NSString *reg = [self extractRegistrationNumberFromEan:ean];
+    NSString *seq = [NSString stringWithString:[product objectForKey:@"seq"]];
     // always open sequence as 01
-    url = [NSString stringWithFormat:@"%@/%@/mobile/patinfo/reg/%@/seq/01", kOddbBaseURL, lang, reg];
+    url = [NSString stringWithFormat:@"%@/%@/mobile/patinfo/reg/%@/seq/%@", kOddbBaseURL, lang, reg, seq];
   } else if ([type isEqualToString:@"FI"]) {
     NSString *reg = [self extractRegistrationNumberFromEan:ean];
     url = [NSString stringWithFormat:@"%@/%@/mobile/fachinfo/reg/%@", kOddbBaseURL, lang, reg];
   }
+  //DLog(@"url = %@", url);
   [self openWebViewWithURL:[NSURL URLWithString:url]];
 }
 
@@ -380,7 +403,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                                                                             error:&error];
   NSString *registrationNumber;
   if (error != nil) {
-    DLog(@"error = %@", error);
+    //DLog(@"error = %@", error);
     registrationNumber = @"";
   } else {
     NSTextCheckingResult *match =
@@ -405,12 +428,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   NSDictionary *dictionnary = [NSDictionary dictionaryWithObjectsAndKeys:userAgent, @"UserAgent", nil];
   [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
 
-  _browser = [[WebViewController alloc] init];
+  if (!_browser) {
+    _browser = [[WebViewController alloc] init];
+  }
   [_browser loadURL:url];
   [self.navigationController pushViewController:_browser
                                        animated:YES];
 }
-
 
 - (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean
 {
@@ -623,10 +647,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  NSDictionary *object = [_objects objectAtIndex:indexPath.row];
-  NSString *ean = [NSString stringWithString:[object objectForKey:@"ean"]];
+  NSDictionary *product = [_objects objectAtIndex:indexPath.row];
   // open oddb.org
-  [self searchWebWithEan:ean];
+  [self searchInfoForProduct:product];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

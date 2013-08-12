@@ -42,12 +42,28 @@
                                                                 target:self
                                                                 action:@selector(goBack)];
   self.navigationItem.leftBarButtonItem = backButton;
+
+  // indicator
+  _indicatorBackground = [[UIView alloc] initWithFrame:CGRectMake((_webview.bounds.size.width/2) - 50,
+                                                                  (_webview.bounds.size.height/2) - 100, 100, 100)];
+  _indicatorBackground.backgroundColor = [UIColor blackColor];
+  _indicatorBackground.alpha = 0.6;
+  [[_indicatorBackground layer] setCornerRadius:5.0];
+  [_webview addSubview:_indicatorBackground];
+  _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+  _indicator.frame = CGRectMake((_webview.bounds.size.width/2) - 20,
+                                (_webview.bounds.size.height/2) - 70, 40, 40);
+  [_webview addSubview:_indicator];
 }
 
 - (void)viewDidUnload
 {
   [super viewDidUnload];
-  // Release any retained subviews of the main view.
+  _webview  = nil;
+  _indicatorBackground = nil;
+  _indicator = nil;
+  _requests = nil;
+  _history  = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -64,6 +80,10 @@
 
 - (void)loadURL:(NSURL *)url
 {
+  //reset requests
+  if (_requests) {
+    [_requests removeAllObjects];
+  }
   url = [url standardizedURL];
   _history = [url absoluteString];
   //DLog(@"load: %@", _history);
@@ -73,11 +93,13 @@
 - (void)goBack
 {
   int requests = [_requests count] - 1;
+  //DLog(@"requets = %@", _requests);
   //DLog(@"history counts: %d", requests);
   if (requests > 0) {
     [_requests removeObjectAtIndex:0];
     [_webview goBack];
   } else {
+    //[self.navigationController popToRootViewControllerAnimated:YES];
     MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
     [self.navigationController popToViewController:(UIViewController *)parent animated:YES];
   }
@@ -89,6 +111,8 @@
   NSURLRequest *request = [NSURLRequest requestWithURL: url];
   //DLog(@"request: %@", request);
   UIWebView *view = (UIWebView*)self.view;
+  // open blank page once
+  [view loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@""]]];
   [view loadRequest:request];
 }
 
@@ -125,10 +149,14 @@
 - (void)webViewDidStartLoad:(UIWebView *)view
 {
   [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+  _indicatorBackground.hidden = NO;
+  [_indicator startAnimating];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)view
 {
+  [_indicator stopAnimating];
+  _indicatorBackground.hidden = YES;
   [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
   NSString *title = [view stringByEvaluatingJavaScriptFromString:@"document.title"];
   if (title) {
@@ -138,7 +166,14 @@
 
 - (void)webView:(UIWebView *)view didFailLoadWithError:(NSError *)err
 {
-  [_requests removeObjectAtIndex:0];
+  [_indicator stopAnimating];
+  _indicatorBackground.hidden = YES;
+
+  int requests = [_requests count];
+  //DLog(@"requets = %@", _requests);
+  if (requests > 0) {
+    [_requests removeObjectAtIndex:0];
+  }
   //DLog(@"loading: %d", view.loading);
   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Failed to open"
                                                   message:@"Error"

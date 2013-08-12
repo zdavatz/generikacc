@@ -8,7 +8,7 @@
 
 #import "Constant.h"
 
-NSString *const kOddbBaseURL               = @"http://ch.oddb.org/";
+NSString *const kOddbBaseURL               = @"http://ch.oddb.org";
 NSString *const kOddbProductSearchBaseURL  = @"http://ch.oddb.org/de/mobile/api_search/ean";
 NSString *const kOddbMobileFlavorUserAgent = @"org.oddb.generikacc";
 

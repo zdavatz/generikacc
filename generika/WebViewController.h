@@ -12,6 +12,9 @@
 {
   NSMutableArray *_requests;
   NSString  *_history;
+
+  UIActivityIndicatorView *_indicator;
+  UIView *_indicatorBackground;
   UIWebView *_webview;
 }
 - (void)loadURL:(NSURL*)url;
