@@ -103,7 +103,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   headerView.backgroundColor = [UIColor clearColor];
   _sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 5.0, 300.0, 45.0)];
   _sectionLabel.font = [UIFont boldSystemFontOfSize:18.0];
-  _sectionLabel.textAlignment = UITextAlignmentLeft;
+  _sectionLabel.textAlignment = kTextAlignmentLeft;
   _sectionLabel.textColor = [UIColor blackColor];
   _sectionLabel.backgroundColor = [UIColor clearColor];
   switch (section) {
@@ -133,14 +133,14 @@ static const float kCellHeight = 44.0; // default = 44.0
   // name
   _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 100.0, 25.0)];
   _nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
-  _nameLabel.textAlignment = UITextAlignmentLeft;
+  _nameLabel.textAlignment = kTextAlignmentLeft;
   _nameLabel.textColor = [UIColor blackColor];
   _nameLabel.backgroundColor = [UIColor clearColor];
   _nameLabel.text = [_settings objectAtIndex:indexPath.row];
   // option
   _optionLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 8.0, 110.0, 25.0)];
   _optionLabel.font = [UIFont systemFontOfSize:16.0];
-  _optionLabel.textAlignment = UITextAlignmentRight;
+  _optionLabel.textAlignment = kTextAlignmentRight;
   _optionLabel.textColor = [UIColor colorWithRed:0.2 green:0.33 blue:0.5 alpha:1.0];
   _optionLabel.backgroundColor = [UIColor clearColor];
 

@@ -192,8 +192,7 @@ static const float kCellHeight = 83.0;
   _settings = [[SettingsViewController alloc] init];
   _settings.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
   UINavigationController *settingsNavigation = [[UINavigationController alloc] initWithRootViewController: _settings];
-  [self presentModalViewController:settingsNavigation animated:YES];
-  //[self.navigationController pushViewController:_settings animated:YES];
+  [self presentViewController:settingsNavigation animated:YES completion:nil];
 }
 
 #pragma mark - Scan View
@@ -248,7 +247,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     // open oddb.org
     [self searchWebWithEan:ean];
   }
-  [_reader dismissModalViewControllerAnimated: YES];
+  [_reader dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didFinishPicking:(id)json withEan:(NSString *)ean barcode:(UIImage *)barcode
@@ -349,8 +348,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                  config:ZBAR_CFG_ENABLE
                      to:0];
   //_reader.readerView.zoom = 2.25; //default 1.25
-  [self presentModalViewController:_reader
-                          animated:YES];
+  [self presentViewController:_reader animated:YES completion:nil];
 }
 
 - (void)searchWebWithEan:(NSString *)ean
@@ -404,7 +402,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   NSString *originAgent = [[NSURLRequest requestWithURL:url] valueForHTTPHeaderField:@"User-Agent"];
   NSString *userAgent = [NSString stringWithFormat:@"%@ %@", originAgent, kOddbMobileFlavorUserAgent];
   //DLog(@"userAgent: %@", userAgent);
-  NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:userAgent, @"UserAgent", nil];
+  NSDictionary *dictionnary = [NSDictionary dictionaryWithObjectsAndKeys:userAgent, @"UserAgent", nil];
   [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
 
   _browser = [[WebViewController alloc] init];
@@ -508,7 +506,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   // name
   _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 2.0, 230.0, 25.0)];
   _nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
-  _nameLabel.textAlignment = UITextAlignmentLeft;
+  _nameLabel.textAlignment = kTextAlignmentLeft;
   _nameLabel.textColor = [UIColor blackColor];
   _nameLabel.text = [NSString stringWithString:[product objectForKey:@"name"]];
   [cell.contentView addSubview:_nameLabel];
@@ -523,7 +521,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   //DLog(@"nameSize = %f", nameSize.width);
   _sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 27.0, 110.0, 16.0)];
   _sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
-  _sizeLabel.textAlignment = UITextAlignmentLeft;
+  _sizeLabel.textAlignment = kTextAlignmentLeft;
   _sizeLabel.textColor = [UIColor blackColor];
   _sizeLabel.text = [NSString stringWithString:[product objectForKey:@"size"]];
   [cell.contentView addSubview:_sizeLabel];
@@ -531,7 +529,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   if ([product objectForKey:@"datetime"]) {
     _dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(170.0, 27.0, 100.0, 16.0)];
     _dateLabel.font = [UIFont systemFontOfSize:12.0];
-    _dateLabel.textAlignment = UITextAlignmentLeft;
+    _dateLabel.textAlignment = kTextAlignmentLeft;
     _dateLabel.textColor = [UIColor grayColor];
     _dateLabel.text = [NSString stringWithString:[product objectForKey:@"datetime"]];
     [cell.contentView addSubview:_dateLabel];
@@ -539,7 +537,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   // price
   _priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 45.0, 60.0, 16.0)];
   _priceLabel.font = [UIFont systemFontOfSize:12.0];
-  _priceLabel.textAlignment = UITextAlignmentLeft;
+  _priceLabel.textAlignment = kTextAlignmentLeft;
   _priceLabel.textColor = [UIColor grayColor];
   NSString *price = [NSString stringWithString:[product objectForKey:@"price"]];
   //DLog(@"price: %@", price);
@@ -550,7 +548,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   // deduction
   _deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 45.0, 60.0, 16.0)];
   _deductionLabel.font = [UIFont systemFontOfSize:12.0];
-  _deductionLabel.textAlignment = UITextAlignmentLeft;
+  _deductionLabel.textAlignment = kTextAlignmentLeft;
   _deductionLabel.textColor = [UIColor grayColor];
   NSString *deduction = [NSString stringWithString:[product objectForKey:@"deduction"]];
   //DLog(@"deduction: %@", deduction);
@@ -561,14 +559,14 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   // category
   _categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(171.0, 45.0, 190.0, 16.0)];
   _categoryLabel.font = [UIFont systemFontOfSize:12.0];
-  _categoryLabel.textAlignment = UITextAlignmentLeft;
+  _categoryLabel.textAlignment = kTextAlignmentLeft;
   _categoryLabel.textColor = [UIColor grayColor];
   _categoryLabel.text = [NSString stringWithString:[product objectForKey:@"category"]];
   [cell.contentView addSubview:_categoryLabel];
   // ean
   _eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 62.0, 260.0, 16.0)];
   _eanLabel.font = [UIFont systemFontOfSize:12.0];
-  _eanLabel.textAlignment = UITextAlignmentLeft;
+  _eanLabel.textAlignment = kTextAlignmentLeft;
   _eanLabel.textColor = [UIColor grayColor];
   _eanLabel.text = [NSString stringWithString:[product objectForKey:@"ean"]];
   [cell.contentView addSubview:_eanLabel];

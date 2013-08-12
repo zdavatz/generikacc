@@ -25,8 +25,8 @@
   */
   // defaults
   NSDictionary *userDefaultsDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                         0, @"search.result.type",
-                                                         0, @"search.result.lang",
+                                                         [NSNumber numberWithInteger:0], @"search.result.type",
+                                                         [NSNumber numberWithInteger:0], @"search.result.lang",
                                                          nil];
   [[NSUserDefaults standardUserDefaults] registerDefaults:userDefaultsDefaults];
   // view

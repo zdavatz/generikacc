@@ -91,7 +91,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   // name
   _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 120.0, 25.0)];
   _nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
-  _nameLabel.textAlignment = UITextAlignmentLeft;
+  _nameLabel.textAlignment = kTextAlignmentLeft;
   _nameLabel.textColor = [UIColor blackColor];
   _nameLabel.backgroundColor = [UIColor clearColor];
   _nameLabel.text = [_options objectAtIndex:indexPath.row];
