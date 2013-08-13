@@ -10,17 +10,20 @@
 
 @interface SettingsDetailViewController : UITableViewController
 {
-  NSArray *_options;
-  NSString *_defaultkey;
-
   NSUserDefaults *_userDefaults;
-  NSIndexPath *_selectedPath;
 
   UITableView *_detailView;
-  UILabel *_nameLabel;
+  NSIndexPath *_selectedPath;
+
+  NSArray *_options;
+  NSString *_defaultkey;
 }
 
-@property (nonatomic, retain) NSArray *options;
-@property (nonatomic, retain) NSString *defaultKey;
+@property (nonatomic, strong, readwrite) NSArray *options;
+@property (nonatomic, strong, readwrite) NSString *defaultKey;
+
+@property (nonatomic, strong, readonly) NSUserDefaults *userDefaults;
+@property (nonatomic, strong, readonly) UITableView *detailView;
+@property (nonatomic, strong, readonly) NSIndexPath *selectedPath;
 
 @end

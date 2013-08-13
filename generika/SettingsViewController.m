@@ -13,70 +13,78 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 @interface SettingsViewController ()
 
+@property (nonatomic, strong, readwrite) SettingsDetailViewController *settingsDetail;
+@property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
+@property (nonatomic, strong, readwrite) UITableView *settingsView;
+@property (nonatomic, strong, readwrite) NSArray *entries;
+
 @end
 
 @implementation SettingsViewController
+
+@synthesize settingsDetail = _settingsDetail;
+@synthesize userDefaults = _userDefaults;
+@synthesize settingsView = _settingsView;
+@synthesize entries = _entries;
 
 - (id)init
 {
   self = [super initWithNibName:nil
                          bundle:nil];
   _userDefaults = [NSUserDefaults standardUserDefaults];
+  _entries = [NSArray arrayWithObjects:@"Search", @"Language", nil];
   return self;
+}
+
+- (void)dealloc
+{
+  _userDefaults = nil;
+  _entries      = nil;
+  [self didReceiveMemoryWarning];
+}
+
+- (void)didReceiveMemoryWarning
+{
+  if ([self isViewLoaded] && [self.view window] == nil) {
+    _settingsView   = nil;
+    _settingsDetail = nil;
+  }
+  [super didReceiveMemoryWarning];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-  [_settingsView reloadData];
+  [self.settingsView reloadData];
   [super viewWillAppear:animated];
+}
+
+- (void)loadView
+{
+  [super loadView];
+  CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  self.settingsView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
+  self.settingsView.delegate = self;
+  self.settingsView.dataSource = self;
+  self.settingsView.rowHeight = kCellHeight;
+  self.view = self.settingsView;
 }
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(updateSettings)
-                                               name:UIApplicationDidFinishLaunchingNotification object:nil];
   UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"close"
                                                                   style:UIBarButtonItemStylePlain
                                                                  target:self
                                                                  action:@selector(closeSettings)];
   self.navigationItem.leftBarButtonItem = closeButton;
-  // contents
-  _settings = [NSArray arrayWithObjects:@"Search", @"Language", nil];
-  // table view
-  CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  _settingsView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
-  _settingsView.delegate = self;
-  _settingsView.dataSource = self;
-  _settingsView.rowHeight = kCellHeight;
-  self.view = _settingsView;
 }
 
-- (void)viewDidUnload
-{
-  _settingsDetail = nil;
-  _settingsView = nil;
-  _settings = nil;
-  _sectionLabel = nil;
-  _nameLabel = nil;
-}
-
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-}
 
 #pragma mark - Action
 
 - (void)closeSettings
 {
   [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)updateSettings
-{
-  // TODO
 }
 
 #pragma mark - Table View
@@ -101,20 +109,20 @@ static const float kCellHeight = 44.0; // default = 44.0
   CGRect headerRect = CGRectMake(0, 0, 300, 40);  
   UIView *headerView = [[UIView alloc] initWithFrame:headerRect];
   headerView.backgroundColor = [UIColor clearColor];
-  _sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 5.0, 300.0, 45.0)];
-  _sectionLabel.font = [UIFont boldSystemFontOfSize:18.0];
-  _sectionLabel.textAlignment = kTextAlignmentLeft;
-  _sectionLabel.textColor = [UIColor blackColor];
-  _sectionLabel.backgroundColor = [UIColor clearColor];
+  UILabel *sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 5.0, 300.0, 45.0)];
+  sectionLabel.font = [UIFont boldSystemFontOfSize:18.0];
+  sectionLabel.textAlignment = kTextAlignmentLeft;
+  sectionLabel.textColor = [UIColor blackColor];
+  sectionLabel.backgroundColor = [UIColor clearColor];
   switch (section) {
     case 0:
-      _sectionLabel.text = @"Settings";
+      sectionLabel.text = @"Settings";
       break;
     default:
-      _sectionLabel.text = @"";
+      sectionLabel.text = @"";
       break;
   }
-  [headerView addSubview:_sectionLabel];
+  [headerView addSubview:sectionLabel];
   return headerView;
 }
 
@@ -125,32 +133,28 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  //DLog(@"indexPath: %@", indexPath);
   static NSString *cellIdentifier = @"Cell";
   UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                  reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   // name
-  _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 100.0, 25.0)];
-  _nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
-  _nameLabel.textAlignment = kTextAlignmentLeft;
-  _nameLabel.textColor = [UIColor blackColor];
-  _nameLabel.backgroundColor = [UIColor clearColor];
-  _nameLabel.text = [_settings objectAtIndex:indexPath.row];
+  UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 100.0, 25.0)];
+  nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
+  nameLabel.textAlignment = kTextAlignmentLeft;
+  nameLabel.textColor = [UIColor blackColor];
+  nameLabel.backgroundColor = [UIColor clearColor];
+  nameLabel.text = [self.entries objectAtIndex:indexPath.row];
+  [cell.contentView addSubview:nameLabel];
   // option
-  _optionLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 8.0, 110.0, 25.0)];
-  _optionLabel.font = [UIFont systemFontOfSize:16.0];
-  _optionLabel.textAlignment = kTextAlignmentRight;
-  _optionLabel.textColor = [UIColor colorWithRed:0.2 green:0.33 blue:0.5 alpha:1.0];
-  _optionLabel.backgroundColor = [UIColor clearColor];
-
+  UILabel *optionLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 8.0, 110.0, 25.0)];
+  optionLabel.font = [UIFont systemFontOfSize:16.0];
+  optionLabel.textAlignment = kTextAlignmentRight;
+  optionLabel.textColor = [UIColor colorWithRed:0.2 green:0.33 blue:0.5 alpha:1.0];
+  optionLabel.backgroundColor = [UIColor clearColor];
   NSDictionary *context = [self contextFor:indexPath];
-  NSInteger selectedRow = [_userDefaults integerForKey:[context objectForKey:@"key"]];
-  //DLog(@"selectedRow = %i", selectedRow);
-  //DLog(@"options = %@", [context objectForKey:@"options"]);
-  _optionLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
-  [cell.contentView addSubview:_nameLabel];
-  [cell.contentView addSubview:_optionLabel];
+  NSInteger selectedRow = [self.userDefaults integerForKey:[context objectForKey:@"key"]];
+  optionLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
+  [cell.contentView addSubview:optionLabel];
   return cell;
 }
 
@@ -158,28 +162,24 @@ static const float kCellHeight = 44.0; // default = 44.0
 {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
   // next
-  _settingsDetail = [[SettingsDetailViewController alloc] init];
-  _settingsDetail.title = [_settings objectAtIndex:indexPath.row];
-  //DLog(@"indexPath.row = %i", indexPath.row);
+  self.settingsDetail = [[SettingsDetailViewController alloc] init];
+  self.settingsDetail.title = [self.entries objectAtIndex:indexPath.row];
   NSDictionary *context = [self contextFor:indexPath];
-  _settingsDetail.options = [context objectForKey:@"options"];
-  _settingsDetail.defaultKey = [context objectForKey:@"key"];
-  [self.navigationController pushViewController:_settingsDetail animated:YES];
+  self.settingsDetail.options = [context objectForKey:@"options"];
+  self.settingsDetail.defaultKey = [context objectForKey:@"key"];
+  [self.navigationController pushViewController:self.settingsDetail animated:YES];
 }
 
 - (NSDictionary *)contextFor:(NSIndexPath *)indexPath
 {
-  //DLog(@"indexPath.row = %i", indexPath.row)
   switch (indexPath.row) {
     case 0:
-      //DLog("%@", [Constant searchTypes]);
       return [NSDictionary dictionaryWithObjectsAndKeys:
                               [Constant searchTypes], @"options",
                               @"search.result.type", @"key",
                               nil];
       break;
     case 1:
-      //DLog("%@", [Constant searchLanguages]);
       return [NSDictionary dictionaryWithObjectsAndKeys:
                               [Constant searchLanguages], @"options",
                               @"search.result.lang", @"key",

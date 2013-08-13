@@ -14,14 +14,15 @@
 {
   SettingsDetailViewController *_settingsDetail;
 
-  NSArray *_settings;
-
   NSUserDefaults *_userDefaults;
 
   UITableView *_settingsView;
-  UILabel *_sectionLabel;
-  UILabel *_nameLabel;
-  UILabel *_optionLabel;
+  NSArray *_entries;
 }
+
+@property (nonatomic, strong, readonly) SettingsDetailViewController *settingsDetail;
+@property (nonatomic, strong, readonly) NSUserDefaults *userDefaults;
+@property (nonatomic, strong, readonly) UITableView *settingsView;
+@property (nonatomic, strong, readonly) NSArray *entries;
 
 @end
