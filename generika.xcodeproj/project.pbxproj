@@ -67,7 +67,7 @@
 		819273AB1535D6B00060859C /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273AA1535D6B00060859C /* libiconv.dylib */; };
 		819E165917B20E8B00B315B3 /* Constant.m in Sources */ = {isa = PBXBuildFile; fileRef = 819E165817B20E8B00B315B3 /* Constant.m */; };
 		819E165A17B20E8B00B315B3 /* Constant.m in Sources */ = {isa = PBXBuildFile; fileRef = 819E165817B20E8B00B315B3 /* Constant.m */; };
-		81B86220153704330054EA0A /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81B8621F153704330054EA0A /* WebViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		81B86220153704330054EA0A /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81B8621F153704330054EA0A /* WebViewController.m */; };
 		81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEF117B879EB0058AC62 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEF017B879EB0058AC62 /* Default-568h@2x.png */; };

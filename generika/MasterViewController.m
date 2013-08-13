@@ -16,39 +16,72 @@
 
 static const float kCellHeight = 83.0;
 
+@interface MasterViewController ()
+
+@property (nonatomic, strong, readwrite) Reachability *reachability;
+@property (nonatomic, strong, readwrite) ZBarReaderViewController *reader;
+@property (nonatomic, strong, readwrite) WebViewController *browser;
+@property (nonatomic, strong, readwrite) SettingsViewController *settings;
+@property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
+@property (nonatomic, strong, readwrite) UITableView *productsView;
+@property (nonatomic, strong, readwrite) NSMutableArray *products;
+
+@end
+
 @implementation MasterViewController
+
+@synthesize reachability = _reachability, userDefaults = _userDefaults;
+@synthesize reader = _reader, browser = _browser, settings = _settings;
+@synthesize productsView = _productsView;
+@synthesize products = _products;
 
 - (id)init
 {
   self = [super initWithNibName:nil
                          bundle:nil];
   _userDefaults = [NSUserDefaults standardUserDefaults];
+  _reachability = [Reachability reachabilityForInternetConnection];
+  // products
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *path = [paths objectAtIndex:0];
+  NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  BOOL exist = [fileManager fileExistsAtPath:filePath isDirectory:NO];
+  if (exist) {
+    _products = [[NSMutableArray alloc] initWithContentsOfFile:filePath];
+  } else {
+    _products = [[NSMutableArray alloc] init];
+  }
   return self;
+}
+
+- (void)dealloc
+{
+  [_products removeAllObjects], _products = nil;
+  _userDefaults = nil;
+  _reachability = nil;
+  [self didReceiveMemoryWarning];
+}
+
+- (void)didReceiveMemoryWarning
+{
+  if ([self isViewLoaded] && [self.view window] == nil) {
+    _productsView = nil;
+    _browser      = nil;
+    _settings     = nil;
+  }
+  [super didReceiveMemoryWarning];
 }
 
 - (void)loadView
 {
   [super loadView];
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  _tableView = [[UITableView alloc] initWithFrame:screenBounds];
-  _tableView.delegate = self;
-  _tableView.dataSource = self;
-  _tableView.rowHeight = kCellHeight;
-  self.view = _tableView;
-
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSString *path = [paths objectAtIndex:0];
-  NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  BOOL exist = [fileManager fileExistsAtPath:filePath isDirectory:NO];
-  //DLog(@"products.plist exist: %d", exist);
-  if (exist) {
-    _objects = [[NSMutableArray alloc] initWithContentsOfFile:filePath];
-  } else {
-    _objects = [[NSMutableArray alloc] init];
-  }
-  _reader = [[ZBarReaderViewController alloc] init];
-  _reachability = [Reachability reachabilityForInternetConnection];
+  self.productsView = [[UITableView alloc] initWithFrame:screenBounds];
+  self.productsView.delegate = self;
+  self.productsView.dataSource = self;
+  self.productsView.rowHeight = kCellHeight;
+  self.view = self.productsView;
 }
 
 - (void)viewDidLoad
@@ -56,52 +89,43 @@ static const float kCellHeight = 83.0;
   [super viewDidLoad];
   // navigation item
   self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
   UIBarButtonItem *scanButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                               target:self
                                                                               action:@selector(scanButtonTapped:)];
   self.navigationItem.rightBarButtonItem = scanButton;
   // tool bar
   [self layoutToolbar];
-
-  [self openReader];
-}
-
-- (void)viewDidUnload
-{
-  [super viewDidUnload];
-  _tableView      = nil;
-  _objects        = nil;
-  _nameLabel      = nil;
-  _sizeLabel      = nil;
-  _priceLabel     = nil;
-  _deductionLabel = nil;
-  _categoryLabel  = nil;
-  _eanLabel       = nil;
-  _reader   = nil;
-  _browser  = nil;
-  _settings = nil;
+  // reader
+  if (!self.reader) {
+    self.reader = [[ZBarReaderViewController alloc] init];
+  }
+  // delay
+  double delayInSeconds = 0.1;
+  dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+  dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+    [self openReader];
+  });
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-  NSIndexPath* selection = [_tableView indexPathForSelectedRow];
+  NSIndexPath* selection = [self.productsView indexPathForSelectedRow];
   if (selection) {
-    [_tableView deselectRowAtIndexPath:selection animated:YES];
+    [self.productsView deselectRowAtIndexPath:selection animated:YES];
   }
-  [_tableView reloadData];
+  [self.productsView reloadData];
   [super viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-  [_tableView flashScrollIndicators];
+  [self.productsView flashScrollIndicators];
   [super viewDidAppear:animated];
 }
 
 - (void)layoutToolbar
 {
-  [self.navigationController setToolbarHidden:NO animated:YES];
+  [self.navigationController setToolbarHidden:NO animated:NO];
   UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
   button.frame = CGRectMake(0, 0, 40, 40);
   UIFont *font = [UIFont fontWithName:@"FontAwesome" size:20.0];
@@ -144,8 +168,8 @@ static const float kCellHeight = 83.0;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)orient
                                 duration:(NSTimeInterval) duration
 {
-  _reader.readerView.captureReader.enableReader = NO;
-  [_reader.readerView willRotateToInterfaceOrientation:orient
+  self.reader.readerView.captureReader.enableReader = NO;
+  [self.reader.readerView willRotateToInterfaceOrientation:orient
                                               duration:0];
   [super willRotateToInterfaceOrientation:orient
                                  duration:duration];
@@ -154,23 +178,20 @@ static const float kCellHeight = 83.0;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)orient
 {
   [super didRotateFromInterfaceOrientation:orient];
-  _reader.readerView.captureReader.enableReader = YES;
+  self.reader.readerView.captureReader.enableReader = YES;
 }
 
 - (BOOL)isReachable
 {
-  NetworkStatus status = [_reachability currentReachabilityStatus];
+  NetworkStatus status = [self.reachability currentReachabilityStatus];
   switch (status) {
     case NotReachable:
-      //DLog(@"Reachable: No");
       return NO;
       break;
     case ReachableViaWWAN:
-      //DLog(@"Reachable: WWAN");
       return YES;
       break;
     case ReachableViaWiFi:
-      //DLog(@"Reachable: WiFi");
       return YES;
       break;
   }
@@ -189,11 +210,11 @@ static const float kCellHeight = 83.0;
 
 - (void)openSettings
 {
-  if (!_settings) {
-    _settings = [[SettingsViewController alloc] init];
+  if (!self.settings) {
+    self.settings = [[SettingsViewController alloc] init];
   }
-  _settings.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  UINavigationController *settingsNavigation = [[UINavigationController alloc] initWithRootViewController: _settings];
+  self.settings.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  UINavigationController *settingsNavigation = [[UINavigationController alloc] initWithRootViewController: self.settings];
   [self presentViewController:settingsNavigation animated:YES completion:nil];
 }
 
@@ -225,38 +246,28 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     break;
   }
   NSString *ean = [NSString stringWithString:symbol.data];
-  NSInteger selectedTypeIndex = [_userDefaults integerForKey:@"search.result.type"];
+  NSInteger selectedTypeIndex = [self.userDefaults integerForKey:@"search.result.type"];
   NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
-  //DLog(@"ean = %@", ean);
-  //DLog(@"type = %@", type);
   if ([ean length] != 13) {
-    // FIXME Not EAN
     [self notFoundEan:ean];
   } else {
     // API Request
     UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
     NSString *searchURL = [NSString stringWithFormat:@"%@/%@", kOddbProductSearchBaseURL, ean];
-    //DLog(@"searchURL = %@", searchURL);
     NSURL *productSearch = [NSURL URLWithString:searchURL];
-    //DLog(@"url[productSearch]: %@", productSearch);
     NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
       success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-        NSUInteger before = [_objects count];
+        NSUInteger before = [self.products count];
         [self didFinishPicking:JSON withEan:ean barcode:barcode];
-        NSUInteger after = [_objects count];
-        //DLog(@"count before = %d", before);
-        //DLog(@"count after = %d", after);
+        NSUInteger after = [self.products count];
         if ([type isEqualToString:@"PI"] && before < after) {
-          NSDictionary *product = [_objects objectAtIndex:0];
-          //DLog(@"[success] product = %@", product)
+          NSDictionary *product = [self.products objectAtIndex:0];
           [self searchInfoForProduct:product];
         }
       }
       failure:^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) {
-        // FIXME
-        NSLog(@"error: %@", error);
-        NSLog(@"response: %@", response);
+        // pass
       }];
     [operation start];
     // open oddb.org
@@ -264,24 +275,21 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
                                 ean, @"ean",
                                 nil];
-      //DLog(@"[main] product = %@", product)
       [self searchInfoForProduct:product];
     } else {
       [operation waitUntilFinished];
     }
   }
-  [_reader dismissViewControllerAnimated:YES completion:nil];
+  [self.reader dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didFinishPicking:(id)json withEan:(NSString *)ean barcode:(UIImage *)barcode
 {
-  //DLog(@"json: %@", json);
   if (json == nil || [json count] == 0) {
     [self notFoundEan:ean];
   } else {
     // image
     NSString *barcodePath = [self storeBarcode:barcode ofEan:ean];
-    //DLog(@"barcodePath: %@", barcodePath);
     // text
     NSString *category = [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "];
     NSString *price = nil;
@@ -294,7 +302,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
     NSString *dateString = [dateFormat stringFromDate:now];
-    //DLog(@"date: %@", dateString)
     NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
       [json valueForKeyPath:@"reg"],       @"reg",
       [json valueForKeyPath:@"seq"],       @"seq",
@@ -308,11 +315,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       ean,         @"ean",
       dateString,  @"datetime",
       nil];
-    //DLog(@"product: %@", product);
-    [_objects insertObject:product atIndex:0];
-    //DLog(@"_objects: %@", _objects);
+    [self.products insertObject:product atIndex:0];
     NSString *productsPath = [self storeProducts];
-    //DLog(@"productsPath: %@", productsPath);
     if (productsPath) {
       // alert
       NSString *publicPrice = nil;
@@ -325,11 +329,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                                [product objectForKey:@"name"],
                                [product objectForKey:@"size"],
                                publicPrice];
-      UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Generika.cc sagt:"
-                                                     message:message
-                                                    delegate:self
-                                           cancelButtonTitle:@"OK"
-                                           otherButtonTitles:nil];
+      UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Generika.cc sagt:"
+                                                      message:message
+                                                     delegate:self
+                                            cancelButtonTitle:@"OK"
+                                            otherButtonTitles:nil];
       [alert show];
     }
   }
@@ -338,19 +342,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)notFoundEan:(NSString *)ean
 {
   NSString *message = [NSString stringWithFormat:@"\"%@\"", ean];
-  UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Kein Medikament gefunden auf Generika.cc mit dem folgenden EAN-Code:"
-                                                 message:message
-                                                delegate:self
-                                       cancelButtonTitle:@"OK"
-                                       otherButtonTitles:nil];
+  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Kein Medikament gefunden auf Generika.cc mit dem folgenden EAN-Code:"
+                                                  message:message
+                                                 delegate:self
+                                        cancelButtonTitle:@"OK"
+                                        otherButtonTitles:nil];
   [alert show];
 }
 
 - (void)openReader
 {
-  _reader.readerDelegate = self;
-  _reader.supportedOrientationsMask = ZBarOrientationMaskAll;
-  ZBarImageScanner *scanner = _reader.scanner;
+  self.reader.readerDelegate = self;
+  self.reader.supportedOrientationsMask = ZBarOrientationMaskAll;
+  ZBarImageScanner *scanner = self.reader.scanner;
   // disable
   [scanner setSymbology:ZBAR_I25
                  config:ZBAR_CFG_ENABLE
@@ -370,17 +374,16 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [scanner setSymbology:ZBAR_QRCODE
                  config:ZBAR_CFG_ENABLE
                      to:0];
-  //_reader.readerView.zoom = 2.25; //default 1.25
-  [self presentViewController:_reader animated:YES completion:nil];
+  [self presentViewController:self.reader animated:YES completion:nil];
 }
 
 - (void)searchInfoForProduct:(NSDictionary *)product
 {
   NSString *ean = [NSString stringWithString:[product objectForKey:@"ean"]];
 
-  NSInteger selectedTypeIndex = [_userDefaults integerForKey:@"search.result.type"];
+  NSInteger selectedTypeIndex = [self.userDefaults integerForKey:@"search.result.type"];
   NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
-  NSInteger selectedLangIndex = [_userDefaults integerForKey:@"search.result.lang"];
+  NSInteger selectedLangIndex = [self.userDefaults integerForKey:@"search.result.lang"];
   NSString *lang = [[Constant searchLangs] objectAtIndex:selectedLangIndex];
 
   NSString *url;
@@ -389,13 +392,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   } else if ([type isEqualToString:@"PI"]) {
     NSString *reg = [self extractRegistrationNumberFromEan:ean];
     NSString *seq = [NSString stringWithString:[product objectForKey:@"seq"]];
-    // always open sequence as 01
     url = [NSString stringWithFormat:@"%@/%@/mobile/patinfo/reg/%@/seq/%@", kOddbBaseURL, lang, reg, seq];
   } else if ([type isEqualToString:@"FI"]) {
     NSString *reg = [self extractRegistrationNumberFromEan:ean];
     url = [NSString stringWithFormat:@"%@/%@/mobile/fachinfo/reg/%@", kOddbBaseURL, lang, reg];
   }
-  //DLog(@"url = %@", url);
   [self openWebViewWithURL:[NSURL URLWithString:url]];
 }
 
@@ -407,15 +408,12 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                                                                             error:&error];
   NSString *registrationNumber;
   if (error != nil) {
-    //DLog(@"error = %@", error);
     registrationNumber = @"";
   } else {
     NSTextCheckingResult *match =
       [regexp firstMatchInString:ean options:0 range:NSMakeRange(0, ean.length)];
-    //DLog("match count = %i", match.numberOfRanges);
     if (match.numberOfRanges > 1) {
       registrationNumber = [ean substringWithRange:[match rangeAtIndex:1]];
-      //DLog("matched text = %@", registrationNumber);
     } else {
       registrationNumber = @"";
     }
@@ -428,14 +426,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   // User-Agent
   NSString *originAgent = [[NSURLRequest requestWithURL:url] valueForHTTPHeaderField:@"User-Agent"];
   NSString *userAgent = [NSString stringWithFormat:@"%@ %@", originAgent, kOddbMobileFlavorUserAgent];
-  //DLog(@"userAgent: %@", userAgent);
   NSDictionary *dictionnary = [NSDictionary dictionaryWithObjectsAndKeys:userAgent, @"UserAgent", nil];
-  [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
+  [_userDefaults registerDefaults:dictionnary];
 
-  if (!_browser) {
-    _browser = [[WebViewController alloc] init];
+  if (!self.browser) {
+    self.browser = [[WebViewController alloc] init];
   }
-  [_browser loadURL:url];
+  [self.browser loadURL:url];
   [self.navigationController pushViewController:_browser
                                        animated:YES];
 }
@@ -458,15 +455,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
          withIntermediateDirectories:YES
                           attributes:nil
                                error:&error];
-  //DLog(@"error: %@", error);
   time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
-  //DLog(@"timestamp, %d", (int)timestamp);
   NSString *fileName = [NSString stringWithFormat:@"%@_%d.png", ean, (int)timestamp];
   NSString *filePath = [path stringByAppendingPathComponent:fileName];
   NSData *barcodeData = UIImagePNGRepresentation(barcodeImage);
-  //DLog(@"filePath: %@", filePath);
   BOOL saved = [barcodeData writeToFile:filePath atomically:YES];
-  //DLog(@"image saved: %d", saved);
   if (saved) {
     return filePath;
   } else {
@@ -479,10 +472,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   NSString *path = [paths objectAtIndex:0];
   NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
-  //DLog(@"filePath: %@", filePath);
-  //DLog(@"_objects: %@", _objects);
-  BOOL saved = [_objects writeToFile:filePath atomically:YES];
-  //DLog(@"plist saved: %d", saved);
+  BOOL saved = [self.products writeToFile:filePath atomically:YES];
   if (saved) {
     return filePath;
   } else {
@@ -499,8 +489,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  //DLog(@"objects count: %d", _objects.count);
-  return _objects.count;
+  return self.products.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -509,7 +498,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  //DLog(@"indexPath: %@", indexPath);
   static NSString *cellIdentifier = @"Cell";
   CGRect cellFrame = CGRectMake(0, 0, tableView.frame.size.width, 100);
   UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -518,8 +506,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:productView];
 
-  NSDictionary *product = [_objects objectAtIndex:indexPath.row];
-  //DLog(@"product %@", product);
+  NSDictionary *product = [self.products objectAtIndex:indexPath.row];
   NSString *barcodePath = [product objectForKey:@"barcode"];
   if (barcodePath) { // replace absolute path
     NSRange range = [barcodePath rangeOfString:@"/Documents/"];
@@ -528,10 +515,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
         [barcodePath substringFromIndex:range.location]];
     }
     barcodePath = [barcodePath stringByExpandingTildeInPath];
-    //DLog(@"barcodePath: %@", barcodePath);
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL exist = [fileManager fileExistsAtPath:barcodePath isDirectory:NO];
-    //DLog(@"image exist: %d", exist);
     if (exist) {
       UIImage *barcodeImage = [[UIImage alloc] initWithContentsOfFile:barcodePath];
       UIImageView *barcodeView = [[UIImageView alloc] initWithImage:barcodeImage];
@@ -539,80 +524,68 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     }
   }
   // name
-  _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 2.0, 230.0, 25.0)];
-  _nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
-  _nameLabel.textAlignment = kTextAlignmentLeft;
-  _nameLabel.textColor = [UIColor blackColor];
-  _nameLabel.text = [NSString stringWithString:[product objectForKey:@"name"]];
-  [cell.contentView addSubview:_nameLabel];
+  UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 2.0, 230.0, 25.0)];
+  nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
+  nameLabel.textAlignment = kTextAlignmentLeft;
+  nameLabel.textColor = [UIColor blackColor];
+  nameLabel.text = [NSString stringWithString:[product objectForKey:@"name"]];
+  [cell.contentView addSubview:nameLabel];
   // size
-  /*
-  CGSize nameSize = [[_nameLabel text] sizeWithFont:[_nameLabel font]];
-  CGRect sizeRect = CGRectMake(70 + _nameLabel.frame.size.width + 5.0, 7.0, 100.0, 30.0);
-  if (nameSize.width < _nameLabel.frame.size.width) {
-    sizeRect.origin.x = 70 + nameSize.width + 5.0;
-  }
-  */
-  //DLog(@"nameSize = %f", nameSize.width);
-  _sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 27.0, 110.0, 16.0)];
-  _sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
-  _sizeLabel.textAlignment = kTextAlignmentLeft;
-  _sizeLabel.textColor = [UIColor blackColor];
-  _sizeLabel.text = [NSString stringWithString:[product objectForKey:@"size"]];
-  [cell.contentView addSubview:_sizeLabel];
+  UILabel *sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 27.0, 110.0, 16.0)];
+  sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
+  sizeLabel.textAlignment = kTextAlignmentLeft;
+  sizeLabel.textColor = [UIColor blackColor];
+  sizeLabel.text = [NSString stringWithString:[product objectForKey:@"size"]];
+  [cell.contentView addSubview:sizeLabel];
   // datetime
   if ([product objectForKey:@"datetime"]) {
-    _dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(170.0, 27.0, 100.0, 16.0)];
-    _dateLabel.font = [UIFont systemFontOfSize:12.0];
-    _dateLabel.textAlignment = kTextAlignmentLeft;
-    _dateLabel.textColor = [UIColor grayColor];
-    _dateLabel.text = [NSString stringWithString:[product objectForKey:@"datetime"]];
-    [cell.contentView addSubview:_dateLabel];
+    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(170.0, 27.0, 100.0, 16.0)];
+    dateLabel.font = [UIFont systemFontOfSize:12.0];
+    dateLabel.textAlignment = kTextAlignmentLeft;
+    dateLabel.textColor = [UIColor grayColor];
+    dateLabel.text = [NSString stringWithString:[product objectForKey:@"datetime"]];
+    [cell.contentView addSubview:dateLabel];
   }
   // price
-  _priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 45.0, 60.0, 16.0)];
-  _priceLabel.font = [UIFont systemFontOfSize:12.0];
-  _priceLabel.textAlignment = kTextAlignmentLeft;
-  _priceLabel.textColor = [UIColor grayColor];
+  UILabel *priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 45.0, 60.0, 16.0)];
+  priceLabel.font = [UIFont systemFontOfSize:12.0];
+  priceLabel.textAlignment = kTextAlignmentLeft;
+  priceLabel.textColor = [UIColor grayColor];
   NSString *price = [NSString stringWithString:[product objectForKey:@"price"]];
-  //DLog(@"price: %@", price);
   if (![price isEqualToString:@"k.A."]) {
-    _priceLabel.text = price;
+    priceLabel.text = price;
   }
-  [cell.contentView addSubview:_priceLabel];
+  [cell.contentView addSubview:priceLabel];
   // deduction
-  _deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 45.0, 60.0, 16.0)];
-  _deductionLabel.font = [UIFont systemFontOfSize:12.0];
-  _deductionLabel.textAlignment = kTextAlignmentLeft;
-  _deductionLabel.textColor = [UIColor grayColor];
+  UILabel *deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 45.0, 60.0, 16.0)];
+  deductionLabel.font = [UIFont systemFontOfSize:12.0];
+  deductionLabel.textAlignment = kTextAlignmentLeft;
+  deductionLabel.textColor = [UIColor grayColor];
   NSString *deduction = [NSString stringWithString:[product objectForKey:@"deduction"]];
-  //DLog(@"deduction: %@", deduction);
   if (![deduction isEqualToString:@"k.A."]) {
-    _deductionLabel.text = deduction;
+    deductionLabel.text = deduction;
   }
-  [cell.contentView addSubview:_deductionLabel];
+  [cell.contentView addSubview:deductionLabel];
   // category
-  _categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(171.0, 45.0, 190.0, 16.0)];
-  _categoryLabel.font = [UIFont systemFontOfSize:12.0];
-  _categoryLabel.textAlignment = kTextAlignmentLeft;
-  _categoryLabel.textColor = [UIColor grayColor];
-  _categoryLabel.text = [NSString stringWithString:[product objectForKey:@"category"]];
-  [cell.contentView addSubview:_categoryLabel];
+  UILabel *categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(171.0, 45.0, 190.0, 16.0)];
+  categoryLabel.font = [UIFont systemFontOfSize:12.0];
+  categoryLabel.textAlignment = kTextAlignmentLeft;
+  categoryLabel.textColor = [UIColor grayColor];
+  categoryLabel.text = [NSString stringWithString:[product objectForKey:@"category"]];
+  [cell.contentView addSubview:categoryLabel];
   // ean
-  _eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 62.0, 260.0, 16.0)];
-  _eanLabel.font = [UIFont systemFontOfSize:12.0];
-  _eanLabel.textAlignment = kTextAlignmentLeft;
-  _eanLabel.textColor = [UIColor grayColor];
-  _eanLabel.text = [NSString stringWithString:[product objectForKey:@"ean"]];
-  [cell.contentView addSubview:_eanLabel];
+  UILabel *eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 62.0, 260.0, 16.0)];
+  eanLabel.font = [UIFont systemFontOfSize:12.0];
+  eanLabel.textAlignment = kTextAlignmentLeft;
+  eanLabel.textColor = [UIColor grayColor];
+  eanLabel.text = [NSString stringWithString:[product objectForKey:@"ean"]];
+  [cell.contentView addSubview:eanLabel];
 
-  //DLog(@"cell %@", cell);
   return cell;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  // Return NO if you do not want the specified item to be editable.
   return YES;
 }
 
@@ -620,32 +593,30 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                                             forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    NSDictionary *product = [_objects objectAtIndex:indexPath.row];
+    NSDictionary *product = [self.products objectAtIndex:indexPath.row];
     NSString *barcodePath = [product objectForKey:@"barcode"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
     [fileManager removeItemAtPath:barcodePath error:&error];
-    //DLog(@"remove image error: %@", error);
-    [_objects removeObjectAtIndex:indexPath.row];
+    [self.products removeObjectAtIndex:indexPath.row];
     [self storeProducts];
-    [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
   }
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated
 {
-  //DLog(@"editing: %d", editing);
   [super setEditing:editing animated:YES];
-  [_tableView setEditing:editing animated:YES];
+  [self.productsView setEditing:editing animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
   if (fromIndexPath.section == toIndexPath.section) {
-    if (_objects && toIndexPath.row < [_objects count]) {
-      NSDictionary  *product = [_objects objectAtIndex:fromIndexPath.row];
-      [_objects removeObject:product];
-      [_objects insertObject:product atIndex:toIndexPath.row];
+    if (self.products && toIndexPath.row < [self.products count]) {
+      NSDictionary  *product = [self.products objectAtIndex:fromIndexPath.row];
+      [self.products removeObject:product];
+      [self.products insertObject:product atIndex:toIndexPath.row];
       [self storeProducts];
     }
   }
@@ -658,7 +629,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  NSDictionary *product = [_objects objectAtIndex:indexPath.row];
+  NSDictionary *product = [self.products objectAtIndex:indexPath.row];
   // open oddb.org
   [self searchInfoForProduct:product];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];

@@ -9,30 +9,61 @@
 #import "WebViewController.h"
 
 @class MasterViewController;
+
+@interface WebViewController ()
+
+@property (nonatomic, strong, readwrite) UIActivityIndicatorView *indicator;
+@property (nonatomic, strong, readwrite) UIView *indicatorBackground;
+@property (nonatomic, strong, readwrite) UIWebView *browserView;
+@property (nonatomic, strong, readwrite) NSMutableArray *requests;
+@property (nonatomic, strong, readwrite) NSString *history;
+
+@end
+
 @implementation WebViewController
+
+@synthesize indicator = _indicator, indicatorBackground = _indicatorBackground;
+@synthesize browserView = _browserView;
+@synthesize requests = _requests, history = _history;
 
 - (id)init
 {
   self = [super initWithNibName:nil
                          bundle:nil];
+  _requests = [[NSMutableArray alloc] init];
   return self;
+}
+
+- (void)dealloc
+{
+  [_requests removeAllObjects], _requests = nil;
+  _history = nil;
+  [self didReceiveMemoryWarning];
+}
+
+- (void)didReceiveMemoryWarning
+{
+  if ([self isViewLoaded] && [self.view window] == nil) {
+    _browserView         = nil;
+    _indicatorBackground = nil;
+    _indicator           = nil;
+  }
+  [super didReceiveMemoryWarning];
 }
 
 - (void)loadView
 {
   [super loadView];
-  _requests = [[NSMutableArray alloc] init];
+  CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  self.browserView = [[UIWebView alloc] initWithFrame:screenBounds];
+  self.browserView.scalesPageToFit = YES;
+  self.browserView.delegate = self;
+  self.view = self.browserView;
 }
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  _webview = [[UIWebView alloc] init];
-  _webview.frame = screenBounds;
-  _webview.scalesPageToFit = YES;
-  _webview.delegate = self;
-  self.view = _webview;
   UIBarButtonItem *actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                                 target:self
                                                                                 action:@selector(showActions)];
@@ -44,26 +75,17 @@
   self.navigationItem.leftBarButtonItem = backButton;
 
   // indicator
-  _indicatorBackground = [[UIView alloc] initWithFrame:CGRectMake((_webview.bounds.size.width/2) - 50,
-                                                                  (_webview.bounds.size.height/2) - 100, 100, 100)];
-  _indicatorBackground.backgroundColor = [UIColor blackColor];
-  _indicatorBackground.alpha = 0.6;
-  [[_indicatorBackground layer] setCornerRadius:5.0];
-  [_webview addSubview:_indicatorBackground];
-  _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-  _indicator.frame = CGRectMake((_webview.bounds.size.width/2) - 20,
-                                (_webview.bounds.size.height/2) - 70, 40, 40);
-  [_webview addSubview:_indicator];
-}
-
-- (void)viewDidUnload
-{
-  [super viewDidUnload];
-  _webview  = nil;
-  _indicatorBackground = nil;
-  _indicator = nil;
-  _requests = nil;
-  _history  = nil;
+  self.indicatorBackground = [[UIView alloc] initWithFrame:CGRectMake((self.browserView.bounds.size.width/2) - 50,
+                                                                      (self.browserView.bounds.size.height/2) - 100, 100, 100)];
+  self.indicatorBackground.backgroundColor = [UIColor blackColor];
+  self.indicatorBackground.alpha = 0.6;
+  [[self.indicatorBackground layer] setCornerRadius:5.0];
+  [self.browserView addSubview:self.indicatorBackground];
+  self.indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+  //self.indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+  self.indicator.frame = CGRectMake((self.browserView.bounds.size.width/2) - 20,
+                                    (self.browserView.bounds.size.height/2) - 70, 40, 40);
+  [self.browserView addSubview:self.indicator];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -81,25 +103,21 @@
 - (void)loadURL:(NSURL *)url
 {
   //reset requests
-  if (_requests) {
-    [_requests removeAllObjects];
+  if (self.requests) {
+    [self.requests removeAllObjects];
   }
   url = [url standardizedURL];
-  _history = [url absoluteString];
-  //DLog(@"load: %@", _history);
+  self.history = [url absoluteString];
   [self refresh];
 }
 
 - (void)goBack
 {
-  int requests = [_requests count] - 1;
-  //DLog(@"requets = %@", _requests);
-  //DLog(@"history counts: %d", requests);
-  if (requests > 0) {
-    [_requests removeObjectAtIndex:0];
-    [_webview goBack];
+  int requests_count = [self.requests count] - 1;
+  if (requests_count > 0) {
+    [self.requests removeObjectAtIndex:0];
+    [self.browserView goBack];
   } else {
-    //[self.navigationController popToRootViewControllerAnimated:YES];
     MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
     [self.navigationController popToViewController:(UIViewController *)parent animated:YES];
   }
@@ -107,9 +125,8 @@
 
 - (void)refresh
 {
-  NSURL *url = [NSURL URLWithString: _history];
+  NSURL *url = [NSURL URLWithString: self.history];
   NSURLRequest *request = [NSURLRequest requestWithURL: url];
-  //DLog(@"request: %@", request);
   UIWebView *view = (UIWebView*)self.view;
   // open blank page once
   [view loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@""]]];
@@ -120,13 +137,13 @@
 {
   UIActionSheet *sheet = [[UIActionSheet alloc] init];
   sheet.delegate = self;
-  sheet.title = [[_webview.request URL] absoluteString];
+  sheet.title = [[self.browserView.request URL] absoluteString];
   [sheet addButtonWithTitle:@"Open in Safari"];
   [sheet addButtonWithTitle:@"Back to List"];
   [sheet addButtonWithTitle:@"Cancel"];
   sheet.destructiveButtonIndex = 0;
   sheet.cancelButtonIndex      = 2;
-  [sheet showInView:_webview];
+  [sheet showInView:self.browserView];
 }
 
 
@@ -134,9 +151,8 @@
 
 - (void)actionSheet:(UIActionSheet *)sheet clickedButtonAtIndex:(NSInteger)index
 {
-  //DLog(@"sheet button index: %d", index);
   if (index == sheet.destructiveButtonIndex) {
-    [[UIApplication sharedApplication] openURL:[_webview.request URL]];
+    [[UIApplication sharedApplication] openURL:[self.browserView.request URL]];
   } else if (index == 1) { //back to list
     MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
     [self.navigationController popToViewController:(UIViewController *)parent animated:YES];
@@ -149,14 +165,14 @@
 - (void)webViewDidStartLoad:(UIWebView *)view
 {
   [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-  _indicatorBackground.hidden = NO;
-  [_indicator startAnimating];
+  self.indicatorBackground.hidden = NO;
+  [self.indicator startAnimating];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)view
 {
-  [_indicator stopAnimating];
-  _indicatorBackground.hidden = YES;
+  [self.indicator stopAnimating];
+  self.indicatorBackground.hidden = YES;
   [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
   NSString *title = [view stringByEvaluatingJavaScriptFromString:@"document.title"];
   if (title) {
@@ -166,15 +182,13 @@
 
 - (void)webView:(UIWebView *)view didFailLoadWithError:(NSError *)err
 {
-  [_indicator stopAnimating];
-  _indicatorBackground.hidden = YES;
+  [self.indicator stopAnimating];
+  self.indicatorBackground.hidden = YES;
 
-  int requests = [_requests count];
-  //DLog(@"requets = %@", _requests);
-  if (requests > 0) {
-    [_requests removeObjectAtIndex:0];
+  int requests_count = [self.requests count];
+  if (requests_count > 0) {
+    [self.requests removeObjectAtIndex:0];
   }
-  //DLog(@"loading: %d", view.loading);
   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Failed to open"
                                                   message:@"Error"
                                                  delegate:nil
@@ -191,7 +205,6 @@
   }
 
   NSURL *url = [[req URL] standardizedURL];
-  //DLog(@"url: %@", url);
   BOOL result = YES;
   switch(type)
   {
@@ -202,7 +215,7 @@
   case UIWebViewNavigationTypeFormSubmitted:
   case UIWebViewNavigationTypeFormResubmitted:
   case UIWebViewNavigationTypeOther:
-    [_requests insertObject:url atIndex:0];
+    [self.requests insertObject:url atIndex:0];
   default:
     break;
   }

@@ -12,12 +12,19 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 @interface SettingsDetailViewController ()
 
+@property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
+@property (nonatomic, strong, readwrite) UITableView *detailView;
+@property (nonatomic, strong, readwrite) NSIndexPath *selectedPath;
+
 @end
 
 @implementation SettingsDetailViewController
 
-@synthesize options = _options;
-@synthesize defaultKey = _defaultKey;
+@synthesize options = _options, defaultKey = _defaultKey;
+
+@synthesize userDefaults = _userDefaults;
+@synthesize detailView = _detailView;
+@synthesize selectedPath = _selectedPath;
 
 - (id)init
 {
@@ -27,36 +34,42 @@ static const float kCellHeight = 44.0; // default = 44.0
   return self;
 }
 
-- (void)viewDidLoad
+- (void)dealloc
 {
-  [super viewDidLoad];
-
-  NSInteger selectedRow = [_userDefaults integerForKey:_defaultKey];
-  //DLog(@"selectedRow = %i", selectedRow);
-  _selectedPath = [NSIndexPath indexPathForRow:selectedRow inSection:0];
-
-  CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  _detailView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
-  _detailView.delegate = self;
-  _detailView.dataSource = self;
-  _detailView.rowHeight = kCellHeight;
-  self.view = _detailView;
-}
-
-- (void)viewDidUnload
-{
-  [super viewDidUnload];
-  _options = nil;
-  _defaultKey = nil;
+  _userDefaults = nil;
+  _options      = nil;
+  _defaultkey   = nil;
   _selectedPath = nil;
-  _detailView = nil;
-  _nameLabel = nil;
+  [self didReceiveMemoryWarning];
 }
 
 - (void)didReceiveMemoryWarning
 {
+  if ([self isViewLoaded] && [self.view window] == nil) {
+    _detailView = nil;
+  }
   [super didReceiveMemoryWarning];
 }
+
+- (void)loadView
+{
+  [super loadView];
+
+  CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  self.detailView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
+  self.detailView.delegate = self;
+  self.detailView.dataSource = self;
+  self.detailView.rowHeight = kCellHeight;
+  self.view = self.detailView;
+}
+
+- (void)viewDidLoad
+{
+  [super viewDidLoad];
+  NSInteger selectedRow = [self.userDefaults integerForKey:self.defaultKey];
+  self.selectedPath = [NSIndexPath indexPathForRow:selectedRow inSection:0];
+}
+
 
 #pragma mark - Table view
 
@@ -67,7 +80,7 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return _options.count;
+  return self.options.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -80,41 +93,35 @@ static const float kCellHeight = 44.0; // default = 44.0
   static NSString *cellIdentifier = @"Cell";
   UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                  reuseIdentifier:cellIdentifier];
-
-  //DLog(@"indexPath.row = %i", indexPath.row);
-  //DLog(@"_selectedPath.row = %i", _selectedPath.row);
-  if (indexPath.row == _selectedPath.row) {
+  if (indexPath.row == self.selectedPath.row) {
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
   } else {
     cell.accessoryType = UITableViewCellAccessoryNone;
   }
   // name
-  _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 120.0, 25.0)];
-  _nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
-  _nameLabel.textAlignment = kTextAlignmentLeft;
-  _nameLabel.textColor = [UIColor blackColor];
-  _nameLabel.backgroundColor = [UIColor clearColor];
-  _nameLabel.text = [_options objectAtIndex:indexPath.row];
-  [cell.contentView addSubview:_nameLabel];
-  
+  UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 120.0, 25.0)];
+  nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
+  nameLabel.textAlignment = kTextAlignmentLeft;
+  nameLabel.textColor = [UIColor blackColor];
+  nameLabel.backgroundColor = [UIColor clearColor];
+  nameLabel.text = [self.options objectAtIndex:indexPath.row];
+  [cell.contentView addSubview:nameLabel];
   return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
-  //DLog(@"indexPath.row = %i", indexPath.row);
-  //DLog(@"_selectedPath.row = %i", _selectedPath.row);
-  if (indexPath.row != _selectedPath.row) {
+  if (indexPath.row != self.selectedPath.row) {
     // uncheck
-    UITableViewCell *prev = [tableView cellForRowAtIndexPath:_selectedPath];
+    UITableViewCell *prev = [tableView cellForRowAtIndexPath:self.selectedPath];
     prev.accessoryType = UITableViewCellAccessoryNone;
     // check & store
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    [_userDefaults setInteger:indexPath.row forKey:_defaultKey];
-    [_userDefaults synchronize];
-    _selectedPath = indexPath;
+    [self.userDefaults setInteger:indexPath.row forKey:self.defaultKey];
+    [self.userDefaults synchronize];
+    self.selectedPath = indexPath;
   }
 }
 

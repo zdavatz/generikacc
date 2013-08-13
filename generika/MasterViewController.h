@@ -19,19 +19,20 @@
 
   NSUserDefaults *_userDefaults;
 
-  UITableView *_tableView;
-  NSMutableArray *_objects;
-  UILabel *_nameLabel;
-  UILabel *_sizeLabel;
-  UILabel *_dateLabel;
-  UILabel *_priceLabel;
-  UILabel *_deductionLabel;
-  UILabel *_categoryLabel;
-  UILabel *_eanLabel;
+  UITableView *_productsView;
+  NSMutableArray *_products;
 }
 
-- (IBAction)scanButtonTapped:(UIButton *)button;
-- (IBAction)settingsButtonTapped:(UIButton *)button;
+@property (nonatomic, strong, readonly) Reachability *reachability;
+@property (nonatomic, strong, readonly) ZBarReaderViewController *reader;
+@property (nonatomic, strong, readonly) WebViewController *browser;
+@property (nonatomic, strong, readonly) SettingsViewController *settings;
+@property (nonatomic, strong, readonly) NSUserDefaults *userDefaults;
+@property (nonatomic, strong, readonly) UITableView *productsView;
+@property (nonatomic, strong, readonly) NSMutableArray *products;
+
+- (void)scanButtonTapped:(UIButton *)button;
+- (void)settingsButtonTapped:(UIButton *)button;
 
 - (void)openReader;
 - (void)searchInfoForProduct:(NSDictionary *)product;
