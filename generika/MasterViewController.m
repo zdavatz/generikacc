@@ -227,7 +227,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   NSString *ean = [NSString stringWithString:symbol.data];
   NSInteger selectedTypeIndex = [_userDefaults integerForKey:@"search.result.type"];
   NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
-  //DLog(@"ean: %@", ean);
+  //DLog(@"ean = %@", ean);
+  //DLog(@"type = %@", type);
   if ([ean length] != 13) {
     // FIXME Not EAN
     [self notFoundEan:ean];
@@ -241,10 +242,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
       success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        NSUInteger before = [_objects count];
         [self didFinishPicking:JSON withEan:ean barcode:barcode];
-        //DLog(@"type = %@", type);
-        if ([type isEqualToString:@"PI"]) {
-          NSDictionary *product = [_objects lastObject];
+        NSUInteger after = [_objects count];
+        //DLog(@"count before = %d", before);
+        //DLog(@"count after = %d", after);
+        if ([type isEqualToString:@"PI"] && before < after) {
+          NSDictionary *product = [_objects objectAtIndex:0];
           //DLog(@"[success] product = %@", product)
           [self searchInfoForProduct:product];
         }
