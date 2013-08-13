@@ -520,13 +520,20 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
   NSDictionary *product = [_objects objectAtIndex:indexPath.row];
   //DLog(@"product %@", product);
-  if ([product objectForKey:@"barcode"]) {
-    //DLog(@"barcode: %@", [product objectForKey:@"barcode"]);
+  NSString *barcodePath = [product objectForKey:@"barcode"];
+  if (barcodePath) { // replace absolute path
+    NSRange range = [barcodePath rangeOfString:@"/Documents/"];
+    if (range.location != NSNotFound) { // like stringByAbbreviatingWithTildeInPath
+      barcodePath = [NSString stringWithFormat:@"~%@",
+        [barcodePath substringFromIndex:range.location]];
+    }
+    barcodePath = [barcodePath stringByExpandingTildeInPath];
+    //DLog(@"barcodePath: %@", barcodePath);
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    BOOL exist = [fileManager fileExistsAtPath:[product objectForKey:@"barcode"] isDirectory:NO];
+    BOOL exist = [fileManager fileExistsAtPath:barcodePath isDirectory:NO];
     //DLog(@"image exist: %d", exist);
     if (exist) {
-      UIImage *barcodeImage = [[UIImage alloc] initWithContentsOfFile:[product objectForKey:@"barcode"]];
+      UIImage *barcodeImage = [[UIImage alloc] initWithContentsOfFile:barcodePath];
       UIImageView *barcodeView = [[UIImageView alloc] initWithImage:barcodeImage];
       [cell.contentView addSubview:barcodeView];
     }
