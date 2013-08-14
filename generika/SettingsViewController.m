@@ -106,15 +106,19 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-  CGFloat width  = self.view.frame.size.width;
+  CGFloat width  = tableView.frame.size.width;
   CGFloat height = [self tableView:tableView heightForHeaderInSection:section];
   CGRect headerRect = CGRectMake(0, 0, width, height);
   UIView *headerView = [[UIView alloc] initWithFrame:headerRect];
   headerView.backgroundColor = [UIColor clearColor];
-  UILabel *sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(45.0, 5.0, width, height)];
-  sectionLabel.font = [UIFont boldSystemFontOfSize:18.0];
+  float leftMargin = (tableView.frame.size.width - CGSizeMake(tableView.frame.size.width - 40.0, MAXFLOAT).width) / 2;
+  if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
+    leftMargin += 30.0;
+  }
+  UILabel *sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftMargin, 0, 300.0, height)];
+  sectionLabel.font = [UIFont boldSystemFontOfSize:17.0];
   sectionLabel.textAlignment = kTextAlignmentLeft;
-  sectionLabel.textColor = [UIColor blackColor];
+  sectionLabel.textColor = [UIColor colorWithRed:0.29 green:0.33 blue:0.42 alpha:1]; // default color
   sectionLabel.backgroundColor = [UIColor clearColor];
   switch (section) {
     case 0:
