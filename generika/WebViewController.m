@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 ywesee GmbH. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "WebViewController.h"
 
 @class MasterViewController;
