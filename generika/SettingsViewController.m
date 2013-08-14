@@ -106,10 +106,12 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-  CGRect headerRect = CGRectMake(0, 0, 300, 40);  
+  CGFloat width  = self.view.frame.size.width;
+  CGFloat height = [self tableView:tableView heightForHeaderInSection:section];
+  CGRect headerRect = CGRectMake(0, 0, width, height);
   UIView *headerView = [[UIView alloc] initWithFrame:headerRect];
   headerView.backgroundColor = [UIColor clearColor];
-  UILabel *sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 5.0, 300.0, 45.0)];
+  UILabel *sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(45.0, 5.0, width, height)];
   sectionLabel.font = [UIFont boldSystemFontOfSize:18.0];
   sectionLabel.textAlignment = kTextAlignmentLeft;
   sectionLabel.textColor = [UIColor blackColor];
@@ -137,20 +139,29 @@ static const float kCellHeight = 44.0; // default = 44.0
   UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                  reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  CGRect frame = cell.frame;
   // name
-  UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 100.0, 25.0)];
+  CGRect nameFrame = CGRectMake(frame.origin.x + 10.0,
+                                frame.origin.y + 8.0,
+                                frame.size.width - 20.0, 25.0);
+  UILabel *nameLabel = [[UILabel alloc] initWithFrame:nameFrame];
   nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
   nameLabel.textAlignment = kTextAlignmentLeft;
   nameLabel.textColor = [UIColor blackColor];
+  [nameLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
   nameLabel.backgroundColor = [UIColor clearColor];
   nameLabel.text = [self.entries objectAtIndex:indexPath.row];
   [cell.contentView addSubview:nameLabel];
   // option
-  UILabel *optionLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 8.0, 110.0, 25.0)];
+  CGRect optionFrame = CGRectMake(frame.origin.x + 10.0,
+                                  frame.origin.y + 8.0,
+                                  frame.size.width - 25.0, 25.0);
+  UILabel *optionLabel = [[UILabel alloc] initWithFrame:optionFrame];
   optionLabel.font = [UIFont systemFontOfSize:16.0];
   optionLabel.textAlignment = kTextAlignmentRight;
   optionLabel.textColor = [UIColor colorWithRed:0.2 green:0.33 blue:0.5 alpha:1.0];
   optionLabel.backgroundColor = [UIColor clearColor];
+  [optionLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
   NSDictionary *context = [self contextFor:indexPath];
   NSInteger selectedRow = [self.userDefaults integerForKey:[context objectForKey:@"key"]];
   optionLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
