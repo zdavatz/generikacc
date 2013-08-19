@@ -76,17 +76,18 @@
   self.navigationItem.leftBarButtonItem = backButton;
 
   // indicator
-  self.indicatorBackground = [[UIView alloc] initWithFrame:CGRectMake((self.browserView.bounds.size.width/2) - 50,
-                                                                      (self.browserView.bounds.size.height/2) - 100, 100, 100)];
+  self.indicatorBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100.0, 100.0)];
   self.indicatorBackground.backgroundColor = [UIColor blackColor];
   self.indicatorBackground.alpha = 0.6;
   [[self.indicatorBackground layer] setCornerRadius:5.0];
   [self.browserView addSubview:self.indicatorBackground];
   self.indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-  //self.indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-  self.indicator.frame = CGRectMake((self.browserView.bounds.size.width/2) - 20,
-                                    (self.browserView.bounds.size.height/2) - 70, 40, 40);
   [self.browserView addSubview:self.indicator];
+  [self layoutIndicator];
+  [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(didRotate:)
+                                               name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -98,6 +99,17 @@
   }
 }
 
+- (void)didRotate:(NSNotification *)notification
+{
+  [self layoutIndicator];
+}
+
+- (void)layoutIndicator {
+  if (self.indicator) {
+    self.indicator.center = self.browserView.center;
+    self.indicatorBackground.center = self.browserView.center;
+  }
+}
 
 # pragma mark - Action
 
@@ -166,6 +178,7 @@
 - (void)webViewDidStartLoad:(UIWebView *)view
 {
   [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+  [self layoutIndicator];
   self.indicatorBackground.hidden = NO;
   [self.indicator startAnimating];
 }
