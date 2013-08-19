@@ -65,16 +65,16 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  UIBarButtonItem *actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                                target:self
-                                                                                action:@selector(showActions)];
-  self.navigationItem.rightBarButtonItem = actionButton;
+  // navigationbar
   UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"back"
                                                                  style:UIBarButtonItemStylePlain
                                                                 target:self
                                                                 action:@selector(goBack)];
   self.navigationItem.leftBarButtonItem = backButton;
-
+  UIBarButtonItem *actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                                target:self
+                                                                                action:@selector(showActions)];
+  self.navigationItem.rightBarButtonItem = actionButton;
   // indicator
   self.indicatorBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100.0, 100.0)];
   self.indicatorBackground.backgroundColor = [UIColor blackColor];
@@ -88,6 +88,18 @@
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didRotate:)
                                                name:UIDeviceOrientationDidChangeNotification object:nil];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+  [self.navigationController setToolbarHidden:YES animated:YES];
+  [super viewWillAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+  [self.navigationController setToolbarHidden:NO animated:YES];
+  [super viewWillDisappear:animated];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
