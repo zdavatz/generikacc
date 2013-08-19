@@ -22,9 +22,11 @@ static const float kCellHeight = 83.0;
 @property (nonatomic, strong, readwrite) ZBarReaderViewController *reader;
 @property (nonatomic, strong, readwrite) WebViewController *browser;
 @property (nonatomic, strong, readwrite) SettingsViewController *settings;
+@property (nonatomic, strong, readwrite) UISearchDisplayController *search;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *productsView;
 @property (nonatomic, strong, readwrite) NSMutableArray *products;
+@property (nonatomic, strong, readwrite) NSMutableArray *filtered;
 
 @end
 
@@ -32,8 +34,9 @@ static const float kCellHeight = 83.0;
 
 @synthesize reachability = _reachability, userDefaults = _userDefaults;
 @synthesize reader = _reader, browser = _browser, settings = _settings;
+@synthesize search = _search;
 @synthesize productsView = _productsView;
-@synthesize products = _products;
+@synthesize products = _products, filtered = _filtered;
 
 - (id)init
 {
@@ -52,12 +55,14 @@ static const float kCellHeight = 83.0;
   } else {
     _products = [[NSMutableArray alloc] init];
   }
+  _filtered = [NSMutableArray arrayWithCapacity:[_products count]];
   return self;
 }
 
 - (void)dealloc
 {
   [_products removeAllObjects], _products = nil;
+  [_filtered removeAllObjects], _filtered = nil;
   _userDefaults = nil;
   _reachability = nil;
   [self didReceiveMemoryWarning];
@@ -69,6 +74,7 @@ static const float kCellHeight = 83.0;
     _productsView = nil;
     _browser      = nil;
     _settings     = nil;
+    _search       = nil;
   }
   [super didReceiveMemoryWarning];
 }
@@ -93,8 +99,19 @@ static const float kCellHeight = 83.0;
                                                                               target:self
                                                                               action:@selector(scanButtonTapped:)];
   self.navigationItem.rightBarButtonItem = scanButton;
-  // tool bar
+  // toolbar
   [self layoutToolbar];
+  // searchbar
+  UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0,0,self.productsView.frame.size.width, 44.0)];
+  searchBar.tintColor = [UIColor lightGrayColor];
+  searchBar.delegate = self;
+  searchBar.placeholder = @"Medikament";
+  [searchBar sizeToFit];
+  self.productsView.tableHeaderView = searchBar;
+  self.search = [[UISearchDisplayController alloc] initWithSearchBar:searchBar contentsController:self];
+  self.search.delegate = self;
+  self.search.searchResultsDelegate = self;
+  self.search.searchResultsDataSource = self;
   // reader
   if (!self.reader) {
     self.reader = [[ZBarReaderViewController alloc] init];
@@ -489,7 +506,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return self.products.count;
+  if (tableView == self.search.searchResultsTableView) {
+    return self.filtered.count;
+  } else {
+    return self.products.count;
+  }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -506,7 +527,12 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:productView];
 
-  NSDictionary *product = [self.products objectAtIndex:indexPath.row];
+  NSDictionary *product;
+  if (tableView == self.search.searchResultsTableView) {
+    product = [self.filtered objectAtIndex:indexPath.row];
+  } else {
+    product = [self.products objectAtIndex:indexPath.row];
+  }
   NSString *barcodePath = [product objectForKey:@"barcode"];
   if (barcodePath) { // replace absolute path
     NSRange range = [barcodePath rangeOfString:@"/Documents/"];
@@ -586,7 +612,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  return YES;
+  if (tableView == self.search.searchResultsTableView) {
+    return NO;
+  } else {
+    return YES;
+  }
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
@@ -610,6 +640,15 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self.productsView setEditing:editing animated:YES];
 }
 
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  if (tableView == self.search.searchResultsTableView) {
+    return NO;
+  } else {
+    return YES;
+  }
+}
+
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
   if (fromIndexPath.section == toIndexPath.section) {
@@ -622,17 +661,38 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-  return YES;
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  NSDictionary *product = [self.products objectAtIndex:indexPath.row];
+  NSDictionary *product;
+  if (tableView == self.search.searchResultsTableView) {
+    product = [self.filtered objectAtIndex:indexPath.row];
+  } else {
+    product = [self.products objectAtIndex:indexPath.row];
+  }
   // open oddb.org
   [self searchInfoForProduct:product];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+
+#pragma mark - Searchbar
+
+- (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope
+{
+  [self.filtered removeAllObjects];
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K contains[cd] %@", @"name", searchText];
+  self.filtered = [NSMutableArray arrayWithArray:[self.products filteredArrayUsingPredicate:predicate]];
+}
+
+
+#pragma mark - UISearchDisplaycontroller delegate
+
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
+{
+  [self filterContentForSearchText:searchString
+                             scope:[[self.search.searchBar scopeButtonTitles]
+                     objectAtIndex:[self.search.searchBar selectedScopeButtonIndex]]];
+  return YES;
 }
 
 @end
