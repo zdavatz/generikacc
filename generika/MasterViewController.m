@@ -145,6 +145,23 @@ static const float kCellHeight = 83.0;
   self.toolbarItems = [NSArray arrayWithObjects:space, settingsBarButton, margin, nil];
 }
 
+- (BOOL)isReachable
+{
+  NetworkStatus status = [self.reachability currentReachabilityStatus];
+  switch (status) {
+    case NotReachable:
+      return NO;
+      break;
+    case ReachableViaWWAN:
+      return YES;
+      break;
+    case ReachableViaWiFi:
+      return YES;
+      break;
+  }
+  return NO;
+}
+
 - (BOOL)shouldAutorotate
 {
   return YES;
@@ -179,23 +196,6 @@ static const float kCellHeight = 83.0;
 {
   [super didRotateFromInterfaceOrientation:orient];
   self.reader.readerView.captureReader.enableReader = YES;
-}
-
-- (BOOL)isReachable
-{
-  NetworkStatus status = [self.reachability currentReachabilityStatus];
-  switch (status) {
-    case NotReachable:
-      return NO;
-      break;
-    case ReachableViaWWAN:
-      return YES;
-      break;
-    case ReachableViaWiFi:
-      return YES;
-      break;
-  }
-  return NO;
 }
 
 
