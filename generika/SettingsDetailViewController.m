@@ -101,7 +101,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   // name
   CGRect nameFrame;
   UIFont *nameFont;
-  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+  if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
     nameFrame = CGRectMake(10.0, 8.0, 120.0, 25.0);
     nameFont = [UIFont boldSystemFontOfSize:16.0];
   } else { // iOS 7 or later
