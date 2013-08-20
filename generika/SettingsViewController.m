@@ -112,13 +112,23 @@ static const float kCellHeight = 44.0; // default = 44.0
   UIView *headerView = [[UIView alloc] initWithFrame:headerRect];
   headerView.backgroundColor = [UIColor clearColor];
   float leftMargin = (tableView.frame.size.width - CGSizeMake(tableView.frame.size.width - 40.0, MAXFLOAT).width) / 2;
-  if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
-    leftMargin += 30.0;
+  UIFont  *sectionFont;
+  UIColor *sectionColor;
+  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+    sectionFont = [UIFont boldSystemFontOfSize:17.0];
+    sectionColor = [UIColor colorWithRed:0.29 green:0.33 blue:0.42 alpha:1]; // default color
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
+      leftMargin += 30.0;
+    }
+  } else { // iOS 7 or later
+    sectionFont = [UIFont systemFontOfSize:15.0];
+    sectionColor = [UIColor grayColor];
+    leftMargin -= 5.0;
   }
   UILabel *sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftMargin, 0, 300.0, height)];
-  sectionLabel.font = [UIFont boldSystemFontOfSize:17.0];
+  sectionLabel.font = sectionFont;
+  sectionLabel.textColor = sectionColor;
   sectionLabel.textAlignment = kTextAlignmentLeft;
-  sectionLabel.textColor = [UIColor colorWithRed:0.29 green:0.33 blue:0.42 alpha:1]; // default color
   sectionLabel.backgroundColor = [UIColor clearColor];
   switch (section) {
     case 0:
@@ -145,11 +155,19 @@ static const float kCellHeight = 44.0; // default = 44.0
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   CGRect frame = cell.frame;
   // name
-  CGRect nameFrame = CGRectMake(frame.origin.x + 10.0,
-                                frame.origin.y + 8.0,
-                                frame.size.width - 20.0, 25.0);
+  CGRect nameFrame;
+  UIFont *nameFont;
+  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+    nameFrame = CGRectMake(frame.origin.x + 10.0, frame.origin.x + 8.0,
+                           frame.size.width - 20.0, 25.0);
+    nameFont =[UIFont boldSystemFontOfSize:16.0];
+  } else { // iOS 7 or later
+    nameFrame = CGRectMake(frame.origin.x + 15.0, frame.origin.x + 10.0,
+                           frame.size.width - 20.0, 25.0);
+    nameFont = [UIFont systemFontOfSize:15.0];
+  }
   UILabel *nameLabel = [[UILabel alloc] initWithFrame:nameFrame];
-  nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
+  nameLabel.font = nameFont;
   nameLabel.textAlignment = kTextAlignmentLeft;
   nameLabel.textColor = [UIColor blackColor];
   [nameLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
@@ -157,13 +175,24 @@ static const float kCellHeight = 44.0; // default = 44.0
   nameLabel.text = [self.entries objectAtIndex:indexPath.row];
   [cell.contentView addSubview:nameLabel];
   // option
-  CGRect optionFrame = CGRectMake(frame.origin.x + 10.0,
-                                  frame.origin.y + 8.0,
-                                  frame.size.width - 25.0, 25.0);
+  CGRect optionFrame;
+  UIFont *optionFont;
+  UIColor *optionColor;
+  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+    optionFrame = CGRectMake(frame.origin.x + 10.0, frame.origin.y + 8.0,
+                             frame.size.width - 25.0, 25.0);
+    optionFont = [UIFont systemFontOfSize:16.0];
+    optionColor = [UIColor colorWithRed:0.2 green:0.33 blue:0.5 alpha:1.0];
+  } else { // iOS 7 or later
+    optionFrame = CGRectMake(frame.origin.x + 25.0, frame.origin.y + 10.0,
+                             frame.size.width - 25.0, 25.0);
+    optionFont = [UIFont systemFontOfSize:15.0];
+    optionColor = [UIColor lightGrayColor];
+  }
   UILabel *optionLabel = [[UILabel alloc] initWithFrame:optionFrame];
-  optionLabel.font = [UIFont systemFontOfSize:16.0];
+  optionLabel.font = optionFont;
   optionLabel.textAlignment = kTextAlignmentRight;
-  optionLabel.textColor = [UIColor colorWithRed:0.2 green:0.33 blue:0.5 alpha:1.0];
+  optionLabel.textColor = optionColor;
   optionLabel.backgroundColor = [UIColor clearColor];
   [optionLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
   NSDictionary *context = [self contextFor:indexPath];
