@@ -148,6 +148,12 @@ static const float kCellHeight = 83.0;
   UIFont *font = [UIFont fontWithName:@"FontAwesome" size:20.0];
   [button.titleLabel setFont:font];
   [button setTitle:@"\uF013" forState:UIControlStateNormal];
+  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+    [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+  } else { // iOS 7 or later
+    [button setTitleColor:[UIColor colorWithRed:6/255.0 green:121/255.0 blue:251/255.0 alpha:1.0]
+                 forState:UIControlStateNormal];
+  }
   [button addTarget:self
              action:@selector(settingsButtonTapped:)
    forControlEvents:UIControlEventTouchUpInside];
