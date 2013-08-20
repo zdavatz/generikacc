@@ -99,8 +99,17 @@ static const float kCellHeight = 44.0; // default = 44.0
     cell.accessoryType = UITableViewCellAccessoryNone;
   }
   // name
-  UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 8.0, 120.0, 25.0)];
-  nameLabel.font = [UIFont boldSystemFontOfSize:16.0];
+  CGRect nameFrame;
+  UIFont *nameFont;
+  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+    nameFrame = CGRectMake(10.0, 8.0, 120.0, 25.0);
+    nameFont = [UIFont boldSystemFontOfSize:16.0];
+  } else { // iOS 7 or later
+    nameFrame = CGRectMake(15.0, 10.0, 120.0, 25.0);
+    nameFont = [UIFont systemFontOfSize:15.0];
+  }
+  UILabel *nameLabel = [[UILabel alloc] initWithFrame:nameFrame];
+  nameLabel.font = nameFont;
   nameLabel.textAlignment = kTextAlignmentLeft;
   nameLabel.textColor = [UIColor blackColor];
   nameLabel.backgroundColor = [UIColor clearColor];
