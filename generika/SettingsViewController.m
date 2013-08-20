@@ -114,7 +114,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   float leftMargin = (tableView.frame.size.width - CGSizeMake(tableView.frame.size.width - 40.0, MAXFLOAT).width) / 2;
   UIFont  *sectionFont;
   UIColor *sectionColor;
-  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+  if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
     sectionFont = [UIFont boldSystemFontOfSize:17.0];
     sectionColor = [UIColor colorWithRed:0.29 green:0.33 blue:0.42 alpha:1]; // default color
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
@@ -157,7 +157,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   // name
   CGRect nameFrame;
   UIFont *nameFont;
-  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+  if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
     nameFrame = CGRectMake(frame.origin.x + 10.0, frame.origin.x + 8.0,
                            frame.size.width - 20.0, 25.0);
     nameFont =[UIFont boldSystemFontOfSize:16.0];
@@ -178,7 +178,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   CGRect optionFrame;
   UIFont *optionFont;
   UIColor *optionColor;
-  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+  if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
     optionFrame = CGRectMake(frame.origin.x + 10.0, frame.origin.y + 8.0,
                              frame.size.width - 25.0, 25.0);
     optionFont = [UIFont systemFontOfSize:16.0];
