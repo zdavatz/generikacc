@@ -116,6 +116,11 @@ static const float kCellHeight = 83.0;
   if (!self.reader) {
     self.reader = [[ZBarReaderViewController alloc] init];
   }
+  [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(didRotate:)
+                                               name:UIDeviceOrientationDidChangeNotification
+                                             object:nil];
   // delay
   double delayInSeconds = 0.1;
   dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
@@ -195,6 +200,11 @@ static const float kCellHeight = 83.0;
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
+- (void)didRotate:(NSNotification *)notification
+{
+  [self layoutReaderToolbar];
+}
+
 // iOS <= 5
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -220,7 +230,6 @@ static const float kCellHeight = 83.0;
   [super didRotateFromInterfaceOrientation:orient];
   self.reader.readerView.captureReader.enableReader = YES;
 }
-
 
 #pragma mark - Settings View
 
@@ -254,11 +263,11 @@ static const float kCellHeight = 83.0;
 didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   if (![self isReachable]) {
-    UIAlertView *alert =[[UIAlertView alloc] initWithTitle:@"Keine Verbindung zum Internet!"
-                                                   message:nil
-                                                  delegate:self
-                                         cancelButtonTitle:@"OK"
-                                         otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Keine Verbindung zum Internet!"
+                                                    message:nil
+                                                   delegate:self
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
     [alert show];
     return;
   }
@@ -397,7 +406,30 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [scanner setSymbology:ZBAR_QRCODE
                  config:ZBAR_CFG_ENABLE
                      to:0];
-  [self presentViewController:self.reader animated:YES completion:nil];
+  [self presentViewController:self.reader animated:YES completion:^{
+    [self layoutReaderToolbar];
+  }];
+}
+
+- (void)layoutReaderToolbar
+{
+  if (self.reader) {
+    if (floor(NSFoundationVersionNumber) > kVersionNumber_iOS_6_1) { // iOS 7 or later
+      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
+        // Fix "Cancel" Position for iOS 7 on iPad
+        UIView *toolbarView = [self.reader.view.subviews objectAtIndex:1];
+        UIToolbar *toolbar = [toolbarView.subviews objectAtIndex:0];
+        UIView *buttonView = (UIView *)[toolbar.subviews objectAtIndex:2]; // UIToolbarTextButton
+        UIView *button = (UIView *)[[buttonView subviews] objectAtIndex:0]; // UIToolbarNavigationButton
+        UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+          button.center = CGPointMake(30.0, 60.0);
+        } else if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+          button.center = CGPointMake(30.0, 45.0);
+        }
+      }
+    }
+  }
 }
 
 - (void)searchInfoForProduct:(NSDictionary *)product
