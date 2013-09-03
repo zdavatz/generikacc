@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "ProductManager.h"
 #import "MasterViewController.h"
 
 @implementation AppDelegate
@@ -29,10 +30,11 @@
                                                          [NSNumber numberWithInteger:0], @"search.result.lang",
                                                          nil];
   [[NSUserDefaults standardUserDefaults] registerDefaults:userDefaultsDefaults];
+  // products
+  [[ProductManager sharedManager] load];
   // view
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   _window = [[UIWindow alloc] initWithFrame:screenBounds];
-
   MasterViewController *masterViewController = [[MasterViewController alloc] init];
   _navigationController = [[UINavigationController alloc] initWithRootViewController:masterViewController];
   _navigationController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;

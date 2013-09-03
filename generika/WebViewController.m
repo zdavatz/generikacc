@@ -9,6 +9,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "WebViewController.h"
 
+
 @class MasterViewController;
 
 @interface WebViewController ()
@@ -19,13 +20,14 @@
 @property (nonatomic, strong, readwrite) NSMutableArray *requests;
 @property (nonatomic, strong, readwrite) NSString *history;
 
+- (void)goBack;
+- (void)refresh;
+- (void)showActions;
+- (void)layoutIndicator;
+
 @end
 
 @implementation WebViewController
-
-@synthesize indicator = _indicator, indicatorBackground = _indicatorBackground;
-@synthesize browserView = _browserView;
-@synthesize requests = _requests, history = _history;
 
 - (id)init
 {
@@ -122,6 +124,7 @@
     self.indicatorBackground.center = self.browserView.center;
   }
 }
+
 
 # pragma mark - Action
 

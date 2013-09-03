@@ -10,9 +10,13 @@
 #import "AFJSONRequestOperation.h"
 #import "Reachability.h"
 
+#import "Product.h"
+#import "ProductManager.h"
+
 #import "MasterViewController.h"
 #import "WebViewController.h"
 #import "SettingsViewController.h"
+
 
 static const float kCellHeight = 83.0;
 
@@ -25,18 +29,22 @@ static const float kCellHeight = 83.0;
 @property (nonatomic, strong, readwrite) UISearchDisplayController *search;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *productsView;
-@property (nonatomic, strong, readwrite) NSMutableArray *products;
 @property (nonatomic, strong, readwrite) NSMutableArray *filtered;
+
+- (void)scanButtonTapped:(UIButton *)button;
+- (void)settingsButtonTapped:(UIButton *)button;
+- (void)openReader;
+- (void)openSettings;
+- (void)searchInfoForProduct:(Product *)product;
+- (void)openWebViewWithURL:(NSURL *)url;
+- (void)layoutToolbar;
+- (void)layoutReaderToolbar;
+- (BOOL)isReachable;
+- (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean;
 
 @end
 
 @implementation MasterViewController
-
-@synthesize reachability = _reachability, userDefaults = _userDefaults;
-@synthesize reader = _reader, browser = _browser, settings = _settings;
-@synthesize search = _search;
-@synthesize productsView = _productsView;
-@synthesize products = _products, filtered = _filtered;
 
 - (id)init
 {
@@ -45,23 +53,12 @@ static const float kCellHeight = 83.0;
   _userDefaults = [NSUserDefaults standardUserDefaults];
   _reachability = [Reachability reachabilityForInternetConnection];
   // products
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSString *path = [paths objectAtIndex:0];
-  NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  BOOL exist = [fileManager fileExistsAtPath:filePath isDirectory:NO];
-  if (exist) {
-    _products = [[NSMutableArray alloc] initWithContentsOfFile:filePath];
-  } else {
-    _products = [[NSMutableArray alloc] init];
-  }
-  _filtered = [NSMutableArray arrayWithCapacity:[_products count]];
+  _filtered = [NSMutableArray arrayWithCapacity:[[ProductManager sharedManager].products count]];
   return self;
 }
 
 - (void)dealloc
 {
-  [_products removeAllObjects], _products = nil;
   [_filtered removeAllObjects], _filtered = nil;
   _userDefaults = nil;
   _reachability = nil;
@@ -173,23 +170,6 @@ static const float kCellHeight = 83.0;
   self.toolbarItems = [NSArray arrayWithObjects:space, settingsBarButton, margin, nil];
 }
 
-- (BOOL)isReachable
-{
-  NetworkStatus status = [self.reachability currentReachabilityStatus];
-  switch (status) {
-    case NotReachable:
-      return NO;
-      break;
-    case ReachableViaWWAN:
-      return YES;
-      break;
-    case ReachableViaWiFi:
-      return YES;
-      break;
-  }
-  return NO;
-}
-
 - (BOOL)shouldAutorotate
 {
   return YES;
@@ -230,6 +210,27 @@ static const float kCellHeight = 83.0;
   [super didRotateFromInterfaceOrientation:orient];
   self.reader.readerView.captureReader.enableReader = YES;
 }
+
+
+#pragma mark - Util
+
+- (BOOL)isReachable
+{
+  NetworkStatus status = [self.reachability currentReachabilityStatus];
+  switch (status) {
+    case NotReachable:
+      return NO;
+      break;
+    case ReachableViaWWAN:
+      return YES;
+      break;
+    case ReachableViaWiFi:
+      return YES;
+      break;
+  }
+  return NO;
+}
+
 
 #pragma mark - Settings View
 
@@ -290,11 +291,12 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
       success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-        NSUInteger before = [self.products count];
+        ProductManager *manager = [ProductManager sharedManager];
+        NSUInteger before = [manager.products count];
         [self didFinishPicking:JSON withEan:ean barcode:barcode];
-        NSUInteger after = [self.products count];
+        NSUInteger after = [manager.products count];
         if ([type isEqualToString:@"PI"] && before < after) {
-          NSDictionary *product = [self.products objectAtIndex:0];
+          Product *product = [manager productAtIndex:0];
           [self searchInfoForProduct:product];
         }
       }
@@ -304,9 +306,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [operation start];
     // open oddb.org
     if (![type isEqualToString:@"PI"]) {
-      NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
-                                ean, @"ean",
-                                nil];
+      Product *product = [[Product alloc] initWithEan:ean];
       [self searchInfoForProduct:product];
     } else {
       [operation waitUntilFinished];
@@ -320,47 +320,46 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   if (json == nil || [json count] == 0) {
     [self notFoundEan:ean];
   } else {
-    // image
-    NSString *barcodePath = [self storeBarcode:barcode ofEan:ean];
-    // text
-    NSString *category = [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "];
-    NSString *price = nil;
-    if ([[json valueForKeyPath:@"price"] isEqual:[NSNull null]]) {
-      price = @"";
-    } else {
-      price = [json valueForKeyPath:@"price"];
-    }
+    Product *product = [[Product alloc] init];
     NSDate *now = [NSDate date];
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
-    NSString *dateString = [dateFormat stringFromDate:now];
-    NSDictionary *product = [NSDictionary dictionaryWithObjectsAndKeys:
-      [json valueForKeyPath:@"reg"],       @"reg",
-      [json valueForKeyPath:@"seq"],       @"seq",
-      [json valueForKeyPath:@"pack"],      @"pack",
-      [json valueForKeyPath:@"name"],      @"name",
-      [json valueForKeyPath:@"size"],      @"size",
-      [json valueForKeyPath:@"deduction"], @"deduction",
-      price,       @"price",
-      category,    @"category",
-      barcodePath, @"barcode",
-      ean,         @"ean",
-      dateString,  @"datetime",
-      nil];
-    [self.products insertObject:product atIndex:0];
-    NSString *productsPath = [self storeProducts];
+    NSString *datetime = [dateFormat stringFromDate:now];
+    // more values
+    NSDictionary *dict = @{
+      @"reg"       : [json valueForKeyPath:@"reg"],
+      @"seq"       : [json valueForKeyPath:@"seq"],
+      @"pack"      : [json valueForKeyPath:@"pack"],
+      @"name"      : [json valueForKeyPath:@"name"],
+      @"size"      : [json valueForKeyPath:@"size"],
+      @"deduction" : [json valueForKeyPath:@"deduction"],
+      @"price"     : [json valueForKeyPath:@"price"],
+      @"category"  : [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "],
+      @"barcode"   : [self storeBarcode:barcode ofEan:ean],
+      @"ean"       : ean,
+      @"datetime"  : datetime
+    };
+    for (NSString *key in [dict allKeys]) {
+      NSString *value = nil;
+      if ([dict[key] isEqual:[NSNull null]]) {
+        value = @""; 
+      } else {
+        value = dict[key];
+      }
+      [product setValue:value forKey:key];
+    }
+    ProductManager *manager = [ProductManager sharedManager];
+    [manager insertProduct:product atIndex:0];
+    NSString *productsPath = [manager save];
     if (productsPath) {
       // alert
       NSString *publicPrice = nil;
-      if ([price isEqualToString:@""]) {
-        publicPrice = price;
+      if ([product.price isEqualToString:@""]) {
+        publicPrice = product.price;
       } else {
-        publicPrice = [NSString stringWithFormat:@"CHF: %@", price];
+        publicPrice = [NSString stringWithFormat:@"CHF: %@", product.price];
       }
-      NSString *message = [NSString stringWithFormat:@"%@,\n%@\n%@",
-                               [product objectForKey:@"name"],
-                               [product objectForKey:@"size"],
-                               publicPrice];
+      NSString *message = [NSString stringWithFormat:@"%@,\n%@\n%@", product.name, product.size, publicPrice];
       UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Generika.cc sagt:"
                                                       message:message
                                                      delegate:self
@@ -432,48 +431,21 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-- (void)searchInfoForProduct:(NSDictionary *)product
+- (void)searchInfoForProduct:(Product *)product
 {
-  NSString *ean = [NSString stringWithString:[product objectForKey:@"ean"]];
-
   NSInteger selectedTypeIndex = [self.userDefaults integerForKey:@"search.result.type"];
   NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
   NSInteger selectedLangIndex = [self.userDefaults integerForKey:@"search.result.lang"];
   NSString *lang = [[Constant searchLangs] objectAtIndex:selectedLangIndex];
-
   NSString *url;
   if ([type isEqualToString:@"Preisvergleich"]) {
-    url = [NSString stringWithFormat:@"%@/%@/mobile/compare/ean13/%@", kOddbBaseURL, lang, ean];
+    url = [NSString stringWithFormat:@"%@/%@/mobile/compare/ean13/%@", kOddbBaseURL, lang, product.ean];
   } else if ([type isEqualToString:@"PI"]) {
-    NSString *reg = [self extractRegistrationNumberFromEan:ean];
-    NSString *seq = [NSString stringWithString:[product objectForKey:@"seq"]];
-    url = [NSString stringWithFormat:@"%@/%@/mobile/patinfo/reg/%@/seq/%@", kOddbBaseURL, lang, reg, seq];
+    url = [NSString stringWithFormat:@"%@/%@/mobile/patinfo/reg/%@/seq/%@", kOddbBaseURL, lang, product.reg, product.seq];
   } else if ([type isEqualToString:@"FI"]) {
-    NSString *reg = [self extractRegistrationNumberFromEan:ean];
-    url = [NSString stringWithFormat:@"%@/%@/mobile/fachinfo/reg/%@", kOddbBaseURL, lang, reg];
+    url = [NSString stringWithFormat:@"%@/%@/mobile/fachinfo/reg/%@", kOddbBaseURL, lang, product.reg];
   }
   [self openWebViewWithURL:[NSURL URLWithString:url]];
-}
-
-- (NSString *)extractRegistrationNumberFromEan:(NSString *)ean
-{
-  NSError *error = nil;
-  NSRegularExpression *regexp = [NSRegularExpression regularExpressionWithPattern:@"7680(\\d{5}).+"
-                                                                          options:0
-                                                                            error:&error];
-  NSString *registrationNumber;
-  if (error != nil) {
-    registrationNumber = @"";
-  } else {
-    NSTextCheckingResult *match =
-      [regexp firstMatchInString:ean options:0 range:NSMakeRange(0, ean.length)];
-    if (match.numberOfRanges > 1) {
-      registrationNumber = [ean substringWithRange:[match rangeAtIndex:1]];
-    } else {
-      registrationNumber = @"";
-    }
-  }
-  return registrationNumber;
 }
 
 - (void)openWebViewWithURL:(NSURL *)url
@@ -522,18 +494,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-- (NSString *)storeProducts
-{
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSString *path = [paths objectAtIndex:0];
-  NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
-  BOOL saved = [self.products writeToFile:filePath atomically:YES];
-  if (saved) {
-    return filePath;
-  } else {
-    return nil;
-  }
-}
 
 #pragma mark - Table View
 
@@ -547,7 +507,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   if (tableView == self.search.searchResultsTableView) {
     return self.filtered.count;
   } else {
-    return self.products.count;
+    return [[ProductManager sharedManager].products count];
   }
 }
 
@@ -565,13 +525,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:productView];
 
-  NSDictionary *product;
+  Product *product;
   if (tableView == self.search.searchResultsTableView) {
     product = [self.filtered objectAtIndex:indexPath.row];
   } else {
-    product = [self.products objectAtIndex:indexPath.row];
+    product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
   }
-  NSString *barcodePath = [product objectForKey:@"barcode"];
+  NSString *barcodePath = product.barcode;
   if (barcodePath) { // replace absolute path
     NSRange range = [barcodePath rangeOfString:@"/Documents/"];
     if (range.location != NSNotFound) { // like stringByAbbreviatingWithTildeInPath
@@ -592,22 +552,22 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
   nameLabel.textAlignment = kTextAlignmentLeft;
   nameLabel.textColor = [UIColor blackColor];
-  nameLabel.text = [NSString stringWithString:[product objectForKey:@"name"]];
+  nameLabel.text = product.name;
   [cell.contentView addSubview:nameLabel];
   // size
   UILabel *sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 27.0, 110.0, 16.0)];
   sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
   sizeLabel.textAlignment = kTextAlignmentLeft;
   sizeLabel.textColor = [UIColor blackColor];
-  sizeLabel.text = [NSString stringWithString:[product objectForKey:@"size"]];
+  sizeLabel.text = product.size;
   [cell.contentView addSubview:sizeLabel];
   // datetime
-  if ([product objectForKey:@"datetime"]) {
+  if (product.datetime) {
     UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(170.0, 27.0, 100.0, 16.0)];
     dateLabel.font = [UIFont systemFontOfSize:12.0];
     dateLabel.textAlignment = kTextAlignmentLeft;
     dateLabel.textColor = [UIColor grayColor];
-    dateLabel.text = [NSString stringWithString:[product objectForKey:@"datetime"]];
+    dateLabel.text = product.datetime;
     [cell.contentView addSubview:dateLabel];
   }
   // price
@@ -615,7 +575,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   priceLabel.font = [UIFont systemFontOfSize:12.0];
   priceLabel.textAlignment = kTextAlignmentLeft;
   priceLabel.textColor = [UIColor grayColor];
-  NSString *price = [NSString stringWithString:[product objectForKey:@"price"]];
+  NSString *price = product.price;
   if (![price isEqualToString:@"k.A."]) {
     priceLabel.text = price;
   }
@@ -625,7 +585,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   deductionLabel.font = [UIFont systemFontOfSize:12.0];
   deductionLabel.textAlignment = kTextAlignmentLeft;
   deductionLabel.textColor = [UIColor grayColor];
-  NSString *deduction = [NSString stringWithString:[product objectForKey:@"deduction"]];
+  NSString *deduction = product.deduction;
   if (![deduction isEqualToString:@"k.A."]) {
     deductionLabel.text = deduction;
   }
@@ -635,14 +595,14 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   categoryLabel.font = [UIFont systemFontOfSize:12.0];
   categoryLabel.textAlignment = kTextAlignmentLeft;
   categoryLabel.textColor = [UIColor grayColor];
-  categoryLabel.text = [NSString stringWithString:[product objectForKey:@"category"]];
+  categoryLabel.text = product.category;
   [cell.contentView addSubview:categoryLabel];
   // ean
   UILabel *eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 62.0, 260.0, 16.0)];
   eanLabel.font = [UIFont systemFontOfSize:12.0];
   eanLabel.textAlignment = kTextAlignmentLeft;
   eanLabel.textColor = [UIColor grayColor];
-  eanLabel.text = [NSString stringWithString:[product objectForKey:@"ean"]];
+  eanLabel.text = product.ean;
   [cell.contentView addSubview:eanLabel];
 
   return cell;
@@ -661,13 +621,12 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                                             forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    NSDictionary *product = [self.products objectAtIndex:indexPath.row];
-    NSString *barcodePath = [product objectForKey:@"barcode"];
+    Product *product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
+    NSString *barcodePath = product.barcode;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
     [fileManager removeItemAtPath:barcodePath error:&error];
-    [self.products removeObjectAtIndex:indexPath.row];
-    [self storeProducts];
+    [[ProductManager sharedManager] removeProductAtIndex:indexPath.row];
     [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
   }
 }
@@ -690,22 +649,25 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
   if (fromIndexPath.section == toIndexPath.section) {
-    if (self.products && toIndexPath.row < [self.products count]) {
-      NSDictionary  *product = [self.products objectAtIndex:fromIndexPath.row];
-      [self.products removeObject:product];
-      [self.products insertObject:product atIndex:toIndexPath.row];
-      [self storeProducts];
+    ProductManager *manager = [ProductManager sharedManager];
+    if (manager.products && toIndexPath.row < [manager.products count]) {
+      Product *product = [manager productAtIndex:fromIndexPath.row];
+      if (product) {
+        [manager removeProductAtIndex:fromIndexPath.row];
+      }
+      [manager insertProduct:product atIndex:toIndexPath.row];
+      [manager save];
     }
   }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  NSDictionary *product;
+  Product *product;
   if (tableView == self.search.searchResultsTableView) {
     product = [self.filtered objectAtIndex:indexPath.row];
   } else {
-    product = [self.products objectAtIndex:indexPath.row];
+    product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
   }
   // open oddb.org
   [self searchInfoForProduct:product];
@@ -719,7 +681,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   [self.filtered removeAllObjects];
   NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K contains[cd] %@", @"name", searchText];
-  self.filtered = [NSMutableArray arrayWithArray:[self.products filteredArrayUsingPredicate:predicate]];
+  self.filtered = [NSMutableArray arrayWithArray:[[ProductManager sharedManager].products filteredArrayUsingPredicate:predicate]];
 }
 
 

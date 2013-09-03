@@ -9,6 +9,7 @@
 #import "SettingsViewController.h"
 #import "SettingsDetailViewController.h"
 
+
 static const float kCellHeight = 44.0; // default = 44.0
 
 @interface SettingsViewController ()
@@ -18,14 +19,12 @@ static const float kCellHeight = 44.0; // default = 44.0
 @property (nonatomic, strong, readwrite) UITableView *settingsView;
 @property (nonatomic, strong, readwrite) NSArray *entries;
 
+- (void)closeSettings;
+- (NSDictionary *)contextFor:(NSIndexPath *)indexPath;
+
 @end
 
 @implementation SettingsViewController
-
-@synthesize settingsDetail = _settingsDetail;
-@synthesize userDefaults = _userDefaults;
-@synthesize settingsView = _settingsView;
-@synthesize entries = _entries;
 
 - (id)init
 {
@@ -86,6 +85,7 @@ static const float kCellHeight = 44.0; // default = 44.0
 {
   [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
+
 
 #pragma mark - Table View
 

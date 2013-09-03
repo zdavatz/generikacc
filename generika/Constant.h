@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 ywesee GmbH. All rights reserved.
 //
 
+
 extern CGFloat const kVersionNumber_iOS_6_1;
 
 extern NSString *const kOddbBaseURL;
@@ -27,4 +28,5 @@ extern NSString *const kOddbMobileFlavorUserAgent;
 + (NSArray *)searchTypes;
 + (NSArray *)searchLanguages;
 + (NSArray *)searchLangs;
+
 @end

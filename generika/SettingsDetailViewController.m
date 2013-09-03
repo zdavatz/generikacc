@@ -8,6 +8,7 @@
 
 #import "SettingsDetailViewController.h"
 
+
 static const float kCellHeight = 44.0; // default = 44.0
 
 @interface SettingsDetailViewController ()
@@ -19,12 +20,6 @@ static const float kCellHeight = 44.0; // default = 44.0
 @end
 
 @implementation SettingsDetailViewController
-
-@synthesize options = _options, defaultKey = _defaultKey;
-
-@synthesize userDefaults = _userDefaults;
-@synthesize detailView = _detailView;
-@synthesize selectedPath = _selectedPath;
 
 - (id)init
 {
@@ -38,7 +33,7 @@ static const float kCellHeight = 44.0; // default = 44.0
 {
   _userDefaults = nil;
   _options      = nil;
-  _defaultkey   = nil;
+  _defaultKey   = nil;
   _selectedPath = nil;
   [self didReceiveMemoryWarning];
 }
