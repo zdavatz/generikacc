@@ -7,12 +7,15 @@
 //
 
 #import "AppDelegate.h"
-#import "ProductManager.h"
 #import "MasterViewController.h"
+#import "ProductManager.h"
+
+
+@interface AppDelegate ()
+
+@end
 
 @implementation AppDelegate
-
-@synthesize window = _window, navigationController = _navigationController;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

@@ -12,6 +12,9 @@
 
 @interface ProductManager ()
 
+@property (nonatomic, strong, readwrite) NSMetadataQuery *query;
+
+- (void)loadDocument;
 - (NSString *)productsPath;
 
 @end
@@ -30,7 +33,9 @@ static ProductManager *_sharedInstance = nil;
 
 - (id)init
 {
-  self = [super init];
+  //self = [super init];
+  NSURL *url = [NSURL fileURLWithPath:[self productsPath]];
+  self = [super initWithFileURL:url];
   if (!self) {
     return nil;
   }
@@ -98,7 +103,30 @@ static ProductManager *_sharedInstance = nil;
 
 #pragma mark - Saving and Loading methods
 
-- (NSString *)save
+- (NSString *)productsPath
+{
+  NSURL *ubiq = [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:nil];
+  if ([self iCloudOn] && ubiq) {
+    NSURL *plist = [ubiq URLByAppendingPathComponent:@"products.plist"];
+    DLog(@"plist #=> %@", plist);
+    return [plist absoluteString];
+  } else {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    if ([paths count] < 1) {
+      return nil;
+    }
+    NSString *path = [paths objectAtIndex:0];
+    NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
+    return filePath;
+  }
+}
+
+- (BOOL)iCloudOn
+{
+  return YES;
+}
+
+- (BOOL)saveToLocalFile
 {
   NSMutableArray *productDicts = [[NSMutableArray alloc] init];
   NSString *productsPath = [self productsPath];
@@ -106,41 +134,125 @@ static ProductManager *_sharedInstance = nil;
     NSDictionary *productDict = [product dictionaryWithValuesForKeys:[product productKeys]];
     [productDicts addObject:productDict]; 
   }
-  BOOL saved = [productDicts writeToFile:productsPath atomically:YES];
+  return [productDicts writeToFile:productsPath atomically:YES];
+}
+
+- (NSString *)save
+{
+  BOOL saved = false;
+  if ([self iCloudOn]) {
+    // iCloud
+    DLog(@"fileURL #=> %@", [self fileURL]);
+    [self saveToURL:[self fileURL]
+   forSaveOperation:UIDocumentSaveForCreating
+  completionHandler:^(BOOL success) {
+      if (success) {
+        [self saveToLocalFile];
+      }
+    }];
+  } else {
+    saved = [self saveToLocalFile];
+  }
   if (saved) {
-    return productsPath;
+    return [self productsPath];
   } else {
     return nil;
   }
 }
 
-- (void)load
+- (void)loadDocument
 {
-  NSString *productsPath = [self productsPath];
+  NSMetadataQuery *query = [[NSMetadataQuery alloc] init];
+  self.query = query;
+  [query setSearchScopes:[NSArray arrayWithObject:NSMetadataQueryUbiquitousDocumentsScope]];
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K == %@", NSMetadataItemFSNameKey, @"products.plist"];
+  [query setPredicate:predicate];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(queryDidFinishGathering:)
+           name:NSMetadataQueryDidFinishGatheringNotification
+         object:query];
+  [query startQuery];
+}
+
+- (void)loadData:(NSMetadataQuery *)query
+{
+    if ([query resultCount] == 1) {
+      NSMetadataItem *item = [query resultAtIndex:0];
+      NSURL *url = [item valueForAttribute:NSMetadataItemURLKey];
+      DLog(@"url #=> %@", url);
+    }
+}
+
+- (void)queryDidFinishGathering:(NSNotification *)notification
+{
+  NSMetadataQuery *query = [notification object];
+  [query disableUpdates];
+  [query stopQuery];
+
+  [[NSNotificationCenter defaultCenter]
+    removeObserver:self
+              name:NSMetadataQueryDidFinishGatheringNotification
+            object:query];
+  self.query = nil;
+  [self loadData:query];
+}
+
+- (void)loadFromLocalFile
+{
   NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSString *productsPath = [self productsPath];
   BOOL exist = [fileManager fileExistsAtPath:productsPath isDirectory:NO];
   if (exist) {
     NSArray *productDicts = [[NSArray alloc] initWithContentsOfFile:productsPath];
     for (NSDictionary *productDict in productDicts) {
-      Product *product = [[Product alloc] init]; 
+      DLog(@"productDict #=> %@", productDict);
+      Product *product = [[Product alloc] init];
       [product setValuesForKeysWithDictionary:productDict];
       [self addProduct:product];
     }
   }
 }
 
-
-#pragma mark - File Path
-
-- (NSString *)productsPath
+- (void)load
 {
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  if ([paths count] < 1) {
-    return nil;
+  if ([self iCloudOn]) {
+    [self loadDocument];
+  } else {
+    [self loadFromLocalFile];
   }
-  NSString *path = [paths objectAtIndex:0];
-  NSString *filePath = [path stringByAppendingPathComponent:@"products.plist"];
-  return filePath;
+}
+
+
+#pragma mark - UIDocument
+
+- (BOOL)writeContents:(id)contents
+                toURL:(NSURL *)url
+     forSaveOperation:(UIDocumentSaveOperation)operation
+  originalContentsURL:(NSURL *)originalContentsURL
+                error:(NSError **)error
+{
+  DLog(@"url #=> %@", url);
+  DLog(@"contents #=> %@", contents);
+  [self.products writeToURL:url atomically:NO];
+  //[super writeContents:contents toURL:url forSaveOperation:operation originalContentsURL:originalContentsURL error:error];
+  return YES;
+}
+  
+- (BOOL)loadFromContents:(id)contents ofType:(NSString *)typeName error:(NSError **)error
+{
+  if ([contents length] > 0) {
+    DLog(@"1 contents #=> %@", contents);
+  } else {
+    DLog(@"0 contents #=> %@", contents);
+  }
+  return YES;
+}
+
+- (id)contentsForType:(NSString *)typeName error:(NSError **)error
+{
+  DLog(@"typeName #=> %@", typeName);
+  return self.products;
 }
 
 @end

@@ -6,11 +6,12 @@
 //  Copyright (c) 2012 ywesee GmbH. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+
+@class MasterViewController, ProductManager;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) UINavigationController *navigationController;
+@property (nonatomic, strong, readwrite) UIWindow *window;
+@property (nonatomic, strong, readwrite) UINavigationController *navigationController;
 
 @end

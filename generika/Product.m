@@ -51,7 +51,7 @@
 }
 
 
-#pragma mark Getter methods
+#pragma mark - Getter methods
 
 - (NSString *)reg
 {
@@ -94,7 +94,7 @@
 }
 
 
-#pragma mark Conversion to Dictionary
+#pragma mark - Conversion to Dictionary
 
 - (NSArray *)productKeys
 {

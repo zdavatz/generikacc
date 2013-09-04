@@ -9,7 +9,7 @@
 
 @class Product;
 
-@interface ProductManager : NSObject
+@interface ProductManager : UIDocument
 
 @property (nonatomic, strong, readonly) NSMutableArray *products;
 
