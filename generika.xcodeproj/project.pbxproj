@@ -75,6 +75,9 @@
 		81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEF117B879EB0058AC62 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEF017B879EB0058AC62 /* Default-568h@2x.png */; };
+		933D3B4B17EB0AA8000D63CF /* icon-76.png in Resources */ = {isa = PBXBuildFile; fileRef = 933D3B4A17EB0AA8000D63CF /* icon-76.png */; };
+		933D3B4D17EB0AB7000D63CF /* icon-120.png in Resources */ = {isa = PBXBuildFile; fileRef = 933D3B4C17EB0AB7000D63CF /* icon-120.png */; };
+		933D3B4F17EB0AC4000D63CF /* icon-152.png in Resources */ = {isa = PBXBuildFile; fileRef = 933D3B4E17EB0AC4000D63CF /* icon-152.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -180,6 +183,9 @@
 		81B8CEBF17D4767500DF463B /* ProductManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductManager.m; sourceTree = "<group>"; };
 		81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "fontawesome-webfont.ttf"; path = "resources/fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		81F2DEF017B879EB0058AC62 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "resources/Default-568h@2x.png"; sourceTree = "<group>"; };
+		933D3B4A17EB0AA8000D63CF /* icon-76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-76.png"; path = "resources/icon-76.png"; sourceTree = "<group>"; };
+		933D3B4C17EB0AB7000D63CF /* icon-120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-120.png"; path = "resources/icon-120.png"; sourceTree = "<group>"; };
+		933D3B4E17EB0AC4000D63CF /* icon-152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-152.png"; path = "resources/icon-152.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -440,6 +446,9 @@
 		81FEDA1F1538962900756CAE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				933D3B4E17EB0AC4000D63CF /* icon-152.png */,
+				933D3B4C17EB0AB7000D63CF /* icon-120.png */,
+				933D3B4A17EB0AA8000D63CF /* icon-76.png */,
 				81F2DEF017B879EB0058AC62 /* Default-568h@2x.png */,
 				81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */,
 				812E6F16153DB7E500009A04 /* icon-72.png */,
@@ -494,7 +503,7 @@
 		8192735A1535D56D0060859C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "ywesee GmbH";
 			};
 			buildConfigurationList = 8192735D1535D56D0060859C /* Build configuration list for PBXProject "generika" */;
@@ -528,10 +537,13 @@
 				812E6F1B153DB7E500009A04 /* icon@2x.png in Resources */,
 				810A924F179CCEC800DAA963 /* zbar-back.png in Resources */,
 				810A9251179CCEC800DAA963 /* zbar-help.html in Resources */,
+				933D3B4D17EB0AB7000D63CF /* icon-120.png in Resources */,
 				810A9253179CCEC800DAA963 /* zbar-helpicons.png in Resources */,
 				810A9255179CCEC800DAA963 /* zbar-samples.png in Resources */,
 				81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */,
 				81F2DEF117B879EB0058AC62 /* Default-568h@2x.png in Resources */,
+				933D3B4B17EB0AA8000D63CF /* icon-76.png in Resources */,
+				933D3B4F17EB0AC4000D63CF /* icon-152.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -669,6 +681,7 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -698,6 +711,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -717,7 +731,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: ywesee GmbH (4B37356EGR)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "generika/generika-Prefix.pch";
@@ -744,7 +758,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: ywesee GmbH (4B37356EGR)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "generika/generika-Prefix.pch";
@@ -823,6 +837,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -842,7 +857,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: ywesee GmbH (4B37356EGR)";
 				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
