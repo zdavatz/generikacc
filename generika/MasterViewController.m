@@ -412,19 +412,21 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)layoutReaderToolbar
 {
-  if (self.reader) {
+  if (self.reader && self.reader.view) {
     if (floor(NSFoundationVersionNumber) > kVersionNumber_iOS_6_1) { // iOS 7 or later
       if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
         // Fix "Cancel" Position for iOS 7 on iPad
-        UIView *toolbarView = [self.reader.view.subviews objectAtIndex:1];
-        UIToolbar *toolbar = [toolbarView.subviews objectAtIndex:0];
-        UIView *buttonView = (UIView *)[toolbar.subviews objectAtIndex:2]; // UIToolbarTextButton
-        UIView *button = (UIView *)[[buttonView subviews] objectAtIndex:0]; // UIToolbarNavigationButton
-        UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
-        if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-          button.center = CGPointMake(30.0, 60.0);
-        } else if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-          button.center = CGPointMake(30.0, 45.0);
+        UIView *toolbarView = [self.reader.view.subviews objectAtIndex:2];
+        if ([toolbarView.subviews count]) {
+          UIToolbar *toolbar = [toolbarView.subviews objectAtIndex:0];
+          UIView *buttonView = (UIView *)[toolbar.subviews objectAtIndex:2]; // UIToolbarTextButton
+          UIView *button = (UIView *)[[buttonView subviews] objectAtIndex:0]; // UIToolbarNavigationButton
+          UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+          if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+            button.center = CGPointMake(30.0, 60.0);
+          } else if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+            button.center = CGPointMake(30.0, 45.0);
+          }
         }
       }
     }
