@@ -12,10 +12,11 @@
 
 @interface ProductManager ()
 
+@property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) NSMetadataQuery *query;
 @property (nonatomic, strong, readwrite) NSFileWrapper *fileWrapper;
 
-- (void)loadRemoteFile;
+- (void)loadRemoteFile:(NSString *)filePath;
 - (NSString *)productsPath;
 
 @end
@@ -43,12 +44,14 @@ static ProductManager *_sharedInstance = nil;
     return nil;
   }
   _products = [[NSMutableArray array] init];
+  _userDefaults = [NSUserDefaults standardUserDefaults];
   return self;
 }
 
 - (void)dealloc
 {
-  _products = nil;
+  _products     = nil;
+  _userDefaults = nil;
 }
 
 
@@ -205,7 +208,11 @@ static ProductManager *_sharedInstance = nil;
 
 - (BOOL)iCloudOn
 {
-  return YES;
+  NSInteger selected = [self.userDefaults integerForKey:@"sync.icloud"];
+  DLog(@"slected #=> %i", selected);
+  NSNumber *value = [NSNumber numberWithInt:selected];
+  DLog(@"iCloudOn #=> %@", value);
+  return [value boolValue];
 }
 
 - (NSString *)iCloudFilePath

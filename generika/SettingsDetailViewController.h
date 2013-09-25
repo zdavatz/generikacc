@@ -11,5 +11,6 @@
 
 @property (nonatomic, strong, readwrite) NSArray *options;
 @property (nonatomic, strong, readwrite) NSString *defaultKey;
+@property (nonatomic, strong, readwrite) NSString *label;
 
 @end

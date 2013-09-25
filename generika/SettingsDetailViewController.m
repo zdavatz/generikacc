@@ -7,6 +7,7 @@
 //
 
 #import "SettingsDetailViewController.h"
+#import "ProductManager.h"
 
 
 static const float kCellHeight = 44.0; // default = 44.0
@@ -16,6 +17,9 @@ static const float kCellHeight = 44.0; // default = 44.0
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *detailView;
 @property (nonatomic, strong, readwrite) NSIndexPath *selectedPath;
+
+- (BOOL)isSwitch;
+- (void)changeSwitch:(UISwitch *)toggleSwitch;
 
 @end
 
@@ -34,6 +38,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   _userDefaults = nil;
   _options      = nil;
   _defaultKey   = nil;
+  _label        = nil;
   _selectedPath = nil;
   [self didReceiveMemoryWarning];
 }
@@ -75,7 +80,11 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return self.options.count;
+  if ([self isSwitch]) {
+    return 1;
+  } else {
+    return self.options.count;
+  }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -88,11 +97,6 @@ static const float kCellHeight = 44.0; // default = 44.0
   static NSString *cellIdentifier = @"Cell";
   UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                  reuseIdentifier:cellIdentifier];
-  if (indexPath.row == self.selectedPath.row) {
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
-  } else {
-    cell.accessoryType = UITableViewCellAccessoryNone;
-  }
   // name
   CGRect nameFrame;
   UIFont *nameFont;
@@ -108,24 +112,66 @@ static const float kCellHeight = 44.0; // default = 44.0
   nameLabel.textAlignment = kTextAlignmentLeft;
   nameLabel.textColor = [UIColor blackColor];
   nameLabel.backgroundColor = [UIColor clearColor];
-  nameLabel.text = [self.options objectAtIndex:indexPath.row];
+  if (![self isSwitch]) {
+    nameLabel.text = [self.options objectAtIndex:indexPath.row];
+    if (indexPath.row == self.selectedPath.row) {
+      cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    } else {
+      cell.accessoryType = UITableViewCellAccessoryNone;
+    }
+  } else {
+    nameLabel.text = self.label;
+    UISwitch *toggleSwitch = [[UISwitch alloc] init];
+    toggleSwitch.frame = CGRectMake(1.0, 1.0, 20.0, 20.0);
+    NSNumber *value = [NSNumber numberWithInt:self.selectedPath.row];
+    toggleSwitch.on = [value boolValue];
+    [toggleSwitch addTarget:self
+                     action:@selector(changeSwitch:)
+           forControlEvents:UIControlEventValueChanged];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.accessoryView = toggleSwitch;
+  }
   [cell.contentView addSubview:nameLabel];
   return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
-  if (indexPath.row != self.selectedPath.row) {
-    // uncheck
-    UITableViewCell *prev = [tableView cellForRowAtIndexPath:self.selectedPath];
-    prev.accessoryType = UITableViewCellAccessoryNone;
-    // check & store
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    [self.userDefaults setInteger:indexPath.row forKey:self.defaultKey];
-    [self.userDefaults synchronize];
-    self.selectedPath = indexPath;
+  if (![self isSwitch]) {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (indexPath.row != self.selectedPath.row) {
+      // uncheck
+      UITableViewCell *prev = [tableView cellForRowAtIndexPath:self.selectedPath];
+      prev.accessoryType = UITableViewCellAccessoryNone;
+      // check & store
+      UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+      cell.accessoryType = UITableViewCellAccessoryCheckmark;
+      [self.userDefaults setInteger:indexPath.row forKey:self.defaultKey];
+      [self.userDefaults synchronize];
+      self.selectedPath = indexPath;
+    }
+  }
+}
+
+
+#pragma mark - UI
+
+- (BOOL)isSwitch
+{
+  return [self.options isEqualToArray:@[@"Off", @"On"]];
+}
+
+- (void)changeSwitch:(UISwitch *)toggleSwitch
+{
+  NSNumber *value = [NSNumber numberWithBool:toggleSwitch.on];
+  [self.userDefaults setInteger:[value intValue] forKey:self.defaultKey];
+  [self.userDefaults synchronize];
+  if ([value boolValue]) {
+    DLog(@"value #=> %@", value);
+    ProductManager *manager = [ProductManager sharedManager];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+      [manager load];
+    });
   }
 }
 

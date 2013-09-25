@@ -31,7 +31,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   self = [super initWithNibName:nil
                          bundle:nil];
   _userDefaults = [NSUserDefaults standardUserDefaults];
-  _entries = [NSArray arrayWithObjects:@"Search", @"Language", nil];
+  _entries = [NSArray arrayWithObjects:@"Search", @"Language", @"iCloud Sync", nil];
   return self;
 }
 
@@ -96,7 +96,7 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return 2;
+  return 3;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -209,7 +209,11 @@ static const float kCellHeight = 44.0; // default = 44.0
   self.settingsDetail = [[SettingsDetailViewController alloc] init];
   self.settingsDetail.title = [self.entries objectAtIndex:indexPath.row];
   NSDictionary *context = [self contextFor:indexPath];
-  self.settingsDetail.options = [context objectForKey:@"options"];
+  NSString *label = [context objectForKey:@"label"];
+  if (label) {
+    self.settingsDetail.label = label;
+  }
+  self.settingsDetail.options    = [context objectForKey:@"options"];
   self.settingsDetail.defaultKey = [context objectForKey:@"key"];
   [self.navigationController pushViewController:self.settingsDetail animated:YES];
 }
@@ -220,13 +224,20 @@ static const float kCellHeight = 44.0; // default = 44.0
     case 0:
       return [NSDictionary dictionaryWithObjectsAndKeys:
                               [Constant searchTypes], @"options",
-                              @"search.result.type", @"key",
+                              @"search.result.type",  @"key",
                               nil];
       break;
     case 1:
       return [NSDictionary dictionaryWithObjectsAndKeys:
                               [Constant searchLanguages], @"options",
-                              @"search.result.lang", @"key",
+                              @"search.result.lang",      @"key",
+                              nil];
+      break;
+    case 2:
+      return [NSDictionary dictionaryWithObjectsAndKeys: // switch
+                              @[@"Off", @"On"], @"options",
+                              @"sync.icloud",   @"key",
+                              @"iCloud Sync",   @"label",
                               nil];
       break;
     default:
