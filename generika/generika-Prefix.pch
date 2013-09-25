@@ -5,14 +5,16 @@
 #import <Availability.h>
 
 #ifdef __OBJC__
-    #import <UIKit/UIKit.h>
-    #import <Foundation/Foundation.h>
-    #import "ZBarSDK.h"
-    #import "Constant.h"
+  #import <UIKit/UIKit.h>
+  #import <Foundation/Foundation.h>
+  #import "ZBarSDK.h"
+  #import "Constant.h"
 #endif
 
 #ifdef DEBUG
-    #define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+  #define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+  #define DLogMethod NSLog(@"%s", __func__);
 #else
-    #define DLog(...)
+  #define DLog(...);
+  #define DLogMethod(...);
 #endif

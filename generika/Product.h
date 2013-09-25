@@ -7,7 +7,7 @@
 //
 
 
-@interface Product : NSObject
+@interface Product : NSObject <NSCoding>
 
 @property (nonatomic, strong, readwrite) NSString *reg;
 @property (nonatomic, strong, readwrite) NSString *seq;

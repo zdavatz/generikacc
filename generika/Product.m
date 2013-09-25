@@ -51,6 +51,44 @@
 }
 
 
+#pragma mark - NSCoding Interface
+
+- (id)initWithCoder:(NSCoder *)decoder
+{
+  self = [super init];
+  if (!self) {
+    return nil;
+  }
+  _reg       = [decoder decodeObjectForKey:@"reg"];
+  _seq       = [decoder decodeObjectForKey:@"seq"];
+  _pack      = [decoder decodeObjectForKey:@"pack"];
+  _name      = [decoder decodeObjectForKey:@"name"];
+  _size      = [decoder decodeObjectForKey:@"size"];
+  _deduction = [decoder decodeObjectForKey:@"deduction"];
+  _price     = [decoder decodeObjectForKey:@"price"];
+  _category  = [decoder decodeObjectForKey:@"category"];
+  _barcode   = [decoder decodeObjectForKey:@"barcode"];
+  _ean       = [decoder decodeObjectForKey:@"ean"];
+  _datetime  = [decoder decodeObjectForKey:@"datetime"];
+  return self;
+}
+
+
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
+  [encoder encodeObject:self.reg forKey:@"reg"];
+  [encoder encodeObject:self.seq forKey:@"seq"];
+  [encoder encodeObject:self.pack forKey:@"pack"];
+  [encoder encodeObject:self.name forKey:@"name"];
+  [encoder encodeObject:self.size forKey:@"size"];
+  [encoder encodeObject:self.deduction forKey:@"deduction"];
+  [encoder encodeObject:self.price forKey:@"price"];
+  [encoder encodeObject:self.category forKey:@"category"];
+  [encoder encodeObject:self.barcode forKey:@"barcode"];
+  [encoder encodeObject:self.ean forKey:@"ean"];
+  [encoder encodeObject:self.datetime forKey:@"datetime"];
+}
+
 #pragma mark - Getter methods
 
 - (NSString *)reg

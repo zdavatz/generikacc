@@ -40,7 +40,6 @@ static const float kCellHeight = 83.0;
 - (void)layoutToolbar;
 - (void)layoutReaderToolbar;
 - (BOOL)isReachable;
-- (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean;
 
 @end
 
@@ -53,7 +52,9 @@ static const float kCellHeight = 83.0;
   _userDefaults = [NSUserDefaults standardUserDefaults];
   _reachability = [Reachability reachabilityForInternetConnection];
   // products
-  _filtered = [NSMutableArray arrayWithCapacity:[[ProductManager sharedManager].products count]];
+  NSArray *products = [ProductManager sharedManager].products;
+  DLog(@"products #=> %@", products);
+  _filtered = [NSMutableArray arrayWithCapacity:[products count]];
   return self;
 }
 
@@ -132,7 +133,7 @@ static const float kCellHeight = 83.0;
   if (selection) {
     [self.productsView deselectRowAtIndexPath:selection animated:YES];
   }
-  [self.productsView reloadData];
+  [self refresh];
   [super viewWillAppear:animated];
 }
 
@@ -325,6 +326,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
     NSString *datetime = [dateFormat stringFromDate:now];
+    ProductManager *manager = [ProductManager sharedManager];
     // more values
     NSDictionary *dict = @{
       @"reg"       : [json valueForKeyPath:@"reg"],
@@ -335,7 +337,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       @"deduction" : [json valueForKeyPath:@"deduction"],
       @"price"     : [json valueForKeyPath:@"price"],
       @"category"  : [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "],
-      @"barcode"   : [self storeBarcode:barcode ofEan:ean],
+      @"barcode"   : [manager storeBarcode:barcode ofEan:ean],
       @"ean"       : ean,
       @"datetime"  : datetime
     };
@@ -348,10 +350,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       }
       [product setValue:value forKey:key];
     }
-    ProductManager *manager = [ProductManager sharedManager];
-    [manager insertProduct:product atIndex:0];
-    NSString *productsPath = [manager save];
-    if (productsPath) {
+    BOOL saved = [manager insertProduct:product atIndex:0];
+    if (saved) {
       // alert
       NSString *publicPrice = nil;
       if ([product.price isEqualToString:@""]) {
@@ -462,40 +462,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     self.browser = [[WebViewController alloc] init];
   }
   [self.browser loadURL:url];
-  [self.navigationController pushViewController:_browser
+  [self.navigationController pushViewController:self.browser
                                        animated:YES];
 }
-
-- (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean
-{
-  // resize
-  CGRect barcodeRect = CGRectMake(0.0, 0.0, 66.0, 83.0);
-  UIGraphicsBeginImageContext(barcodeRect.size);
-  [barcode drawInRect:barcodeRect];
-  UIImage *barcodeImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSString *documentsDirectory = [paths objectAtIndex:0];
-  NSString *path = [documentsDirectory stringByAppendingPathComponent:@"barcodes"];
-  NSError *error;
-  [fileManager createDirectoryAtPath:path
-         withIntermediateDirectories:YES
-                          attributes:nil
-                               error:&error];
-  time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
-  NSString *fileName = [NSString stringWithFormat:@"%@_%d.png", ean, (int)timestamp];
-  NSString *filePath = [path stringByAppendingPathComponent:fileName];
-  NSData *barcodeData = UIImagePNGRepresentation(barcodeImage);
-  BOOL saved = [barcodeData writeToFile:filePath atomically:YES];
-  if (saved) {
-    return filePath;
-  } else {
-    return nil;
-  }
-}
-
 
 #pragma mark - Table View
 
@@ -628,7 +597,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
     [fileManager removeItemAtPath:barcodePath error:&error];
-    [[ProductManager sharedManager] removeProductAtIndex:indexPath.row];
+    ProductManager* manager = [ProductManager sharedManager];
+    [manager removeProductAtIndex:indexPath.row];
     [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
   }
 }
@@ -653,12 +623,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   if (fromIndexPath.section == toIndexPath.section) {
     ProductManager *manager = [ProductManager sharedManager];
     if (manager.products && toIndexPath.row < [manager.products count]) {
-      Product *product = [manager productAtIndex:fromIndexPath.row];
-      if (product) {
-        [manager removeProductAtIndex:fromIndexPath.row];
-      }
-      [manager insertProduct:product atIndex:toIndexPath.row];
-      [manager save];
+      [manager moveProductAtIndex:fromIndexPath.row toIndex:toIndexPath.row];
     }
   }
 }
@@ -676,6 +641,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+
+- (void)refresh
+{
+  [self.productsView reloadData];
+}
 
 #pragma mark - Searchbar
 
