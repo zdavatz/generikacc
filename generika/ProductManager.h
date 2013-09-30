@@ -19,7 +19,7 @@
 - (BOOL)insertProduct:(Product *)project atIndex:(unsigned int)index;
 - (BOOL)removeProductAtIndex:(unsigned int)index;
 - (BOOL)moveProductAtIndex:(unsigned int)fromIndex toIndex:(unsigned int)toIndex;
-- (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean;
+- (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean to:(NSString *)destination;
 - (Product *)productAtIndex:(unsigned int)index;
 
 - (BOOL)save;

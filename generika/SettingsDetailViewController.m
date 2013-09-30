@@ -167,7 +167,6 @@ static const float kCellHeight = 44.0; // default = 44.0
   [self.userDefaults setInteger:[value intValue] forKey:self.defaultKey];
   [self.userDefaults synchronize];
   if ([value boolValue]) {
-    DLog(@"value #=> %@", value);
     ProductManager *manager = [ProductManager sharedManager];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
       [manager load];

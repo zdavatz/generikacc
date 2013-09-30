@@ -53,7 +53,6 @@ static const float kCellHeight = 83.0;
   _reachability = [Reachability reachabilityForInternetConnection];
   // products
   NSArray *products = [ProductManager sharedManager].products;
-  DLog(@"products #=> %@", products);
   _filtered = [NSMutableArray arrayWithCapacity:[products count]];
   return self;
 }
@@ -119,6 +118,13 @@ static const float kCellHeight = 83.0;
                                            selector:@selector(didRotate:)
                                                name:UIDeviceOrientationDidChangeNotification
                                              object:nil];
+  // notification
+  ProductManager *manager = [ProductManager sharedManager];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(refresh)
+           name:@"productsDidLoaded"
+         object:manager];
   // delay
   double delayInSeconds = 0.1;
   dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
@@ -337,7 +343,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       @"deduction" : [json valueForKeyPath:@"deduction"],
       @"price"     : [json valueForKeyPath:@"price"],
       @"category"  : [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "],
-      @"barcode"   : [manager storeBarcode:barcode ofEan:ean],
+      @"barcode"   : [manager storeBarcode:barcode ofEan:ean to:@"both"],
       @"ean"       : ean,
       @"datetime"  : datetime
     };

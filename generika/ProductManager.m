@@ -35,10 +35,7 @@ static ProductManager *_sharedInstance = nil;
 
 - (id)init
 {
-  //NSString *path = [self localFilePath];
-  //NSURL *pathURL = [NSURL fileURLWithPath:path];
   NSURL *pathURL = [self productsPathURL];
-  DLog(@"initial pathURL #=> %@", pathURL);
   self = [super initWithFileURL:pathURL];
   if (!self) {
     return nil;
@@ -129,7 +126,7 @@ static ProductManager *_sharedInstance = nil;
   return [self.products objectAtIndex:index];
 }
 
-- (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean
+- (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean to:(NSString *)destination
 {
   // resize
   CGRect barcodeRect = CGRectMake(0.0, 0.0, 66.0, 83.0);
@@ -153,9 +150,8 @@ static ProductManager *_sharedInstance = nil;
   NSString *filePath = [path stringByAppendingPathComponent:fileName];
   NSData *barcodeData = UIImagePNGRepresentation(barcodeImage);
   BOOL saved = [barcodeData writeToFile:filePath atomically:YES];
-  DLog(@"saved #=> %i", saved);
   if (saved) {
-    if ([self iCloudOn]) {
+    if ([destination isEqualToString:@"local"] && [self iCloudOn]) {
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         [self copyFileInPath:filePath toiCloudDirectory:@"barcodes"];
       });
@@ -169,22 +165,17 @@ static ProductManager *_sharedInstance = nil;
 - (BOOL)save
 {
   if ([self saveToLocal]) {
-    DLogMethod;
     if ([self iCloudOn]) {
       NSURL *productsPathURL = [self productsPathURL];
-      DLog(@"productsPathURL #=> %@", productsPathURL);
       [self saveToURL:productsPathURL
      forSaveOperation:UIDocumentSaveForOverwriting
     completionHandler:^(BOOL success) {
-        if (success) {
-          DLog(@"saved !!!!!!");
-          // TODO
-        } else {
-          DLog(@"fail !!!!");
-        }
         [self closeWithCompletionHandler:NULL];
       }];
     }
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:@"productsDidLoaded"
+                    object:self];
     return true;
   } else {
     return false;
@@ -193,7 +184,6 @@ static ProductManager *_sharedInstance = nil;
 
 - (void)load
 {
-  DLogMethod;
   if ([self iCloudOn]) {
     [self loadRemoteFile:@"products.plist"];
   }
@@ -209,9 +199,7 @@ static ProductManager *_sharedInstance = nil;
 - (BOOL)iCloudOn
 {
   NSInteger selected = [self.userDefaults integerForKey:@"sync.icloud"];
-  DLog(@"slected #=> %i", selected);
   NSNumber *value = [NSNumber numberWithInt:selected];
-  DLog(@"iCloudOn #=> %@", value);
   return [value boolValue];
 }
 
@@ -267,33 +255,30 @@ static ProductManager *_sharedInstance = nil;
 
 - (BOOL)saveToLocal
 {
-  DLogMethod;
   NSMutableArray *productDicts = [[NSMutableArray alloc] init];
   for (Product *product in self.products) {
-    DLog(@"product #=> %@", product);
     NSDictionary *productDict = [product dictionaryWithValuesForKeys:[product productKeys]];
     [productDicts addObject:productDict];
   }
   NSString *filePath = [self localFilePath];
-
   [productDicts writeToFile:filePath atomically:YES];
   NSArray *saved = [[NSArray alloc] initWithContentsOfFile:filePath];
-  DLog(@"saved dicts #=> %@", saved);
-  return YES;
+  if ([saved count] > 0) {
+    return YES;
+  } else {
+    return NO;
+  }
 }
 
 - (void)loadFromLocal
 {
   NSString *filePath = [self localFilePath];
-  DLog(@"filePath #=> %@", filePath);
   NSFileManager *fileManager = [NSFileManager defaultManager];
   BOOL exist = [fileManager fileExistsAtPath:filePath isDirectory:NO];
-  DLog(@"exist #=> %i", exist);
   if (exist) {
     [self.products removeAllObjects];
     NSArray *productDicts = [[NSArray alloc] initWithContentsOfFile:filePath];
     for (NSDictionary *productDict in productDicts) {
-      DLog(@"[local] productDict #=> %@", productDict);
       Product *product = [[Product alloc] init];
       [product setValuesForKeysWithDictionary:productDict];
       [self.products addObject:product];
@@ -320,11 +305,8 @@ static ProductManager *_sharedInstance = nil;
     saved = [fileManager copyItemAtURL:[NSURL fileURLWithPath:filePath]
                                  toURL:[dir URLByAppendingPathComponent:fileName]
                                  error:&copyError];
-    DLog(@"saved #=> %i", saved);
-    DLog(@"itemAtURL #=> %@", [NSURL fileURLWithPath:filePath]);
-    DLog(@"destinationURL #=> %@", [dir URLByAppendingPathComponent:fileName]);
     if (copyError != nil) {
-      DLog(@"copyError #=> %@", [copyError localizedDescription]);
+      return false;
     }
   }
   return saved;
@@ -332,7 +314,6 @@ static ProductManager *_sharedInstance = nil;
 
 - (BOOL)removeFile:(NSString *)fileName fromiCloudDirectory:(NSString *)directory
 {
-  DLogMethod;
   BOOL saved = false;
   NSURL *ubiq = [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:nil];
   if (ubiq) {
@@ -342,8 +323,6 @@ static ProductManager *_sharedInstance = nil;
     NSError *error = nil;
     saved = [fileManager removeItemAtURL:[dir URLByAppendingPathComponent:fileName]
                                    error:&error];
-    DLog(@"error #=> %@", error);
-    DLog(@"saved #=> %i", saved);
   }
   return saved;
 }
@@ -362,39 +341,70 @@ static ProductManager *_sharedInstance = nil;
        selector:@selector(queryDidFinishGathering:)
            name:NSMetadataQueryDidFinishGatheringNotification
          object:query];
+  [[NSNotificationCenter defaultCenter]
+   addObserver:self
+      selector:@selector(queryDidFinishGathering:)
+          name:NSMetadataQueryDidUpdateNotification
+        object:query];
   [query startQuery];
 }
 
 - (void)loadData:(NSMetadataQuery *)query
 {
-  DLogMethod;
-  DLog("count #=> %i", [query resultCount]);
-  DLog("query #=> %@", query);
   if ([query resultCount] == 1) {
     NSMetadataItem *item = [query resultAtIndex:0];
     NSURL *url = [item valueForAttribute:NSMetadataItemURLKey];
-    DLog(@"url #=> %@", url);
+    NSError *error = nil;
+    NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
     if ([[url lastPathComponent] isEqualToString:@"products.plist"]) {
-      NSData *data = [[NSData alloc] initWithContentsOfURL:url];
-      NSArray *productDicts = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-      if (productDicts != nil && [productDicts count] > 0) {
-        [self.products removeAllObjects];
-        for (NSDictionary *productDict in productDicts) {
-          DLog(@"[iCloud] productDict #=> %@", productDict);
-          Product *product = [[Product alloc] init];
-          [product setValuesForKeysWithDictionary:productDict];
-          NSString *barcode = product.barcode;
-          if (barcode) {
-            [self loadRemoteFile:[barcode lastPathComponent]];
-          }
-          [self addProduct:product];
-        }
-        [self saveToLocal];
-        // refresh HERE
-      }
+      [coordinator coordinateReadingItemAtURL:url
+                                      options:NSFileCoordinatorReadingWithoutChanges
+                                        error:&error
+                                   byAccessor:^(NSURL *readingURL) {
+                                     // TODO check conflict
+                                     NSMutableData *data = [[NSMutableData alloc] initWithContentsOfURL:readingURL];
+                                     NSKeyedUnarchiver *archiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+                                     NSArray *products = [archiver decodeObjectForKey:@"data"];
+                                     [archiver finishDecoding];
+                                     if (products != nil && [products count] > 0) {
+                                       [self.products removeAllObjects];
+                                       for (Product *product in products) {
+                                         NSString *barcode = product.barcode;
+                                         if (barcode) {
+                                           [self loadRemoteFile:[barcode lastPathComponent]];
+                                         }
+                                         [self.products addObject:product];
+                                       }
+                                       [self saveToLocal];
+                                     }
+                                   }];
     } else { // barcode image
-      DLog(@"barcode #=> %@", url);
+      [coordinator coordinateReadingItemAtURL:url
+                                      options:NSFileCoordinatorReadingWithoutChanges
+                                        error:&error
+                                   byAccessor:^(NSURL *readingURL) {
+                                     NSString *ean = @"";
+                                     NSError *error = nil;
+                                     NSRegularExpression *regexp = 
+                                       [NSRegularExpression regularExpressionWithPattern:@"/(\\d{13})_\\d+\\.png"
+                                                                                 options:0
+                                                                                   error:&error];
+                                     if (error == nil) {
+                                       NSString *urlString = [url absoluteString];
+                                       NSTextCheckingResult *match =
+                                         [regexp firstMatchInString:urlString options:0 range:NSMakeRange(0, urlString.length)];
+                                       if (match.numberOfRanges > 1) {
+                                         ean = [urlString substringWithRange:[match rangeAtIndex:1]];
+                                       }
+                                     }
+                                     NSData *data = [[NSData alloc] initWithContentsOfURL:readingURL];
+                                     UIImage *barcode = [[UIImage alloc] initWithData:data];
+                                     [self storeBarcode:barcode ofEan:ean to:@"local"];
+                                   }];
     }
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:@"productsDidLoaded"
+                    object:self];
   }
 }
 
@@ -410,6 +420,7 @@ static ProductManager *_sharedInstance = nil;
             object:query];
   self.query = nil;
   [self loadData:query];
+  [query enableUpdates];
 }
 
 - (BOOL)writeContents:(id)contents
@@ -418,9 +429,6 @@ static ProductManager *_sharedInstance = nil;
   originalContentsURL:(NSURL *)originalContentsURL
                 error:(NSError **)error
 {
-  DLog(@"url #=> %@", url);
-  DLog(@"contents #=> %@", [contents class]);
-  DLog(@"original ContentsURL #=> %@", originalContentsURL);
   if ([self iCloudOn]) {
     return [super writeContents:contents toURL:url forSaveOperation:operation originalContentsURL:originalContentsURL error:error];
   } else {
@@ -430,14 +438,26 @@ static ProductManager *_sharedInstance = nil;
 
 - (BOOL)loadFromContents:(id)contents ofType:(NSString *)typeName error:(NSError **)error
 {
-  DLogMethod;
-  DLog(@"typeName #=> %@", typeName);
-  if ([contents length] > 0) {
-    DLog(@"1 contents #=> %@", contents);
+  if ([contents isKindOfClass:[NSData class]]) {
+     NSKeyedUnarchiver *archiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:contents];
+     NSArray *products = [archiver decodeObjectForKey:@"data"];
+     [archiver finishDecoding];
+     if (products != nil && [products count] > 0) {
+       [self.products removeAllObjects];
+       for (Product *product in products) {
+         NSString *barcode = product.barcode;
+         if (barcode) {
+           [self loadRemoteFile:[barcode lastPathComponent]];
+         }
+         [self.products addObject:product];
+       }
+       return [self saveToLocal];
+     } else {
+       return NO;
+     }
   } else {
-    DLog(@"0 contents #=> %@", contents);
+    return NO;
   }
-  return YES;
 }
 
 - (id)contentsForType:(NSString *)typeName error:(NSError **)error
@@ -451,9 +471,7 @@ static ProductManager *_sharedInstance = nil;
 
 - (void)handleError:(NSError *)error userInteractionPermitted:(BOOL)userInteractionPermitted
 {
-  DLogMethod;
-  DLog(@"error #=> %@", [error localizedDescription]);
-  DLog(@"userInfo #=> %@", [error userInfo]);
+  // pass
 }
 
 @end
