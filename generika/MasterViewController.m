@@ -7,7 +7,7 @@
 //
 
 #import "JSONKit.h"
-#import "AFJSONRequestOperation.h"
+#import "AFHTTPSessionManager.h"
 #import "Reachability.h"
 
 #import "Product.h"
@@ -295,28 +295,46 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
     NSString *searchURL = [NSString stringWithFormat:@"%@/%@", kOddbProductSearchBaseURL, ean];
     NSURL *productSearch = [NSURL URLWithString:searchURL];
-    NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-      success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
+    session.requestSerializer = [AFJSONRequestSerializer serializer];
+    [session GET:[productSearch absoluteString]
+      parameters:nil
+      success:^(NSURLSessionDataTask *task, id responseObject) {
         ProductManager *manager = [ProductManager sharedManager];
         NSUInteger before = [manager.products count];
-        [self didFinishPicking:JSON withEan:ean barcode:barcode];
+        [self didFinishPicking:responseObject withEan:ean barcode:barcode];
         NSUInteger after = [manager.products count];
         if ([type isEqualToString:@"PI"] && before < after) {
           Product *product = [manager productAtIndex:0];
           [self searchInfoForProduct:product];
         }
       }
-      failure:^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) {
+      failure:^(NSURLSessionDataTask *task, NSError *error) {
         // pass
       }];
-    [operation start];
+    //NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
+    //AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+    //  success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    //    ProductManager *manager = [ProductManager sharedManager];
+    //    NSUInteger before = [manager.products count];
+    //    [self didFinishPicking:JSON withEan:ean barcode:barcode];
+    //    NSUInteger after = [manager.products count];
+    //    if ([type isEqualToString:@"PI"] && before < after) {
+    //      Product *product = [manager productAtIndex:0];
+    //      [self searchInfoForProduct:product];
+    //    }
+    //  }
+    //  failure:^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) {
+    //    // pass
+    //  }];
+    //[operation start];
+
     // open oddb.org
     if (![type isEqualToString:@"PI"]) {
       Product *product = [[Product alloc] initWithEan:ean];
       [self searchInfoForProduct:product];
     } else {
-      [operation waitUntilFinished];
+      //[operation waitUntilFinished];
     }
   }
   [self.reader dismissViewControllerAnimated:YES completion:nil];
