@@ -6,7 +6,11 @@
 //  Copyright (c) 2012 ywesee GmbH. All rights reserved.
 //
 
-#import "generikaTests.h"
+#import <XCTest/XCTest.h>
+
+@interface generikaTests : XCTestCase
+
+@end
 
 @implementation generikaTests
 
@@ -26,7 +30,7 @@
 
 - (void)testExample
 {
-    STFail(@"Unit tests are not implemented yet in generikaTests");
+    //XCTFail(@"Unit tests are not implemented yet in generikaTests");
 }
 
 @end

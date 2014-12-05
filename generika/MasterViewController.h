@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 ywesee GmbH. All rights reserved.
 //
 
+#import <ZBarSDK/ZBarSDK.h>
 
 @class Product;
 @class Reachability, WebViewController, SettingsViewController, ZBarReaderViewController;

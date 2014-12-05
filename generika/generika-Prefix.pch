@@ -7,7 +7,6 @@
 #ifdef __OBJC__
   #import <UIKit/UIKit.h>
   #import <Foundation/Foundation.h>
-  #import "ZBarSDK.h"
   #import "Constant.h"
 #endif
 
