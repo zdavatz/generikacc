@@ -28,7 +28,7 @@
 		8192738D1535D56E0060859C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273671535D56E0060859C /* UIKit.framework */; };
 		8192738E1535D56E0060859C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273691535D56E0060859C /* Foundation.framework */; };
 		819273961535D56E0060859C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 819273941535D56E0060859C /* InfoPlist.strings */; };
-		819273991535D56E0060859C /* generikaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 819273981535D56E0060859C /* generikaTests.m */; };
+		819273991535D56E0060859C /* GenerikaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 819273981535D56E0060859C /* GenerikaTests.m */; };
 		819273A31535D5D90060859C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A21535D5D90060859C /* AVFoundation.framework */; };
 		819273A51535D6780060859C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A41535D6780060859C /* CoreMedia.framework */; };
 		819273A71535D6870060859C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A61535D6870060859C /* CoreVideo.framework */; };
@@ -55,16 +55,16 @@
 			containerPortal = 8192735A1535D56D0060859C /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 819273621535D56E0060859C;
-			remoteInfo = generika;
+			remoteInfo = Generika;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0497976919B7586F308E1BEB /* Pods.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.generika_appstore.xcconfig; path = "Pods/Target Support Files/Pods/Pods.generika_appstore.xcconfig"; sourceTree = "<group>"; };
+		0497976919B7586F308E1BEB /* Pods.Generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.Generika_appstore.xcconfig; path = "Pods/Target Support Files/Pods/Pods.Generika_appstore.xcconfig"; sourceTree = "<group>"; };
 		162DE2905605009DB1A3C51F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		725D9B9D754DAD6B6E974266 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		810A928C179CD50A00DAA963 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		81245DC617D70E1500995F5C /* generika.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = generika.entitlements; sourceTree = "<group>"; };
+		81245DC617D70E1500995F5C /* Generika.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Generika.entitlements; sourceTree = "<group>"; };
 		8129BA54153D46F100CB5896 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8129BA55153D46F100CB5896 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8129BA58153D480100CB5896 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -75,22 +75,22 @@
 		812E6F18153DB7E500009A04 /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon@2x.png"; path = "resources/icon@2x.png"; sourceTree = "<group>"; };
 		8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsDetailViewController.h; sourceTree = "<group>"; };
 		8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsDetailViewController.m; sourceTree = "<group>"; };
-		819273631535D56E0060859C /* generika.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = generika.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8181AD8A1A31BB9D004454C8 /* generika.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = generika.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8181AD8B1A31BC9F004454C8 /* generikaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = generikaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		819273671535D56E0060859C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		819273691535D56E0060859C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8192736B1535D56E0060859C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		8192736F1535D56E0060859C /* generika-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "generika-Info.plist"; sourceTree = "<group>"; };
+		8192736F1535D56E0060859C /* Generika-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Generika-Info.plist"; sourceTree = "<group>"; };
 		819273711535D56E0060859C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		819273731535D56E0060859C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		819273751535D56E0060859C /* generika-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "generika-Prefix.pch"; sourceTree = "<group>"; };
+		819273751535D56E0060859C /* Generika-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Generika-Prefix.pch"; sourceTree = "<group>"; };
 		819273761535D56E0060859C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		819273771535D56E0060859C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8192737F1535D56E0060859C /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
 		819273801535D56E0060859C /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
-		8192738A1535D56E0060859C /* generikaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = generikaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		819273931535D56E0060859C /* generikaTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "generikaTests-Info.plist"; sourceTree = "<group>"; };
+		819273931535D56E0060859C /* GenerikaTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GenerikaTests-Info.plist"; sourceTree = "<group>"; };
 		819273951535D56E0060859C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		819273981535D56E0060859C /* generikaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = generikaTests.m; sourceTree = "<group>"; };
+		819273981535D56E0060859C /* GenerikaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GenerikaTests.m; sourceTree = "<group>"; };
 		819273A21535D5D90060859C /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		819273A41535D6780060859C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		819273A61535D6870060859C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -143,24 +143,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8181AD8C1A31BCB4004454C8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8181AD8B1A31BC9F004454C8 /* generikaTests.xctest */,
+				8181AD8A1A31BB9D004454C8 /* generika.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		819273581535D56D0060859C = {
 			isa = PBXGroup;
 			children = (
-				8192736D1535D56E0060859C /* generika */,
-				819273911535D56E0060859C /* generikaTests */,
-				819273641535D56E0060859C /* Products */,
+				8192736D1535D56E0060859C /* Generika */,
+				819273911535D56E0060859C /* GenerikaTests */,
 				819273661535D56E0060859C /* Frameworks */,
+				8181AD8C1A31BCB4004454C8 /* Products */,
 				F028C00659F81CB7A0255219 /* Pods */,
 			);
-			sourceTree = "<group>";
-		};
-		819273641535D56E0060859C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				819273631535D56E0060859C /* generika.app */,
-				8192738A1535D56E0060859C /* generikaTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		819273661535D56E0060859C /* Frameworks */ = {
@@ -181,7 +181,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		8192736D1535D56E0060859C /* generika */ = {
+		8192736D1535D56E0060859C /* Generika */ = {
 			isa = PBXGroup;
 			children = (
 				81B8CEBB17D4724E00DF463B /* Model */,
@@ -190,33 +190,33 @@
 				81FEDA1F1538962900756CAE /* Resources */,
 				8192736E1535D56E0060859C /* Supporting Files */,
 			);
-			path = generika;
+			path = Generika;
 			sourceTree = "<group>";
 		};
 		8192736E1535D56E0060859C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				81245DC617D70E1500995F5C /* generika.entitlements */,
-				8192736F1535D56E0060859C /* generika-Info.plist */,
+				81245DC617D70E1500995F5C /* Generika.entitlements */,
+				8192736F1535D56E0060859C /* Generika-Info.plist */,
 				819273701535D56E0060859C /* InfoPlist.strings */,
-				819273751535D56E0060859C /* generika-Prefix.pch */,
+				819273751535D56E0060859C /* Generika-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		819273911535D56E0060859C /* generikaTests */ = {
+		819273911535D56E0060859C /* GenerikaTests */ = {
 			isa = PBXGroup;
 			children = (
-				819273981535D56E0060859C /* generikaTests.m */,
+				819273981535D56E0060859C /* GenerikaTests.m */,
 				819273921535D56E0060859C /* Supporting Files */,
 			);
-			path = generikaTests;
+			path = GenerikaTests;
 			sourceTree = "<group>";
 		};
 		819273921535D56E0060859C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				819273931535D56E0060859C /* generikaTests-Info.plist */,
+				819273931535D56E0060859C /* GenerikaTests-Info.plist */,
 				819273941535D56E0060859C /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
@@ -282,7 +282,7 @@
 			children = (
 				162DE2905605009DB1A3C51F /* Pods.debug.xcconfig */,
 				82E1CEA7A3A88A55C2F64414 /* Pods.release.xcconfig */,
-				0497976919B7586F308E1BEB /* Pods.generika_appstore.xcconfig */,
+				0497976919B7586F308E1BEB /* Pods.Generika_appstore.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -290,9 +290,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		819273621535D56E0060859C /* generika */ = {
+		819273621535D56E0060859C /* Generika */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8192739C1535D56E0060859C /* Build configuration list for PBXNativeTarget "generika" */;
+			buildConfigurationList = 8192739C1535D56E0060859C /* Build configuration list for PBXNativeTarget "Generika" */;
 			buildPhases = (
 				058BFE95388A60B7C48CCFAC /* Check Pods Manifest.lock */,
 				8192735F1535D56E0060859C /* Sources */,
@@ -304,14 +304,14 @@
 			);
 			dependencies = (
 			);
-			name = generika;
-			productName = generika;
-			productReference = 819273631535D56E0060859C /* generika.app */;
+			name = Generika;
+			productName = Generika;
+			productReference = 8181AD8A1A31BB9D004454C8 /* generika.app */;
 			productType = "com.apple.product-type.application";
 		};
-		819273891535D56E0060859C /* generikaTests */ = {
+		819273891535D56E0060859C /* GenerikaTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8192739F1535D56E0060859C /* Build configuration list for PBXNativeTarget "generikaTests" */;
+			buildConfigurationList = 8192739F1535D56E0060859C /* Build configuration list for PBXNativeTarget "GenerikaTests" */;
 			buildPhases = (
 				819273851535D56E0060859C /* Sources */,
 				819273861535D56E0060859C /* Frameworks */,
@@ -322,9 +322,9 @@
 			dependencies = (
 				819273901535D56E0060859C /* PBXTargetDependency */,
 			);
-			name = generikaTests;
-			productName = generikaTests;
-			productReference = 8192738A1535D56E0060859C /* generikaTests.xctest */;
+			name = GenerikaTests;
+			productName = GenerikaTests;
+			productReference = 8181AD8B1A31BC9F004454C8 /* generikaTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -345,9 +345,12 @@
 							};
 						};
 					};
+					819273891535D56E0060859C = {
+						TestTargetID = 819273621535D56E0060859C;
+					};
 				};
 			};
-			buildConfigurationList = 8192735D1535D56D0060859C /* Build configuration list for PBXProject "generika" */;
+			buildConfigurationList = 8192735D1535D56D0060859C /* Build configuration list for PBXProject "Generika" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -355,12 +358,12 @@
 				en,
 			);
 			mainGroup = 819273581535D56D0060859C;
-			productRefGroup = 819273641535D56E0060859C /* Products */;
+			productRefGroup = 819273581535D56D0060859C;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				819273621535D56E0060859C /* generika */,
-				819273891535D56E0060859C /* generikaTests */,
+				819273621535D56E0060859C /* Generika */,
+				819273891535D56E0060859C /* GenerikaTests */,
 			);
 		};
 /* End PBXProject section */
@@ -450,7 +453,7 @@
 			files = (
 				8148C65C17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */,
 				81B8CEC117D4767500DF463B /* ProductManager.m in Sources */,
-				819273991535D56E0060859C /* generikaTests.m in Sources */,
+				819273991535D56E0060859C /* GenerikaTests.m in Sources */,
 				81B8CEBA17D46EDE00DF463B /* Product.m in Sources */,
 				819E165A17B20E8B00B315B3 /* Constant.m in Sources */,
 				812B9A4E17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
@@ -462,7 +465,7 @@
 /* Begin PBXTargetDependency section */
 		819273901535D56E0060859C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 819273621535D56E0060859C /* generika */;
+			target = 819273621535D56E0060859C /* Generika */;
 			targetProxy = 8192738F1535D56E0060859C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -568,18 +571,18 @@
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = generika/generika.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "generika/generika-Prefix.pch";
+				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "generika/generika-Info.plist";
+				INFOPLIST_FILE = "Generika/Generika-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = generika;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -595,18 +598,18 @@
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = generika/generika.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "generika/generika-Prefix.pch";
+				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "generika/generika-Info.plist";
+				INFOPLIST_FILE = "Generika/Generika-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = generika;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -619,7 +622,7 @@
 		819273A01535D56E0060859C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -627,13 +630,13 @@
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "generika/generika-Prefix.pch";
-				INFOPLIST_FILE = "generikaTests/generikaTests-Info.plist";
+				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
+				INFOPLIST_FILE = "GenerikaTests/GenerikaTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = generikaTests;
 				PROVISIONING_PROFILE = "";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Debug;
@@ -641,7 +644,7 @@
 		819273A11535D56E0060859C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -649,18 +652,18 @@
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "generika/generika-Prefix.pch";
-				INFOPLIST_FILE = "generikaTests/generikaTests-Info.plist";
+				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
+				INFOPLIST_FILE = "GenerikaTests/GenerikaTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = generikaTests;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Release;
 		};
-		935F8A45153DBCBE00642BDB /* generika_AppStore */ = {
+		935F8A45153DBCBE00642BDB /* Generika_AppStore */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -691,26 +694,26 @@
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s";
 			};
-			name = generika_AppStore;
+			name = Generika_AppStore;
 		};
-		935F8A46153DBCBE00642BDB /* generika_AppStore */ = {
+		935F8A46153DBCBE00642BDB /* Generika_AppStore */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0497976919B7586F308E1BEB /* Pods.generika_appstore.xcconfig */;
+			baseConfigurationReference = 0497976919B7586F308E1BEB /* Pods.Generika_appstore.xcconfig */;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = generika/generika.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "generika/generika-Prefix.pch";
+				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "generika/generika-Info.plist";
+				INFOPLIST_FILE = "Generika/Generika-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = generika;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=*]" = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -718,12 +721,12 @@
 				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
-			name = generika_AppStore;
+			name = Generika_AppStore;
 		};
-		935F8A47153DBCBE00642BDB /* generika_AppStore */ = {
+		935F8A47153DBCBE00642BDB /* Generika_AppStore */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -731,46 +734,46 @@
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "generika/generika-Prefix.pch";
-				INFOPLIST_FILE = "generikaTests/generikaTests-Info.plist";
+				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
+				INFOPLIST_FILE = "GenerikaTests/GenerikaTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = generikaTests;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
 				VALID_ARCHS = "armv7 armv7s";
 			};
-			name = generika_AppStore;
+			name = Generika_AppStore;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8192735D1535D56D0060859C /* Build configuration list for PBXProject "generika" */ = {
+		8192735D1535D56D0060859C /* Build configuration list for PBXProject "Generika" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8192739A1535D56E0060859C /* Debug */,
 				8192739B1535D56E0060859C /* Release */,
-				935F8A45153DBCBE00642BDB /* generika_AppStore */,
+				935F8A45153DBCBE00642BDB /* Generika_AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		8192739C1535D56E0060859C /* Build configuration list for PBXNativeTarget "generika" */ = {
+		8192739C1535D56E0060859C /* Build configuration list for PBXNativeTarget "Generika" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8192739D1535D56E0060859C /* Debug */,
 				8192739E1535D56E0060859C /* Release */,
-				935F8A46153DBCBE00642BDB /* generika_AppStore */,
+				935F8A46153DBCBE00642BDB /* Generika_AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		8192739F1535D56E0060859C /* Build configuration list for PBXNativeTarget "generikaTests" */ = {
+		8192739F1535D56E0060859C /* Build configuration list for PBXNativeTarget "GenerikaTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				819273A01535D56E0060859C /* Debug */,
 				819273A11535D56E0060859C /* Release */,
-				935F8A47153DBCBE00642BDB /* generika_AppStore */,
+				935F8A47153DBCBE00642BDB /* Generika_AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

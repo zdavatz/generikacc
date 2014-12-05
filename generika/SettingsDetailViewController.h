@@ -1,6 +1,6 @@
 //
 //  SettingsDetailViewController.h
-//  generika
+//  Generika
 //
 //  Created by Yasuhiro Asaka on 08/06/13.
 //  Copyright (c) 2013 ywesee GmbH. All rights reserved.

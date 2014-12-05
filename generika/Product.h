@@ -1,6 +1,6 @@
 //
 //  Product.h
-//  generika
+//  Generika
 //
 //  Created by Yasuhiro Asaka on 09/02/13.
 //  Copyright (c) 2013 ywesee GmbH. All rights reserved.
