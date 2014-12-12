@@ -16,6 +16,7 @@
 #import "MasterViewController.h"
 #import "WebViewController.h"
 #import "SettingsViewController.h"
+#import "ReaderViewController.h"
 
 
 static const float kCellHeight = 83.0;
@@ -23,7 +24,7 @@ static const float kCellHeight = 83.0;
 @interface MasterViewController ()
 
 @property (nonatomic, strong, readwrite) Reachability *reachability;
-@property (nonatomic, strong, readwrite) ZBarReaderViewController *reader;
+@property (nonatomic, strong, readwrite) ReaderViewController *reader;
 @property (nonatomic, strong, readwrite) WebViewController *browser;
 @property (nonatomic, strong, readwrite) SettingsViewController *settings;
 @property (nonatomic, strong, readwrite) UISearchDisplayController *search;
@@ -38,7 +39,6 @@ static const float kCellHeight = 83.0;
 - (void)searchInfoForProduct:(Product *)product;
 - (void)openWebViewWithURL:(NSURL *)url;
 - (void)layoutToolbar;
-- (void)layoutReaderToolbar;
 - (BOOL)isReachable;
 
 @end
@@ -92,32 +92,36 @@ static const float kCellHeight = 83.0;
   [super viewDidLoad];
   // navigation item
   self.navigationItem.leftBarButtonItem = self.editButtonItem;
-  UIBarButtonItem *scanButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                              target:self
-                                                                              action:@selector(scanButtonTapped:)];
+  UIBarButtonItem *scanButton = [[UIBarButtonItem alloc]
+    initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                         target:self
+                         action:@selector(scanButtonTapped:)];
   self.navigationItem.rightBarButtonItem = scanButton;
   // toolbar
   [self layoutToolbar];
   // searchbar
-  UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0,0,self.productsView.frame.size.width, 44.0)];
+  UISearchBar *searchBar = [[UISearchBar alloc]
+    initWithFrame:CGRectMake(0,0,self.productsView.frame.size.width, 44.0)];
   searchBar.tintColor = [UIColor lightGrayColor];
   searchBar.delegate = self;
   searchBar.placeholder = @"Medikament";
   [searchBar sizeToFit];
   self.productsView.tableHeaderView = searchBar;
-  self.search = [[UISearchDisplayController alloc] initWithSearchBar:searchBar contentsController:self];
+  self.search = [[UISearchDisplayController alloc]
+    initWithSearchBar:searchBar contentsController:self];
   self.search.delegate = self;
   self.search.searchResultsDelegate = self;
   self.search.searchResultsDataSource = self;
   // reader
   if (!self.reader) {
-    self.reader = [[ZBarReaderViewController alloc] init];
+    self.reader = [[ReaderViewController alloc] init];
   }
   [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(didRotate:)
-                                               name:UIDeviceOrientationDidChangeNotification
-                                             object:nil];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(didRotate:)
+           name:UIDeviceOrientationDidChangeNotification
+         object:nil];
   // notification
   ProductManager *manager = [ProductManager sharedManager];
   [[NSNotificationCenter defaultCenter]
@@ -127,7 +131,8 @@ static const float kCellHeight = 83.0;
          object:manager];
   // delay
   double delayInSeconds = 0.1;
-  dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+  dispatch_time_t popTime = dispatch_time(
+      DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
   dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
     [self openReader];
   });
@@ -160,21 +165,28 @@ static const float kCellHeight = 83.0;
   if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
     [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
   } else { // iOS 7 or later
-    [button setTitleColor:[UIColor colorWithRed:6/255.0 green:121/255.0 blue:251/255.0 alpha:1.0]
+    [button setTitleColor:[UIColor colorWithRed:6/255.0
+                                          green:121/255.0
+                                           blue:251/255.0
+                                          alpha:1.0]
                  forState:UIControlStateNormal];
   }
   [button addTarget:self
              action:@selector(settingsButtonTapped:)
    forControlEvents:UIControlEventTouchUpInside];
-  UIBarButtonItem *settingsBarButton = [[UIBarButtonItem alloc] initWithCustomView:button];
-  UIBarButtonItem *space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                         target:nil
-                                                                         action:nil];
-  UIBarButtonItem *margin = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                          target:nil
-                                                                          action:nil];
+  UIBarButtonItem *settingsBarButton = [[UIBarButtonItem alloc]
+    initWithCustomView:button];
+  UIBarButtonItem *space = [[UIBarButtonItem alloc]
+    initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                         target:nil
+                         action:nil];
+  UIBarButtonItem *margin = [[UIBarButtonItem alloc]
+    initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                         target:nil
+                         action:nil];
   margin.width = -12;
-  self.toolbarItems = [NSArray arrayWithObjects:space, settingsBarButton, margin, nil];
+  self.toolbarItems = [NSArray arrayWithObjects:
+    space, settingsBarButton, margin, nil];
 }
 
 - (BOOL)shouldAutorotate
@@ -189,13 +201,15 @@ static const float kCellHeight = 83.0;
 
 - (void)didRotate:(NSNotification *)notification
 {
-  [self layoutReaderToolbar];
+  // pass
 }
 
 // iOS <= 5
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (BOOL)shouldAutorotateToInterfaceOrientation:
+(UIInterfaceOrientation)interfaceOrientation
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+  if ([[UIDevice currentDevice] userInterfaceIdiom] ==
+      UIUserInterfaceIdiomPhone) {
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
   } else {
     return YES;
@@ -207,7 +221,7 @@ static const float kCellHeight = 83.0;
 {
   self.reader.readerView.captureReader.enableReader = NO;
   [self.reader.readerView willRotateToInterfaceOrientation:orient
-                                              duration:0];
+                                                  duration:0];
   [super willRotateToInterfaceOrientation:orient
                                  duration:duration];
 }
@@ -312,29 +326,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       failure:^(NSURLSessionDataTask *task, NSError *error) {
         // pass
       }];
-    //NSURLRequest *request = [NSURLRequest requestWithURL:productSearch];
-    //AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-    //  success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-    //    ProductManager *manager = [ProductManager sharedManager];
-    //    NSUInteger before = [manager.products count];
-    //    [self didFinishPicking:JSON withEan:ean barcode:barcode];
-    //    NSUInteger after = [manager.products count];
-    //    if ([type isEqualToString:@"PI"] && before < after) {
-    //      Product *product = [manager productAtIndex:0];
-    //      [self searchInfoForProduct:product];
-    //    }
-    //  }
-    //  failure:^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) {
-    //    // pass
-    //  }];
-    //[operation start];
-
     // open oddb.org
     if (![type isEqualToString:@"PI"]) {
       Product *product = [[Product alloc] initWithEan:ean];
       [self searchInfoForProduct:product];
-    } else {
-      //[operation waitUntilFinished];
     }
   }
   [self.reader dismissViewControllerAnimated:YES completion:nil];
@@ -368,7 +363,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     for (NSString *key in [dict allKeys]) {
       NSString *value = nil;
       if ([dict[key] isEqual:[NSNull null]]) {
-        value = @""; 
+        value = @"";
       } else {
         value = dict[key];
       }
@@ -429,32 +424,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [scanner setSymbology:ZBAR_QRCODE
                  config:ZBAR_CFG_ENABLE
                      to:0];
-  [self presentViewController:self.reader animated:YES completion:^{
-    [self layoutReaderToolbar];
-  }];
-}
 
-- (void)layoutReaderToolbar
-{
-  if (self.reader && self.reader.view) {
-    if (floor(NSFoundationVersionNumber) > kVersionNumber_iOS_6_1) { // iOS 7 or later
-      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
-        // Fix "Cancel" Position for iOS 7 on iPad
-        UIView *toolbarView = [self.reader.view.subviews objectAtIndex:2];
-        if ([toolbarView.subviews count]) {
-          UIToolbar *toolbar = [toolbarView.subviews objectAtIndex:0];
-          UIView *buttonView = (UIView *)[toolbar.subviews objectAtIndex:2]; // UIToolbarTextButton
-          UIView *button = (UIView *)[[buttonView subviews] objectAtIndex:0]; // UIToolbarNavigationButton
-          UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
-          if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-            button.center = CGPointMake(30.0, 60.0);
-          } else if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-            button.center = CGPointMake(30.0, 45.0);
-          }
-        }
-      }
-    }
-  }
+  [self presentViewController:self.reader animated:YES completion: nil];
 }
 
 - (void)searchInfoForProduct:(Product *)product

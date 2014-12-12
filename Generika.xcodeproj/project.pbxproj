@@ -18,6 +18,8 @@
 		812E6F1B153DB7E500009A04 /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 812E6F18153DB7E500009A04 /* icon@2x.png */; };
 		8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
 		8148C65C17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
+		818CED2B1A3AF1B800A68885 /* ReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 818CED2A1A3AF1B800A68885 /* ReaderViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		818CED2C1A3AF1B800A68885 /* ReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 818CED2A1A3AF1B800A68885 /* ReaderViewController.m */; };
 		819273681535D56E0060859C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273671535D56E0060859C /* UIKit.framework */; };
 		8192736A1535D56E0060859C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273691535D56E0060859C /* Foundation.framework */; };
 		8192736C1535D56E0060859C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8192736B1535D56E0060859C /* CoreGraphics.framework */; };
@@ -77,6 +79,8 @@
 		8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsDetailViewController.m; sourceTree = "<group>"; };
 		8181AD8A1A31BB9D004454C8 /* generika.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = generika.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8181AD8B1A31BC9F004454C8 /* generikaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = generikaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		818CED291A3AF17C00A68885 /* ReaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReaderViewController.h; sourceTree = "<group>"; };
+		818CED2A1A3AF1B800A68885 /* ReaderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReaderViewController.m; sourceTree = "<group>"; };
 		819273671535D56E0060859C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		819273691535D56E0060859C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8192736B1535D56E0060859C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -247,6 +251,8 @@
 				812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */,
 				8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */,
 				8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */,
+				818CED291A3AF17C00A68885 /* ReaderViewController.h */,
+				818CED2A1A3AF1B800A68885 /* ReaderViewController.m */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -436,6 +442,7 @@
 			files = (
 				819273741535D56E0060859C /* main.m in Sources */,
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
+				818CED2B1A3AF1B800A68885 /* ReaderViewController.m in Sources */,
 				81B8CEB917D46EDE00DF463B /* Product.m in Sources */,
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
 				81B86220153704330054EA0A /* WebViewController.m in Sources */,
@@ -456,6 +463,7 @@
 				819273991535D56E0060859C /* GenerikaTests.m in Sources */,
 				81B8CEBA17D46EDE00DF463B /* Product.m in Sources */,
 				819E165A17B20E8B00B315B3 /* Constant.m in Sources */,
+				818CED2C1A3AF1B800A68885 /* ReaderViewController.m in Sources */,
 				812B9A4E17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

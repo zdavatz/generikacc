@@ -9,7 +9,7 @@
 #import <ZBarSDK/ZBarSDK.h>
 
 @class Product;
-@class Reachability, WebViewController, SettingsViewController, ZBarReaderViewController;
+@class Reachability, WebViewController, SettingsViewController, ReaderViewController;
 
 @interface MasterViewController : UITableViewController <ZBarReaderDelegate, UISearchDisplayDelegate, UISearchBarDelegate>
 
