@@ -591,10 +591,14 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSString *barcodePath = product.barcode;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
     [fileManager removeItemAtPath:barcodePath error:&error];
     ProductManager* manager = [ProductManager sharedManager];
+    // manager removes product
+    //[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     [manager removeProductAtIndex:indexPath.row];
-    [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    [self refresh];
   }
 }
 

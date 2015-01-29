@@ -88,14 +88,14 @@ static ProductManager *_sharedInstance = nil;
   }
   Product *product = [self productAtIndex:index];
   if (product) {
-    NSString *barcodePath = product.barcode;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-      [self removeFile:[barcodePath lastPathComponent] fromiCloudDirectory:@"barcodes"];
-    });
-  }
-  [self.products removeObjectAtIndex:index];
-  if ([self iCloudOn]) {
-    [self updateChangeCount:UIDocumentChangeDone];
+    [self.products removeObjectAtIndex:index];
+    if ([self iCloudOn]) {
+        NSString *barcodePath = product.barcode;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+          [self removeFile:[barcodePath lastPathComponent] fromiCloudDirectory:@"barcodes"];
+        });
+      [self updateChangeCount:UIDocumentChangeDone];
+    }
   }
   return [self save];
 }
@@ -151,7 +151,7 @@ static ProductManager *_sharedInstance = nil;
   NSData *barcodeData = UIImagePNGRepresentation(barcodeImage);
   BOOL saved = [barcodeData writeToFile:filePath atomically:YES];
   if (saved) {
-    if ([destination isEqualToString:@"local"] && [self iCloudOn]) {
+    if ([destination isEqualToString:@"both"] && [self iCloudOn]) {
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         [self copyFileInPath:filePath toiCloudDirectory:@"barcodes"];
       });
