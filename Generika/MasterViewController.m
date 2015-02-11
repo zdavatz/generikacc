@@ -39,6 +39,7 @@ static const float kCellHeight = 83.0;
 - (void)searchInfoForProduct:(Product *)product;
 - (void)openWebViewWithURL:(NSURL *)url;
 - (void)layoutToolbar;
+- (void)setToolbarButton:(UIButton *)button enabled:(BOOL)enabled;
 - (BOOL)isReachable;
 
 @end
@@ -162,15 +163,7 @@ static const float kCellHeight = 83.0;
   UIFont *font = [UIFont fontWithName:@"FontAwesome" size:20.0];
   [button.titleLabel setFont:font];
   [button setTitle:@"\uF013" forState:UIControlStateNormal];
-  if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
-    [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-  } else { // iOS 7 or later
-    [button setTitleColor:[UIColor colorWithRed:6/255.0
-                                          green:121/255.0
-                                           blue:251/255.0
-                                          alpha:1.0]
-                 forState:UIControlStateNormal];
-  }
+  [self setToolbarButton:button enabled:YES];
   [button addTarget:self
              action:@selector(settingsButtonTapped:)
    forControlEvents:UIControlEventTouchUpInside];
@@ -187,6 +180,24 @@ static const float kCellHeight = 83.0;
   margin.width = -12;
   self.toolbarItems = [NSArray arrayWithObjects:
     space, settingsBarButton, margin, nil];
+}
+
+- (void)setToolbarButton:(UIButton *)button enabled:(BOOL)enabled
+{
+  if (enabled) {
+    if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
+      [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    } else { // iOS 7 or later
+      [button setTitleColor:[UIColor colorWithRed:6/255.0
+                                            green:121/255.0
+                                             blue:251/255.0
+                                            alpha:1.0]
+                   forState:UIControlStateNormal];
+    }
+  } else {
+    [button setTitleColor:[UIColor clearColor] forState:UIControlStateNormal];
+  }
+  [button setEnabled:enabled];
 }
 
 - (BOOL)shouldAutorotate
@@ -599,13 +610,23 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     //[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     [manager removeProductAtIndex:indexPath.row];
     [self refresh];
+    [self setEditing:NO animated:YES];
   }
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated
 {
-  [super setEditing:editing animated:YES];
-  [self.productsView setEditing:editing animated:YES];
+  [super setEditing:editing animated:animated];
+  [self.productsView setEditing:editing animated:animated];
+  UIBarButtonItem *settingsBarButtonItem = [self.toolbarItems objectAtIndex:1];
+  UIButton *button = (UIButton *)settingsBarButtonItem.customView;
+  if (editing) {
+    self.navigationItem.rightBarButtonItem.enabled = NO;
+    [self setToolbarButton:button enabled:NO];
+  } else {
+    self.navigationItem.rightBarButtonItem.enabled = YES;
+    [self setToolbarButton:button enabled:YES];
+  }
 }
 
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
@@ -635,11 +656,16 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   } else {
     product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
   }
+  self.navigationItem.rightBarButtonItem.enabled = YES;
   // open oddb.org
   [self searchInfoForProduct:product];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath: (NSIndexPath *)indexPath
+{
+  self.navigationItem.rightBarButtonItem.enabled = YES;
+}
 
 - (void)refresh
 {
