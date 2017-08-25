@@ -348,7 +348,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)didFinishPicking:(id)json withEan:(NSString *)ean barcode:(UIImage *)barcode
 {
-  if (json == nil || [json count] == 0) {
+  if (json == nil || [(NSArray *)json count] == 0) {
     [self notFoundEan:ean];
   } else {
     Product *product = [[Product alloc] init];
