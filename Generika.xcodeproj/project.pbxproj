@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7E68DFADF869B42009A4D4F9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 725D9B9D754DAD6B6E974266 /* libPods.a */; };
 		810A928D179CD50A00DAA963 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 810A928C179CD50A00DAA963 /* Security.framework */; };
 		8129BA56153D46F100CB5896 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8129BA55153D46F100CB5896 /* Reachability.m */; };
 		8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8129BA58153D480100CB5896 /* SystemConfiguration.framework */; };
@@ -35,7 +34,6 @@
 		819273A51535D6780060859C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A41535D6780060859C /* CoreMedia.framework */; };
 		819273A71535D6870060859C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A61535D6870060859C /* CoreVideo.framework */; };
 		819273A91535D6990060859C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A81535D6990060859C /* QuartzCore.framework */; };
-		819273AB1535D6B00060859C /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273AA1535D6B00060859C /* libiconv.dylib */; };
 		819E165917B20E8B00B315B3 /* Constant.m in Sources */ = {isa = PBXBuildFile; fileRef = 819E165817B20E8B00B315B3 /* Constant.m */; };
 		819E165A17B20E8B00B315B3 /* Constant.m in Sources */ = {isa = PBXBuildFile; fileRef = 819E165817B20E8B00B315B3 /* Constant.m */; };
 		81B86220153704330054EA0A /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81B8621F153704330054EA0A /* WebViewController.m */; };
@@ -46,6 +44,7 @@
 		81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEF117B879EB0058AC62 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEF017B879EB0058AC62 /* Default-568h@2x.png */; };
+		8B0547001F50635B00D58E55 /* libZBarSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B0546FF1F50635B00D58E55 /* libZBarSDK.a */; };
 		933D3B4B17EB0AA8000D63CF /* icon-76.png in Resources */ = {isa = PBXBuildFile; fileRef = 933D3B4A17EB0AA8000D63CF /* icon-76.png */; };
 		933D3B4D17EB0AB7000D63CF /* icon-120.png in Resources */ = {isa = PBXBuildFile; fileRef = 933D3B4C17EB0AB7000D63CF /* icon-120.png */; };
 		933D3B4F17EB0AC4000D63CF /* icon-152.png in Resources */ = {isa = PBXBuildFile; fileRef = 933D3B4E17EB0AC4000D63CF /* icon-152.png */; };
@@ -62,9 +61,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0497976919B7586F308E1BEB /* Pods.Generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.Generika_appstore.xcconfig; path = "Pods/Target Support Files/Pods/Pods.Generika_appstore.xcconfig"; sourceTree = "<group>"; };
-		162DE2905605009DB1A3C51F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		725D9B9D754DAD6B6E974266 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		78EA4F1A0F48817BBA40F455 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
 		810A928C179CD50A00DAA963 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		81245DC617D70E1500995F5C /* Generika.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Generika.entitlements; sourceTree = "<group>"; };
 		8129BA54153D46F100CB5896 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -99,7 +96,6 @@
 		819273A41535D6780060859C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		819273A61535D6870060859C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		819273A81535D6990060859C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		819273AA1535D6B00060859C /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		819E165717B20E8B00B315B3 /* Constant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constant.h; sourceTree = "<group>"; };
 		819E165817B20E8B00B315B3 /* Constant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constant.m; sourceTree = "<group>"; };
 		81B8621E153704330054EA0A /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
@@ -110,10 +106,12 @@
 		81B8CEBF17D4767500DF463B /* ProductManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductManager.m; sourceTree = "<group>"; };
 		81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "fontawesome-webfont.ttf"; path = "resources/fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		81F2DEF017B879EB0058AC62 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "resources/Default-568h@2x.png"; sourceTree = "<group>"; };
-		82E1CEA7A3A88A55C2F64414 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		8B0546FF1F50635B00D58E55 /* libZBarSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libZBarSDK.a; path = "../../../Library/Developer/Xcode/DerivedData/Generika-bgffgnexislrpwfdezaunvzvhadg/Build/Products/Debug-iphonesimulator/ZBarSDK/libZBarSDK.a"; sourceTree = "<group>"; };
 		933D3B4A17EB0AA8000D63CF /* icon-76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-76.png"; path = "resources/icon-76.png"; sourceTree = "<group>"; };
 		933D3B4C17EB0AB7000D63CF /* icon-120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-120.png"; path = "resources/icon-120.png"; sourceTree = "<group>"; };
 		933D3B4E17EB0AC4000D63CF /* icon-152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-152.png"; path = "resources/icon-152.png"; sourceTree = "<group>"; };
+		94D3D8AFA6652388A077578D /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
+		FE43CEA9F9FC7C5F0114A594 /* Pods-Generika.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.release.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,9 +119,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B0547001F50635B00D58E55 /* libZBarSDK.a in Frameworks */,
 				810A928D179CD50A00DAA963 /* Security.framework in Frameworks */,
 				8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */,
-				819273AB1535D6B00060859C /* libiconv.dylib in Frameworks */,
 				819273A91535D6990060859C /* QuartzCore.framework in Frameworks */,
 				819273A71535D6870060859C /* CoreVideo.framework in Frameworks */,
 				819273A51535D6780060859C /* CoreMedia.framework in Frameworks */,
@@ -131,7 +129,6 @@
 				819273681535D56E0060859C /* UIKit.framework in Frameworks */,
 				8192736A1535D56E0060859C /* Foundation.framework in Frameworks */,
 				8192736C1535D56E0060859C /* CoreGraphics.framework in Frameworks */,
-				7E68DFADF869B42009A4D4F9 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,6 +144,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0E2D68CB7CF96F152D89425F /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				94D3D8AFA6652388A077578D /* Pods-Generika.debug.xcconfig */,
+				FE43CEA9F9FC7C5F0114A594 /* Pods-Generika.release.xcconfig */,
+				78EA4F1A0F48817BBA40F455 /* Pods-Generika.generika_appstore.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		8181AD8C1A31BCB4004454C8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -163,14 +170,14 @@
 				819273911535D56E0060859C /* GenerikaTests */,
 				819273661535D56E0060859C /* Frameworks */,
 				8181AD8C1A31BCB4004454C8 /* Products */,
-				F028C00659F81CB7A0255219 /* Pods */,
+				0E2D68CB7CF96F152D89425F /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
 		819273661535D56E0060859C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				819273AA1535D6B00060859C /* libiconv.dylib */,
+				8B0546FF1F50635B00D58E55 /* libZBarSDK.a */,
 				810A928C179CD50A00DAA963 /* Security.framework */,
 				8129BA58153D480100CB5896 /* SystemConfiguration.framework */,
 				819273A81535D6990060859C /* QuartzCore.framework */,
@@ -180,7 +187,6 @@
 				819273671535D56E0060859C /* UIKit.framework */,
 				819273691535D56E0060859C /* Foundation.framework */,
 				8192736B1535D56E0060859C /* CoreGraphics.framework */,
-				725D9B9D754DAD6B6E974266 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -283,16 +289,6 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		F028C00659F81CB7A0255219 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				162DE2905605009DB1A3C51F /* Pods.debug.xcconfig */,
-				82E1CEA7A3A88A55C2F64414 /* Pods.release.xcconfig */,
-				0497976919B7586F308E1BEB /* Pods.Generika_appstore.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -300,11 +296,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8192739C1535D56E0060859C /* Build configuration list for PBXNativeTarget "Generika" */;
 			buildPhases = (
-				058BFE95388A60B7C48CCFAC /* Check Pods Manifest.lock */,
+				1FB59DD75318378A5877D3ED /* [CP] Check Pods Manifest.lock */,
 				8192735F1535D56E0060859C /* Sources */,
 				819273601535D56E0060859C /* Frameworks */,
 				819273611535D56E0060859C /* Resources */,
-				930018CACFA18E3FB6A535FA /* Copy Pods Resources */,
+				6713BBF0B0BC380FA09A8522 /* [CP] Embed Pods Frameworks */,
+				53EA26FE98E77060E2B3E7F5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -403,34 +400,65 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		058BFE95388A60B7C48CCFAC /* Check Pods Manifest.lock */ = {
+		1FB59DD75318378A5877D3ED /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Generika-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		930018CACFA18E3FB6A535FA /* Copy Pods Resources */ = {
+		53EA26FE98E77060E2B3E7F5 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Generika/Pods-Generika-resources.sh",
+				"${PODS_ROOT}/ZBarSDK/iphone/res/zbar-back.png",
+				"${PODS_ROOT}/ZBarSDK/iphone/res/zbar-help.html",
+				"${PODS_ROOT}/ZBarSDK/iphone/res/zbar-helpicons.png",
+				"${PODS_ROOT}/ZBarSDK/iphone/res/zbar-samples.png",
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Generika/Pods-Generika-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6713BBF0B0BC380FA09A8522 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Generika/Pods-Generika-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
+				"${BUILT_PRODUCTS_DIR}/JSONKit-NoWarning/JSONKit_NoWarning.framework",
+				"${BUILT_PRODUCTS_DIR}/ZBarSDK/ZBarSDK.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSONKit_NoWarning.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZBarSDK.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Generika/Pods-Generika-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -575,21 +603,33 @@
 		};
 		8192739D1535D56E0060859C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 162DE2905605009DB1A3C51F /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 94D3D8AFA6652388A077578D /* Pods-Generika.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos/AFNetworking",
+					"$(PROJECT_DIR)/build/Release-iphoneos/JSONKit-NoWarning",
+					"$(PROJECT_DIR)/build/Release-iphoneos",
+				);
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_NAME = generika;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -602,21 +642,34 @@
 		};
 		8192739E1535D56E0060859C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 82E1CEA7A3A88A55C2F64414 /* Pods.release.xcconfig */;
+			baseConfigurationReference = FE43CEA9F9FC7C5F0114A594 /* Pods-Generika.release.xcconfig */;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos/AFNetworking",
+					"$(PROJECT_DIR)/build/Release-iphoneos/JSONKit-NoWarning",
+					"$(PROJECT_DIR)/build/Release-iphoneos",
+				);
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_NAME = generika;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -706,21 +759,34 @@
 		};
 		935F8A46153DBCBE00642BDB /* Generika_AppStore */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0497976919B7586F308E1BEB /* Pods.Generika_appstore.xcconfig */;
+			baseConfigurationReference = 78EA4F1A0F48817BBA40F455 /* Pods-Generika.generika_appstore.xcconfig */;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos/AFNetworking",
+					"$(PROJECT_DIR)/build/Release-iphoneos/JSONKit-NoWarning",
+					"$(PROJECT_DIR)/build/Release-iphoneos",
+				);
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_NAME = generika;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=*]" = "";
