@@ -48,6 +48,7 @@
   _barcode   = nil;
   _ean       = nil;
   _datetime  = nil;
+  _expiresAt = nil;
 }
 
 
@@ -70,6 +71,7 @@
   _barcode   = [decoder decodeObjectForKey:@"barcode"];
   _ean       = [decoder decodeObjectForKey:@"ean"];
   _datetime  = [decoder decodeObjectForKey:@"datetime"];
+  _expiresAt = [decoder decodeObjectForKey:@"expiresAt"];
   return self;
 }
 
@@ -87,6 +89,7 @@
   [encoder encodeObject:self.barcode forKey:@"barcode"];
   [encoder encodeObject:self.ean forKey:@"ean"];
   [encoder encodeObject:self.datetime forKey:@"datetime"];
+  [encoder encodeObject:self.expiresAt forKey:@"expiresAt"];
 }
 
 #pragma mark - Getter methods
@@ -140,7 +143,7 @@
     @"reg", @"seq", @"pack",
     @"name", @"size", @"deduction",
     @"price", @"category", @"barcode", @"ean",
-    @"datetime"
+    @"datetime", @"expiresAt"
   ];
 }
 

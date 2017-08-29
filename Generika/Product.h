@@ -20,6 +20,7 @@
 @property (nonatomic, strong, readwrite) NSString *barcode;
 @property (nonatomic, strong, readwrite) NSString *ean;
 @property (nonatomic, strong, readwrite) NSString *datetime;
+@property (nonatomic, strong, readwrite) NSString *expiresAt;
 
 - (id)initWithEan:(NSString *)ean;
 - (NSArray *)productKeys;

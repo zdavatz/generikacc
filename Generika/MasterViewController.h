@@ -11,6 +11,6 @@
 @class Product;
 @class Reachability, WebViewController, SettingsViewController, ReaderViewController;
 
-@interface MasterViewController : UITableViewController <ZBarReaderDelegate, UISearchDisplayDelegate, UISearchBarDelegate>
+@interface MasterViewController : UITableViewController <ZBarReaderDelegate, UISearchDisplayDelegate, UISearchBarDelegate, UIPopoverControllerDelegate>
 
 @end

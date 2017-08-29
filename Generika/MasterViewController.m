@@ -1,4 +1,4 @@
-//
+
 //  MasterViewController.m
 //  Generika
 //
@@ -9,6 +9,9 @@
 #import "JSONKit.h"
 #import "AFHTTPSessionManager.h"
 #import "Reachability.h"
+
+#import "NTMonthYearPicker.h"
+#import "UIPopoverController+iPhone.h"
 
 #import "Product.h"
 #import "ProductManager.h"
@@ -31,6 +34,10 @@ static const float kCellHeight = 83.0;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *productsView;
 @property (nonatomic, strong, readwrite) NSMutableArray *filtered;
+// datepicker
+@property (nonatomic, strong, readwrite) NSIndexPath *pickerIndexPath;
+@property (nonatomic, strong, readwrite) NTMonthYearPicker *datePicker;
+@property (nonatomic, strong, readwrite) UIPopoverController *popOverForDatePicker;
 
 - (void)scanButtonTapped:(UIButton *)button;
 - (void)settingsButtonTapped:(UIButton *)button;
@@ -73,6 +80,9 @@ static const float kCellHeight = 83.0;
     _browser      = nil;
     _settings     = nil;
     _search       = nil;
+    _pickerIndexPath      = nil;
+    _datePicker           = nil;
+    _popOverForDatePicker = nil;
   }
   [super didReceiveMemoryWarning];
 }
@@ -141,7 +151,7 @@ static const float kCellHeight = 83.0;
 
 - (void)viewWillAppear:(BOOL)animated
 {
-  NSIndexPath* selection = [self.productsView indexPathForSelectedRow];
+  NSIndexPath *selection = [self.productsView indexPathForSelectedRow];
   if (selection) {
     [self.productsView deselectRowAtIndexPath:selection animated:YES];
   }
@@ -369,7 +379,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       @"category"  : [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "],
       @"barcode"   : [manager storeBarcode:barcode ofEan:ean to:@"both"],
       @"ean"       : ean,
-      @"datetime"  : datetime
+      @"datetime"  : datetime,
+      @"expiresAt" : @""
     };
     for (NSString *key in [dict allKeys]) {
       NSString *value = nil;
@@ -502,6 +513,20 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:productView];
 
+  // gesture
+  UILongPressGestureRecognizer *longPressGesture;
+  if (tableView == self.search.searchResultsTableView) {
+    // TODO (currently does nothing)
+    longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:nil];
+    longPressGesture.minimumPressDuration = 0.9; // seconds
+    longPressGesture.delegate = self;
+  } else {
+    longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
+    longPressGesture.minimumPressDuration = 1.2; // seconds
+    longPressGesture.delegate = self;
+  }
+  [cell addGestureRecognizer:longPressGesture];
+
   Product *product;
   if (tableView == self.search.searchResultsTableView) {
     product = [self.filtered objectAtIndex:indexPath.row];
@@ -532,7 +557,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   nameLabel.text = product.name;
   [cell.contentView addSubview:nameLabel];
   // size
-  UILabel *sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 27.0, 110.0, 16.0)];
+  UILabel *sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 26.0, 110.0, 16.0)];
   sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
   sizeLabel.textAlignment = kTextAlignmentLeft;
   sizeLabel.textColor = [UIColor blackColor];
@@ -575,12 +600,38 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   categoryLabel.text = product.category;
   [cell.contentView addSubview:categoryLabel];
   // ean
-  UILabel *eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 62.0, 260.0, 16.0)];
+  UILabel *eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 62.0, 110.0, 16.0)];
   eanLabel.font = [UIFont systemFontOfSize:12.0];
   eanLabel.textAlignment = kTextAlignmentLeft;
   eanLabel.textColor = [UIColor grayColor];
   eanLabel.text = product.ean;
   [cell.contentView addSubview:eanLabel];
+  // expires_at
+  UILabel *expiresAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(170.0, 62.0, 100.0, 16.0)];
+  expiresAtLabel.textAlignment = kTextAlignmentLeft;
+  expiresAtLabel.tag = 7;
+  if (product.expiresAt && [product.expiresAt length] != 0) {
+    expiresAtLabel.text = product.expiresAt;
+    expiresAtLabel.font = [UIFont systemFontOfSize:12.0];
+    // comparison for color
+    NSDate *current = [NSDate date];
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+    [dateFormat setDateFormat:@"dd.MM.yyyy HH:mm:ss"];
+    NSDate *expiresAt = [dateFormat dateFromString:[NSString stringWithFormat:@"01.%@ 00:00:00", product.expiresAt]];
+    if ([current compare: expiresAt] == NSOrderedDescending) {
+      // current date is already later than expiration date
+      expiresAtLabel.textColor = [UIColor redColor];
+    } else {
+      expiresAtLabel.textColor = [UIColor greenColor];
+    }
+  } else {
+    expiresAtLabel.text = @"✚ (EXP; Verfalldatum)";
+    expiresAtLabel.font = [UIFont systemFontOfSize:9.0];
+    expiresAtLabel.textColor = [UIColor grayColor];
+  }
+
+  [cell.contentView addSubview:expiresAtLabel];
 
   return cell;
 }
@@ -670,6 +721,90 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)refresh
 {
   [self.productsView reloadData];
+}
+
+#pragma mark - Gesture
+
+- (void)longPress:(UILongPressGestureRecognizer *)gesture
+{
+  if (gesture.state == UIGestureRecognizerStateBegan) {
+    UITableViewCell *cell = (UITableViewCell *)[gesture view];
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    self.pickerIndexPath = indexPath;
+    
+    UIViewController *viewc = [[UIViewController alloc] init];
+    if (!self.datePicker) {
+      self.datePicker = [[NTMonthYearPicker alloc] initWithFrame:CGRectMake(0, 0, 300, 140)];
+      self.datePicker.hidden = NO;
+    }
+    Product *product;
+    if (self.view == self.search.searchResultsTableView) {
+      product = [self.filtered objectAtIndex:indexPath.row];
+    } else {
+      product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
+    }
+    // set date as initial value
+    if (product.expiresAt && [product.expiresAt length] != 0) {
+      NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+      [dateFormat setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+      [dateFormat setDateFormat:@"dd.MM.yyyy HH:mm:ss"];
+      NSDate *expiresAt = [dateFormat dateFromString:[NSString stringWithFormat:@"01.%@ 00:00:00", product.expiresAt]];
+      self.datePicker.date = expiresAt;
+    } else {
+      self.datePicker.date = [NSDate date];
+    }
+    [self.datePicker addTarget:self action:@selector(changeDate:) forControlEvents:UIControlEventValueChanged];
+    UIView *viewForDatePicker = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 140)];
+    [viewForDatePicker addSubview:self.datePicker];
+    [viewc.view addSubview:viewForDatePicker];
+
+    self.popOverForDatePicker = [[UIPopoverController alloc] initWithContentViewController:viewc];
+    [self.popOverForDatePicker setPopoverContentSize:CGSizeMake(300, 140) animated:NO];
+    [self.popOverForDatePicker presentPopoverFromRect:cell.frame inView:self.view permittedArrowDirections:(UIPopoverArrowDirectionUp|UIPopoverArrowDirectionDown) animated:YES];
+  }
+}
+
+- (void)changeDate:(id)sender
+{
+  NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+  [dateFormat setDateFormat:@"MM.YYYY"];
+  NSString *value = [NSString stringWithFormat:@"%@", [dateFormat stringFromDate:self.datePicker.date]];
+
+  if (self.popOverForDatePicker) {
+    NSIndexPath *indexPath = self.pickerIndexPath;
+    UITableViewCell *cell = [self.productsView cellForRowAtIndexPath:indexPath];
+    if (cell) {
+      ProductManager *manager = [ProductManager sharedManager];
+      Product *product;
+      if (self.view == self.search.searchResultsTableView) {
+	product = [self.filtered objectAtIndex:indexPath.row];
+      } else {
+	product = [manager productAtIndex:indexPath.row];
+      }
+      if (value && [value length] != 0) {
+	product.expiresAt = value;
+	[manager save];
+
+	// expires_at
+	UILabel *expiresAtLabel = [cell.contentView viewWithTag:7];
+	expiresAtLabel.font = [UIFont systemFontOfSize:12.0];
+	expiresAtLabel.textAlignment = kTextAlignmentLeft;
+	expiresAtLabel.text = value;
+	// // comparison for color
+	// NSDate *current = [NSDate date];
+	// NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+	// [dateFormat setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+	// [dateFormat setDateFormat:@"dd.MM.yyyy HH:mm:ss"];
+	// NSDate *expiresAt = [dateFormat dateFromString:[NSString stringWithFormat:@"01.%@ 00:00:00", product.expiresAt]];
+	// if ([current compare: expiresAt] == NSOrderedDescending) {
+	//   // current date is already later than expiration date
+	//   expiresAtLabel.textColor = [UIColor redColor];
+	// } else {
+	//   expiresAtLabel.textColor = [UIColor greenColor];
+	// }
+      }
+    }
+  }
 }
 
 #pragma mark - Searchbar
