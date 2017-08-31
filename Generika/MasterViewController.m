@@ -865,6 +865,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 #pragma mark - Searchbar
 
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+  [self setEditing:NO animated:YES];
+}
+
 - (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope
 {
   [self.filtered removeAllObjects];
