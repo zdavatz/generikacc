@@ -70,7 +70,12 @@
   _barcode   = [decoder decodeObjectForKey:@"barcode"];
   _ean       = [decoder decodeObjectForKey:@"ean"];
   _datetime  = [decoder decodeObjectForKey:@"datetime"];
-  _expiresAt = [decoder decodeObjectForKey:@"expiresAt"];
+
+  if ([decoder containsValueForKey:@"expiresAt"]) {
+    _expiresAt = [decoder decodeObjectForKey:@"expiresAt"];
+  } else {
+    _expiresAt = @"";
+  }
   return self;
 }
 
@@ -88,7 +93,12 @@
   [encoder encodeObject:self.barcode forKey:@"barcode"];
   [encoder encodeObject:self.ean forKey:@"ean"];
   [encoder encodeObject:self.datetime forKey:@"datetime"];
-  [encoder encodeObject:self.expiresAt forKey:@"expiresAt"];
+
+  if (self.expiresAt && [self.expiresAt length] != 0) {
+    [encoder encodeObject:self.expiresAt forKey:@"expiresAt"];
+  } else {
+    [encoder encodeObject:@"" forKey:@"expiresAt"];
+  }
 }
 
 #pragma mark - Getter methods
