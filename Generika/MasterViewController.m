@@ -534,25 +534,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-    tableView.separatorInset = UIEdgeInsetsZero;
-  }
-  if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
-    tableView.layoutMargins = UIEdgeInsetsZero;
-  }
-
   static NSString *cellIdentifier = @"Cell";
   CGRect cellFrame = CGRectMake(0, 0, tableView.frame.size.width, 100);
   UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                  reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-    cell.layoutMargins = UIEdgeInsetsZero;
-  }
-  if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
-    cell.preservesSuperviewLayoutMargins = NO;
-  }
-
   UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:productView];
 
