@@ -751,8 +751,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSDate *currentDate = [NSDate date]; 
     NSDateComponents *dateComponents = [calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay)
 						   fromDate:currentDate];
-    // set 01.01.1970 as minimum date
-    [dateComponents setYear:-(dateComponents.year - 1970)];
+    // set 01.01.2015 as minimum date
+    [dateComponents setYear:-(dateComponents.year - 2015)];
     [dateComponents setMonth:-(dateComponents.month - 1)];
     [dateComponents setDay:-(dateComponents.day - 1)];
     NSDate *minDate = [calendar dateByAddingComponents:dateComponents toDate:currentDate options:0];
