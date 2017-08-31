@@ -568,7 +568,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [cell.contentView addSubview:sizeLabel];
   // datetime
   if (product.datetime) {
-    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(170.0, 27.0, 100.0, 16.0)];
+    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(175.0, 27.0, 100.0, 16.0)];
     dateLabel.font = [UIFont systemFontOfSize:12.0];
     dateLabel.textAlignment = kTextAlignmentLeft;
     dateLabel.textColor = [UIColor grayColor];
@@ -586,7 +586,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
   [cell.contentView addSubview:priceLabel];
   // deduction
-  UILabel *deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 45.0, 60.0, 16.0)];
+  UILabel *deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(125.0, 45.0, 60.0, 16.0)];
   deductionLabel.font = [UIFont systemFontOfSize:12.0];
   deductionLabel.textAlignment = kTextAlignmentLeft;
   deductionLabel.textColor = [UIColor grayColor];
@@ -596,7 +596,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
   [cell.contentView addSubview:deductionLabel];
   // category
-  UILabel *categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(171.0, 45.0, 190.0, 16.0)];
+  UILabel *categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(176.0, 45.0, 190.0, 16.0)];
   categoryLabel.font = [UIFont systemFontOfSize:12.0];
   categoryLabel.textAlignment = kTextAlignmentLeft;
   categoryLabel.textColor = [UIColor grayColor];
@@ -610,7 +610,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   eanLabel.text = product.ean;
   [cell.contentView addSubview:eanLabel];
   // expires_at
-  UILabel *expiresAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(170.0, 62.0, 100.0, 16.0)];
+  UILabel *expiresAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(175.0, 62.0, 100.0, 16.0)];
   expiresAtLabel.textAlignment = kTextAlignmentLeft;
   expiresAtLabel.tag = 7;
   if (product.expiresAt && [product.expiresAt length] != 0) {
