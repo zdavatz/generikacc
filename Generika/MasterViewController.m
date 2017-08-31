@@ -621,7 +621,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
     [dateFormat setDateFormat:@"dd.MM.yyyy HH:mm:ss"];
-    NSDate *expiresAt = [dateFormat dateFromString:[NSString stringWithFormat:@"01.%@ 00:00:00", product.expiresAt]];
+    NSDate *expiresAt = [dateFormat dateFromString:[NSString stringWithFormat:@"01.%@ 02:00:00", product.expiresAt]];
     if ([current compare: expiresAt] == NSOrderedDescending) {
       // current date is already later than expiration date
       expiresAtLabel.textColor = [UIColor redColor];
