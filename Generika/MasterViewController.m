@@ -629,7 +629,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       expiresAtLabel.textColor = [UIColor greenColor];
     }
   } else {
-    expiresAtLabel.text = @"✚ (EXP; Verfalldatum)";
+    expiresAtLabel.text = @"+ EXP; Verfalldatum";
     expiresAtLabel.font = [UIFont systemFontOfSize:9.0];
     expiresAtLabel.textColor = [UIColor grayColor];
   }
