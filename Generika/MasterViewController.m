@@ -97,9 +97,26 @@ static const float kCellHeight = 83.0;
   self.view = self.productsView;
 }
 
+- (void)viewDidLayoutSubviews
+{
+  [super viewDidLayoutSubviews];
+  if ([self.productsView respondsToSelector:@selector(setSeparatorInset:)]) {
+    [self.productsView setSeparatorInset:UIEdgeInsetsZero];
+  }
+  if ([self.productsView respondsToSelector:@selector(setLayoutMargins:)]) {
+    [self.productsView setLayoutMargins:UIEdgeInsetsZero];
+  }
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
+    self.productsView.cellLayoutMarginsFollowReadableWidth = NO;
+  }
+}
+
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  if (self.productsView && [self.productsView respondsToSelector:@selector(setCellLayoutMarginsFallowReadableWidth:)]) {
+    self.productsView.cellLayoutMarginsFollowReadableWidth = NO;
+  }
   // navigation item
   self.navigationItem.leftBarButtonItem = self.editButtonItem;
   UIBarButtonItem *scanButton = [[UIBarButtonItem alloc]
@@ -489,6 +506,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   return 1;
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell
+{
+  if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+    cell.separatorInset = UIEdgeInsetsZero;
+  }
+  if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+    cell.preservesSuperviewLayoutMargins = NO;
+  }
+  if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+    cell.layoutMargins = UIEdgeInsetsZero;
+  }
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
   if (tableView == self.search.searchResultsTableView) {
@@ -504,17 +534,27 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+  if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+    tableView.separatorInset = UIEdgeInsetsZero;
+  }
+  if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+    tableView.layoutMargins = UIEdgeInsetsZero;
+  }
+
   static NSString *cellIdentifier = @"Cell";
   CGRect cellFrame = CGRectMake(0, 0, tableView.frame.size.width, 100);
   UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                  reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  cell.preservesSuperviewLayoutMargins = true;
-  cell.contentView.preservesSuperviewLayoutMargins = true;
+  if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+    cell.layoutMargins = UIEdgeInsetsZero;
+  }
+  if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+    cell.preservesSuperviewLayoutMargins = NO;
+  }
 
   UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:productView];
-  [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
 
   // gesture
   UILongPressGestureRecognizer *longPressGesture;
