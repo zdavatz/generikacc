@@ -746,6 +746,17 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     } else {
       product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
     }
+    // for min value
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDate *currentDate = [NSDate date]; 
+    NSDateComponents *dateComponents = [calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay)
+						   fromDate:currentDate];
+    // set 01.01.1970 as minimum date
+    [dateComponents setYear:-(dateComponents.year - 1970)];
+    [dateComponents setMonth:-(dateComponents.month - 1)];
+    [dateComponents setDay:-(dateComponents.day - 1)];
+    NSDate *minDate = [calendar dateByAddingComponents:dateComponents toDate:currentDate options:0];
+    [self.datePicker setMinimumDate:minDate];
     // set date as initial value
     if (product.expiresAt && [product.expiresAt length] != 0) {
       NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -754,8 +765,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       NSDate *expiresAt = [dateFormat dateFromString:[NSString stringWithFormat:@"01.%@ 00:00:00", product.expiresAt]];
       self.datePicker.date = expiresAt;
     } else {
-      self.datePicker.date = [NSDate date];
+      self.datePicker.date = currentDate;
     }
+
     [self.datePicker addTarget:self action:@selector(changeDate:) forControlEvents:UIControlEventValueChanged];
     UIView *viewForDatePicker = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 140)];
     [viewForDatePicker addSubview:self.datePicker];
