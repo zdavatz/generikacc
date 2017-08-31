@@ -762,7 +762,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     self.pickerIndexPath = indexPath;
     
-    UIViewController *viewc = [[UIViewController alloc] init];
     if (!self.datePicker) {
       self.datePicker = [[NTMonthYearPicker alloc] initWithFrame:CGRectMake(0, 0, 300, 140)];
       self.datePicker.hidden = NO;
@@ -798,9 +797,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [self.datePicker addTarget:self action:@selector(changeDate:) forControlEvents:UIControlEventValueChanged];
     UIView *viewForDatePicker = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 140)];
     [viewForDatePicker addSubview:self.datePicker];
-    [viewc.view addSubview:viewForDatePicker];
+    UIViewController *viewController = [[UIViewController alloc] init];
+    [viewController.view addSubview:viewForDatePicker];
 
-    self.popOverForDatePicker = [[UIPopoverController alloc] initWithContentViewController:viewc];
+    self.popOverForDatePicker = [[UIPopoverController alloc] initWithContentViewController:viewController];
     [self.popOverForDatePicker setPopoverContentSize:CGSizeMake(300, 140) animated:NO];
     [self.popOverForDatePicker presentPopoverFromRect:cell.frame inView:self.view permittedArrowDirections:(UIPopoverArrowDirectionUp|UIPopoverArrowDirectionDown) animated:YES];
   }
