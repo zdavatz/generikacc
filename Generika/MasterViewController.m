@@ -664,6 +664,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     //[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     [manager removeProductAtIndex:indexPath.row];
     [self refresh];
+  } else {
     [self setEditing:NO animated:YES];
   }
 }
