@@ -2,8 +2,7 @@
 //  ProductManager.m
 //  Generika
 //
-//  Created by Yasuhiro Asaka on 09/02/13.
-//  Copyright (c) 2013 ywesee GmbH. All rights reserved.
+//  Copyright (c) 2013-2017 ywesee GmbH. All rights reserved.
 //
 
 #import "ProductManager.h"

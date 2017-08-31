@@ -2,8 +2,7 @@
 //  MasterViewController.m
 //  Generika
 //
-//  Created by Yasuhiro Asaka on 4/11/12.
-//  Copyright (c) 2012 ywesee GmbH. All rights reserved.
+//  Copyright (c) 2012-2017 ywesee GmbH. All rights reserved.
 //
 
 #import "JSONKit.h"

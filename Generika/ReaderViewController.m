@@ -2,8 +2,7 @@
 //  ReaderViewController.m
 //  Generika
 //
-//  Created by Yasuhiro Asaka on 12/12/14.
-//  Copyright (c) 2014 ywesee GmbH. All rights reserved.
+//  Copyright (c) 2014-2017 ywesee GmbH. All rights reserved.
 //
 
 #import "ReaderViewController.h"

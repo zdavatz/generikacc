@@ -2,8 +2,7 @@
 //  SettingsViewController.m
 //  Generika
 //
-//  Created by Yasuhiro Asaka on 08/05/13.
-//  Copyright (c) 2013 ywesee GmbH. All rights reserved.
+//  Copyright (c) 2013-2017 ywesee GmbH. All rights reserved.
 //
 
 #import "SettingsViewController.h"
