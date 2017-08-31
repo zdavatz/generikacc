@@ -509,8 +509,12 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                  reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  cell.preservesSuperviewLayoutMargins = true;
+  cell.contentView.preservesSuperviewLayoutMargins = true;
+
   UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:productView];
+  [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
 
   // gesture
   UILongPressGestureRecognizer *longPressGesture;
