@@ -654,7 +654,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   expiresAtLabel.tag = 7;
   if (product.expiresAt && [product.expiresAt length] != 0) {
     expiresAtLabel.text = product.expiresAt;
-    expiresAtLabel.font = [UIFont systemFontOfSize:12.0];
+    expiresAtLabel.font = [UIFont boldSystemFontOfSize:12.0];
     // comparison for color
     NSDate *current = [NSDate date];
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -842,21 +842,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 	// expires_at
 	UILabel *expiresAtLabel = [cell.contentView viewWithTag:7];
-	expiresAtLabel.font = [UIFont systemFontOfSize:12.0];
+        expiresAtLabel.font = [UIFont boldSystemFontOfSize:12.0];
 	expiresAtLabel.textAlignment = kTextAlignmentLeft;
 	expiresAtLabel.text = value;
-	// // comparison for color
-	// NSDate *current = [NSDate date];
-	// NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	// [dateFormat setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
-	// [dateFormat setDateFormat:@"dd.MM.yyyy HH:mm:ss"];
-	// NSDate *expiresAt = [dateFormat dateFromString:[NSString stringWithFormat:@"01.%@ 00:00:00", product.expiresAt]];
-	// if ([current compare: expiresAt] == NSOrderedDescending) {
-	//   // current date is already later than expiration date
-	//   expiresAtLabel.textColor = [UIColor redColor];
-	// } else {
-	//   expiresAtLabel.textColor = [UIColor greenColor];
-	// }
       }
     }
   }
