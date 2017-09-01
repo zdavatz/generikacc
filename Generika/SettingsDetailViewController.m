@@ -60,6 +60,41 @@ static const float kCellHeight = 44.0; // default = 44.0
   self.detailView.dataSource = self;
   self.detailView.rowHeight = kCellHeight;
   self.view = self.detailView;
+
+  [self layoutTableViewSeparator:self.view];
+}
+
+- (void)viewDidLayoutSubviews
+{
+  [super viewDidLayoutSubviews];
+
+  [self layoutTableViewSeparator:self.detailView];
+}
+
+- (void)layoutTableViewSeparator:(UITableView *)tableView
+{
+  if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+    [tableView setSeparatorInset:UIEdgeInsetsZero];
+  }
+  if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+    [tableView setLayoutMargins:UIEdgeInsetsZero];
+  }
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
+    tableView.cellLayoutMarginsFollowReadableWidth = NO;
+  }
+}
+
+- (void)layoutCellSeparator:(UITableViewCell *)cell
+{
+  if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+    cell.separatorInset = UIEdgeInsetsZero;
+  }
+  if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+    cell.preservesSuperviewLayoutMargins = NO;
+  }
+  if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+    cell.layoutMargins = UIEdgeInsetsZero;
+  }
 }
 
 - (void)viewDidLoad
@@ -89,6 +124,11 @@ static const float kCellHeight = 44.0; // default = 44.0
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   return kCellHeight;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell
+{
+  [self layoutCellSeparator:cell];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
