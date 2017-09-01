@@ -205,28 +205,47 @@ static const float kCellHeight = 83.0;
 - (void)layoutToolbar
 {
   [self.navigationController setToolbarHidden:NO animated:NO];
-  UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-  button.frame = CGRectMake(0, 0, 40, 40);
-  UIFont *font = [UIFont fontWithName:@"FontAwesome" size:20.0];
-  [button.titleLabel setFont:font];
-  [button setTitle:@"\uF013" forState:UIControlStateNormal];
-  [self setToolbarButton:button enabled:YES];
-  [button addTarget:self
-             action:@selector(settingsButtonTapped:)
-   forControlEvents:UIControlEventTouchUpInside];
+  // wheel icon button
+  UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  settingsButton.frame = CGRectMake(0, 0, 40, 40);
+  UIFont *settingsFont = [UIFont fontWithName:@"FontAwesome" size:20.0];
+  [settingsButton.titleLabel setFont:settingsFont];
+  [settingsButton setTitle:@"\uF013" forState:UIControlStateNormal];
+  [self setToolbarButton:settingsButton enabled:YES];
+  [settingsButton addTarget:self
+                     action:@selector(settingsButtonTapped:)
+           forControlEvents:UIControlEventTouchUpInside];
   UIBarButtonItem *settingsBarButton = [[UIBarButtonItem alloc]
-    initWithCustomView:button];
+    initWithCustomView:settingsButton];
+  // interaction link
+  UIButton *interactionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  interactionButton.frame = CGRectMake(0, 0, 120, 40);
+  UIFont *interactionFont = [UIFont fontWithName:@"Helvetica" size:15.5];
+  [interactionButton.titleLabel setFont:interactionFont];
+  [interactionButton setTitle:@"Interactions" forState:UIControlStateNormal];
+  [self setToolbarButton:interactionButton enabled:YES];
+  [interactionButton addTarget:self
+                        action:@selector(interactionButtonTapped:)
+              forControlEvents:UIControlEventTouchUpInside];
+  UIBarButtonItem *interactionBarButton = [[UIBarButtonItem alloc]
+    initWithCustomView:interactionButton];
+
   UIBarButtonItem *space = [[UIBarButtonItem alloc]
     initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                          target:nil
                          action:nil];
-  UIBarButtonItem *margin = [[UIBarButtonItem alloc]
+  UIBarButtonItem *lMargin = [[UIBarButtonItem alloc]
     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                          target:nil
                          action:nil];
-  margin.width = -12;
+  lMargin.width = -24;
+  UIBarButtonItem *rMargin = [[UIBarButtonItem alloc]
+    initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                         target:nil
+                         action:nil];
+  rMargin.width = -12;
   self.toolbarItems = [NSArray arrayWithObjects:
-    space, settingsBarButton, margin, nil];
+    lMargin, interactionBarButton, space, settingsBarButton, rMargin, nil];
 }
 
 - (void)setToolbarButton:(UIButton *)button enabled:(BOOL)enabled
@@ -310,6 +329,28 @@ static const float kCellHeight = 83.0;
   return NO;
 }
 
+#pragma mark - Interaction Link
+
+- (void)interactionButtonTapped:(UIButton *)button
+{
+  if (!self.editing) {
+    // open in safari
+    NSInteger selectedLangIndex = [self.userDefaults integerForKey:@"search.result.lang"];
+    NSString *lang = [[Constant searchLangs] objectAtIndex:selectedLangIndex];
+    NSArray *uniqueEANs;
+    uniqueEANs = [[ProductManager sharedManager].products valueForKeyPath:@"@distinctUnionOfObjects.ean"];
+    NSMutableString *productEANs = [NSMutableString string];
+    for (NSString *ean in uniqueEANs) {
+      [productEANs appendString:[NSString stringWithFormat:@",%@", ean]];
+    }
+    if ([productEANs length] != 0) {
+      productEANs = [productEANs substringWithRange:NSMakeRange(1, ([productEANs length] - 1))];
+      NSString *url;
+      url = [NSString stringWithFormat:@"%@/%@/gcc/home_interactions/%@", kOddbBaseURL, lang, productEANs];
+      [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+    }
+  }
+}
 
 #pragma mark - Settings View
 
