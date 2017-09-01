@@ -854,6 +854,16 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
   [self setEditing:NO animated:YES];
+
+  if ([self.search.searchResultsTableView respondsToSelector:@selector(setSeparatorInset:)]) {
+    [self.search.searchResultsTableView setSeparatorInset:UIEdgeInsetsZero];
+  }
+  if ([self.search.searchResultsTableView respondsToSelector:@selector(setLayoutMargins:)]) {
+    [self.search.searchResultsTableView setLayoutMargins:UIEdgeInsetsZero];
+  }
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
+    self.search.searchResultsTableView.cellLayoutMarginsFollowReadableWidth = NO;
+  }
 }
 
 - (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope
