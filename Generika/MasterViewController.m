@@ -86,6 +86,32 @@ static const float kCellHeight = 83.0;
   [super didReceiveMemoryWarning];
 }
 
+- (void)layoutTableViewSeparator:(UITableView *)tableView
+{
+  if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+    [tableView setSeparatorInset:UIEdgeInsetsZero];
+  }
+  if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+    [tableView setLayoutMargins:UIEdgeInsetsZero];
+  }
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
+    tableView.cellLayoutMarginsFollowReadableWidth = NO;
+  }
+}
+
+- (void)layoutCellSeparator:(UITableViewCell *)cell
+{
+  if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+    cell.separatorInset = UIEdgeInsetsZero;
+  }
+  if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+    cell.preservesSuperviewLayoutMargins = NO;
+  }
+  if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+    cell.layoutMargins = UIEdgeInsetsZero;
+  }
+}
+
 - (void)loadView
 {
   [super loadView];
@@ -95,20 +121,15 @@ static const float kCellHeight = 83.0;
   self.productsView.dataSource = self;
   self.productsView.rowHeight = kCellHeight;
   self.view = self.productsView;
+
+  [self layoutTableViewSeparator:self.view];
 }
 
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
-  if ([self.productsView respondsToSelector:@selector(setSeparatorInset:)]) {
-    [self.productsView setSeparatorInset:UIEdgeInsetsZero];
-  }
-  if ([self.productsView respondsToSelector:@selector(setLayoutMargins:)]) {
-    [self.productsView setLayoutMargins:UIEdgeInsetsZero];
-  }
-  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
-    self.productsView.cellLayoutMarginsFollowReadableWidth = NO;
-  }
+
+  [self layoutTableViewSeparator:self.productsView];
 }
 
 - (void)viewDidLoad
@@ -508,15 +529,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell
 {
-  if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-    cell.separatorInset = UIEdgeInsetsZero;
-  }
-  if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
-    cell.preservesSuperviewLayoutMargins = NO;
-  }
-  if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-    cell.layoutMargins = UIEdgeInsetsZero;
-  }
+  [self layoutCellSeparator:cell];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -855,15 +868,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   [self setEditing:NO animated:YES];
 
-  if ([self.search.searchResultsTableView respondsToSelector:@selector(setSeparatorInset:)]) {
-    [self.search.searchResultsTableView setSeparatorInset:UIEdgeInsetsZero];
-  }
-  if ([self.search.searchResultsTableView respondsToSelector:@selector(setLayoutMargins:)]) {
-    [self.search.searchResultsTableView setLayoutMargins:UIEdgeInsetsZero];
-  }
-  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
-    self.search.searchResultsTableView.cellLayoutMarginsFollowReadableWidth = NO;
-  }
+  [self layoutTableViewSeparator:self.search.searchResultsTableView];
 }
 
 - (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope
