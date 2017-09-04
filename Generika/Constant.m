@@ -10,8 +10,8 @@
 
 CGFloat const kVersionNumber_iOS_6_1 = 993.00; // NSFoundationVersionNumber_iOS_6_1
 
-NSString *const kOddbBaseURL               = @"http://ch.oddb.org";
-NSString *const kOddbProductSearchBaseURL  = @"http://ch.oddb.org/de/mobile/api_search/ean";
+NSString *const kOddbBaseURL               = @"https://ch.oddb.org";
+NSString *const kOddbProductSearchBaseURL  = @"https://ch.oddb.org/de/mobile/api_search/ean";
 NSString *const kOddbMobileFlavorUserAgent = @"org.oddb.generikacc";
 
 NSString *const kSearchTypes[] = {

@@ -67,9 +67,9 @@
 			<key>oddb.org</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
-				<true/>
+				<false/>
 				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
+				<false/>
 			</dict>
 		</dict>
 	</dict>
