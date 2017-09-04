@@ -222,7 +222,7 @@ static const float kCellHeight = 83.0;
   interactionButton.frame = CGRectMake(0, 0, 120, 40);
   UIFont *interactionFont = [UIFont fontWithName:@"Helvetica" size:15.5];
   [interactionButton.titleLabel setFont:interactionFont];
-  [interactionButton setTitle:@"Interactions" forState:UIControlStateNormal];
+  [interactionButton setTitle:@"Interaktionen" forState:UIControlStateNormal];
   [self setToolbarButton:interactionButton enabled:YES];
   [interactionButton addTarget:self
                         action:@selector(interactionButtonTapped:)
