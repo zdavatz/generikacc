@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		25B166D89B8D2AFBAE0CC1E6 /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0DF91F8A4D795E1AAA5E2767 /* libPods-Generika.a */; };
 		810A928D179CD50A00DAA963 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 810A928C179CD50A00DAA963 /* Security.framework */; };
 		8129BA56153D46F100CB5896 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8129BA55153D46F100CB5896 /* Reachability.m */; };
 		8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8129BA58153D480100CB5896 /* SystemConfiguration.framework */; };
@@ -35,7 +34,6 @@
 		819273A51535D6780060859C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A41535D6780060859C /* CoreMedia.framework */; };
 		819273A71535D6870060859C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A61535D6870060859C /* CoreVideo.framework */; };
 		819273A91535D6990060859C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273A81535D6990060859C /* QuartzCore.framework */; };
-		819273AB1535D6B00060859C /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273AA1535D6B00060859C /* libiconv.dylib */; };
 		819E165917B20E8B00B315B3 /* Constant.m in Sources */ = {isa = PBXBuildFile; fileRef = 819E165817B20E8B00B315B3 /* Constant.m */; };
 		819E165A17B20E8B00B315B3 /* Constant.m in Sources */ = {isa = PBXBuildFile; fileRef = 819E165817B20E8B00B315B3 /* Constant.m */; };
 		81B86220153704330054EA0A /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81B8621F153704330054EA0A /* WebViewController.m */; };
@@ -46,15 +44,11 @@
 		81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEF117B879EB0058AC62 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEF017B879EB0058AC62 /* Default-568h@2x.png */; };
-		8B28CEB91F5554FC0019856C /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B28CEB41F5554FC0019856C /* libAFNetworking.a */; };
-		8B28CEBA1F5554FC0019856C /* libJSONKit-NoWarning.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B28CEB51F5554FC0019856C /* libJSONKit-NoWarning.a */; };
-		8B28CEBB1F5554FC0019856C /* libNTMonthYearPicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B28CEB61F5554FC0019856C /* libNTMonthYearPicker.a */; };
-		8B28CEBC1F5554FC0019856C /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B28CEB71F5554FC0019856C /* libPods-Generika.a */; };
-		8B28CEBD1F5554FC0019856C /* libZBarSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B28CEB81F5554FC0019856C /* libZBarSDK.a */; };
 		8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */; };
 		933D3B4B17EB0AA8000D63CF /* icon-76.png in Resources */ = {isa = PBXBuildFile; fileRef = 933D3B4A17EB0AA8000D63CF /* icon-76.png */; };
 		933D3B4D17EB0AB7000D63CF /* icon-120.png in Resources */ = {isa = PBXBuildFile; fileRef = 933D3B4C17EB0AB7000D63CF /* icon-120.png */; };
 		933D3B4F17EB0AC4000D63CF /* icon-152.png in Resources */ = {isa = PBXBuildFile; fileRef = 933D3B4E17EB0AC4000D63CF /* icon-152.png */; };
+		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,7 +63,7 @@
 
 /* Begin PBXFileReference section */
 		0CF9631F19C2569452A76CE5 /* Pods-Generika.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.release.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.release.xcconfig"; sourceTree = "<group>"; };
-		0DF91F8A4D795E1AAA5E2767 /* libPods-Generika.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Generika.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Generika.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		810A928C179CD50A00DAA963 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		81245DC617D70E1500995F5C /* Generika.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Generika.entitlements; sourceTree = "<group>"; };
 		8129BA54153D46F100CB5896 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -104,7 +98,6 @@
 		819273A41535D6780060859C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		819273A61535D6870060859C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		819273A81535D6990060859C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		819273AA1535D6B00060859C /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		819E165717B20E8B00B315B3 /* Constant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constant.h; sourceTree = "<group>"; };
 		819E165817B20E8B00B315B3 /* Constant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constant.m; sourceTree = "<group>"; };
 		81B8621E153704330054EA0A /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
@@ -115,11 +108,6 @@
 		81B8CEBF17D4767500DF463B /* ProductManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductManager.m; sourceTree = "<group>"; };
 		81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "fontawesome-webfont.ttf"; path = "resources/fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		81F2DEF017B879EB0058AC62 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "resources/Default-568h@2x.png"; sourceTree = "<group>"; };
-		8B28CEB41F5554FC0019856C /* libAFNetworking.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAFNetworking.a; path = "../../../Library/Developer/Xcode/DerivedData/Generika-bgffgnexislrpwfdezaunvzvhadg/Build/Products/Debug-iphonesimulator/AFNetworking/libAFNetworking.a"; sourceTree = "<group>"; };
-		8B28CEB51F5554FC0019856C /* libJSONKit-NoWarning.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libJSONKit-NoWarning.a"; path = "../../../Library/Developer/Xcode/DerivedData/Generika-bgffgnexislrpwfdezaunvzvhadg/Build/Products/Debug-iphonesimulator/JSONKit-NoWarning/libJSONKit-NoWarning.a"; sourceTree = "<group>"; };
-		8B28CEB61F5554FC0019856C /* libNTMonthYearPicker.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNTMonthYearPicker.a; path = "../../../Library/Developer/Xcode/DerivedData/Generika-bgffgnexislrpwfdezaunvzvhadg/Build/Products/Debug-iphonesimulator/NTMonthYearPicker/libNTMonthYearPicker.a"; sourceTree = "<group>"; };
-		8B28CEB71F5554FC0019856C /* libPods-Generika.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-Generika.a"; path = "../../../Library/Developer/Xcode/DerivedData/Generika-bgffgnexislrpwfdezaunvzvhadg/Build/Products/Debug-iphonesimulator/libPods-Generika.a"; sourceTree = "<group>"; };
-		8B28CEB81F5554FC0019856C /* libZBarSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libZBarSDK.a; path = "../../../Library/Developer/Xcode/DerivedData/Generika-bgffgnexislrpwfdezaunvzvhadg/Build/Products/Debug-iphonesimulator/ZBarSDK/libZBarSDK.a"; sourceTree = "<group>"; };
 		8BE0B9CB1F547A2800B68E3B /* UIPopoverController+iPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIPopoverController+iPhone.h"; sourceTree = "<group>"; };
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
 		933D3B4A17EB0AA8000D63CF /* icon-76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-76.png"; path = "resources/icon-76.png"; sourceTree = "<group>"; };
@@ -134,14 +122,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B28CEB91F5554FC0019856C /* libAFNetworking.a in Frameworks */,
-				8B28CEBA1F5554FC0019856C /* libJSONKit-NoWarning.a in Frameworks */,
-				8B28CEBB1F5554FC0019856C /* libNTMonthYearPicker.a in Frameworks */,
-				8B28CEBC1F5554FC0019856C /* libPods-Generika.a in Frameworks */,
-				8B28CEBD1F5554FC0019856C /* libZBarSDK.a in Frameworks */,
 				810A928D179CD50A00DAA963 /* Security.framework in Frameworks */,
 				8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */,
-				819273AB1535D6B00060859C /* libiconv.dylib in Frameworks */,
 				819273A91535D6990060859C /* QuartzCore.framework in Frameworks */,
 				819273A71535D6870060859C /* CoreVideo.framework in Frameworks */,
 				819273A51535D6780060859C /* CoreMedia.framework in Frameworks */,
@@ -149,7 +131,7 @@
 				819273681535D56E0060859C /* UIKit.framework in Frameworks */,
 				8192736A1535D56E0060859C /* Foundation.framework in Frameworks */,
 				8192736C1535D56E0060859C /* CoreGraphics.framework in Frameworks */,
-				25B166D89B8D2AFBAE0CC1E6 /* libPods-Generika.a in Frameworks */,
+				C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,12 +180,6 @@
 		819273661535D56E0060859C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8B28CEB41F5554FC0019856C /* libAFNetworking.a */,
-				8B28CEB51F5554FC0019856C /* libJSONKit-NoWarning.a */,
-				8B28CEB61F5554FC0019856C /* libNTMonthYearPicker.a */,
-				8B28CEB71F5554FC0019856C /* libPods-Generika.a */,
-				8B28CEB81F5554FC0019856C /* libZBarSDK.a */,
-				819273AA1535D6B00060859C /* libiconv.dylib */,
 				810A928C179CD50A00DAA963 /* Security.framework */,
 				8129BA58153D480100CB5896 /* SystemConfiguration.framework */,
 				819273A81535D6990060859C /* QuartzCore.framework */,
@@ -213,7 +189,7 @@
 				819273671535D56E0060859C /* UIKit.framework */,
 				819273691535D56E0060859C /* Foundation.framework */,
 				8192736B1535D56E0060859C /* CoreGraphics.framework */,
-				0DF91F8A4D795E1AAA5E2767 /* libPods-Generika.a */,
+				6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -621,6 +597,7 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "$(inherited)";
 				PROVISIONING_PROFILE = "";
@@ -648,7 +625,7 @@
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"AFNetworking\"",
@@ -804,6 +781,7 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "$(inherited)";
 				PROVISIONING_PROFILE = "";
