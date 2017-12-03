@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		655D0B626DC9948729287B91 /* libPods-GenerikaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */; };
 		810A928D179CD50A00DAA963 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 810A928C179CD50A00DAA963 /* Security.framework */; };
 		8129BA56153D46F100CB5896 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8129BA55153D46F100CB5896 /* Reachability.m */; };
 		8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8129BA58153D480100CB5896 /* SystemConfiguration.framework */; };
@@ -63,6 +64,7 @@
 
 /* Begin PBXFileReference section */
 		0CF9631F19C2569452A76CE5 /* Pods-Generika.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.release.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.release.xcconfig"; sourceTree = "<group>"; };
+		2A1FFF20E1446C46E024C55C /* Pods-GenerikaTests.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.generika_appstore.xcconfig"; sourceTree = "<group>"; };
 		6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Generika.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		810A928C179CD50A00DAA963 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		81245DC617D70E1500995F5C /* Generika.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Generika.entitlements; sourceTree = "<group>"; };
@@ -113,8 +115,11 @@
 		933D3B4A17EB0AA8000D63CF /* icon-76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-76.png"; path = "resources/icon-76.png"; sourceTree = "<group>"; };
 		933D3B4C17EB0AB7000D63CF /* icon-120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-120.png"; path = "resources/icon-120.png"; sourceTree = "<group>"; };
 		933D3B4E17EB0AC4000D63CF /* icon-152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-152.png"; path = "resources/icon-152.png"; sourceTree = "<group>"; };
+		9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.release.xcconfig"; sourceTree = "<group>"; };
 		B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
+		EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GenerikaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +146,7 @@
 			files = (
 				8192738D1535D56E0060859C /* UIKit.framework in Frameworks */,
 				8192738E1535D56E0060859C /* Foundation.framework in Frameworks */,
+				655D0B626DC9948729287B91 /* libPods-GenerikaTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,6 +159,9 @@
 				D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */,
 				0CF9631F19C2569452A76CE5 /* Pods-Generika.release.xcconfig */,
 				B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */,
+				F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */,
+				9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */,
+				2A1FFF20E1446C46E024C55C /* Pods-GenerikaTests.generika_appstore.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -190,6 +199,7 @@
 				819273691535D56E0060859C /* Foundation.framework */,
 				8192736B1535D56E0060859C /* CoreGraphics.framework */,
 				6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */,
+				EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -321,9 +331,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8192739F1535D56E0060859C /* Build configuration list for PBXNativeTarget "GenerikaTests" */;
 			buildPhases = (
+				373E64B17D12D2CDEBE84062 /* [CP] Check Pods Manifest.lock */,
 				819273851535D56E0060859C /* Sources */,
 				819273861535D56E0060859C /* Frameworks */,
 				819273871535D56E0060859C /* Resources */,
+				3C619177517A174B09387DEB /* [CP] Embed Pods Frameworks */,
+				E9DB5BE1F3F22A1E757E19B3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -426,6 +439,39 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Generika/Pods-Generika-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		373E64B17D12D2CDEBE84062 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-GenerikaTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3C619177517A174B09387DEB /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		A218F00D0A4C7EC498B9055A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -457,6 +503,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Generika/Pods-Generika-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E9DB5BE1F3F22A1E757E19B3 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -713,10 +774,38 @@
 		};
 		819273A01535D56E0060859C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = YES;
+				ENABLE_ON_DEMAND_RESOURCES = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
+				INFOPLIST_FILE = "GenerikaTests/GenerikaTests-Info.plist";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = generikaTests;
+				PROVISIONING_PROFILE = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
+				VALID_ARCHS = "armv7 armv7s arm64";
+			};
+			name = Debug;
+		};
+		819273A11535D56E0060859C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = YES;
+				ENABLE_ON_DEMAND_RESOURCES = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -728,30 +817,9 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = generikaTests;
 				PROVISIONING_PROFILE = "";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
-				VALID_ARCHS = "armv7 armv7s";
-			};
-			name = Debug;
-		};
-		819273A11535D56E0060859C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
-				INFOPLIST_FILE = "GenerikaTests/GenerikaTests-Info.plist";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = generikaTests;
-				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;
 		};
@@ -846,10 +914,13 @@
 		};
 		935F8A47153DBCBE00642BDB /* Generika_AppStore */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A1FFF20E1446C46E024C55C /* Pods-GenerikaTests.generika_appstore.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				ENABLE_BITCODE = YES;
+				ENABLE_ON_DEMAND_RESOURCES = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -858,11 +929,12 @@
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
 				INFOPLIST_FILE = "GenerikaTests/GenerikaTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = generikaTests;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/generika.app/generika";
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Generika_AppStore;
 		};
