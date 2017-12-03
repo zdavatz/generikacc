@@ -5,7 +5,13 @@ target "Generika" do
   pod "JSONKit-NoWarning", "~> 1.2"
   pod "ZBarSDK", "~> 1.3.1"
   pod "NTMonthYearPicker", "~> 1.0"
+
+  target "GenerikaTests" do
+    inherit! :search_paths
+    pod "OCMock", "~> 3.4.1"
+  end
 end
+
 
 post_install do |installer_representation|
   installer_representation.pods_project.targets.each do |target|

@@ -12,10 +12,9 @@
 // FIX
 // Memory leak without release
 // - http://sourceforge.net/p/zbar/patches/36/
-// - https://github.com/ZBar/ZBar/blob/master/iphone/ZBarReaderViewController.m#L321
+// - https://github.com/ZBar/ZBar/blob/master/iphone/ZBarReaderViewController.m
 - (void) loadView {
-  // this file is marked as None-ARC
-  self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 480)] autorelease];
+  self.view = [[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 480)];
 }
 
 - (void) info {
@@ -24,11 +23,10 @@
 
 // FIX
 // Broken toolbar and button layout
-// - https://github.com/ZBar/ZBar/blob/master/iphone/ZBarReaderViewController.m#L239
+// - https://github.com/ZBar/ZBar/blob/master/iphone/ZBarReaderViewController.m
 - (void) initControls {
   if (!showsZBarControls && controls) {
     [controls removeFromSuperview];
-    [controls release];
     controls = nil;
   }
   if (!showsZBarControls) {
@@ -43,10 +41,11 @@
 
   CGRect r = view.bounds;
   r.size.height += 10;
-  [readerView setFrame: r];
+  controls = [[UIView alloc] initWithFrame: r];
 
   // see Constant.m
-  if (floor(NSFoundationVersionNumber) > kVersionNumber_iOS_6_1) { // iOS 7 or later
+  if (floor(NSFoundationVersionNumber) > kVersionNumber_iOS_6_1) {
+    // iOS 7 or later
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
       r.origin.y = view.bounds.size.height - 20;
       r.size.height = 21;
@@ -85,8 +84,8 @@
                                           blue:221.0/255.0
                                          alpha:1]
           forState:UIControlStateNormal];
-  UIBarButtonItem *cancelButtonItem = [[[UIBarButtonItem alloc]
-    initWithCustomView:cancel] autorelease];
+  UIBarButtonItem *cancelButtonItem = [[UIBarButtonItem alloc]
+    initWithCustomView:cancel];
   [cancelButtonItem setTitleTextAttributes:@{
     NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:14.0]}
                                   forState:UIControlStateNormal];
@@ -95,13 +94,13 @@
   [info addTarget:self
         action:@selector(info)
         forControlEvents:UIControlEventTouchUpInside];
-  UIBarButtonItem *infoButtonItem = [[[UIBarButtonItem alloc]
-      initWithCustomView:info] autorelease];
+  UIBarButtonItem *infoButtonItem = [[UIBarButtonItem alloc]
+      initWithCustomView:info];
   // space
-  UIBarButtonItem *spaceItem = [[[UIBarButtonItem alloc]
+  UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc]
     initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                          target:nil
-                         action:nil] autorelease];
+                         action:nil];
 
   toolbar.items = [NSArray arrayWithObjects:
     cancelButtonItem,
@@ -109,7 +108,6 @@
     infoButtonItem, nil];
 
   [controls addSubview:toolbar];
-  [toolbar release];
   [view addSubview:controls];
 }
 
