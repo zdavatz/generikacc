@@ -1,0 +1,34 @@
+*Generika.cc (03 Dec 2017)
+
+	03 Dec 2017; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
+	* Add make test target (via xcodebuild command)
+	* Fixing test build (GenerikaTests) using Cocoapods
+
+	02 Dec 2017; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
+	* Fixing building on Xcode 9.1
+
+	snip...
+
+	17 Apr 2012; Zeno R.R. Davatz <zdavatz@ywesee.com>:
+	* Updated User-Agent in WebView
+	* Updated generika.xcodeproj/project.pbxproj
+	* Updated info plist for icon images
+	* Added 2 icon images (57x57, 72x72)
+	* Updated actionsheet
+	* Updated network error handling
+	* Fixed product insert order
+	* Added moving of TableViewCell
+
+	16 Apr 2012; Zeno R.R. Davatz <zdavatz@ywesee.com>:
+	* Improved TableView
+	* Updated orientation handling
+	* Improved image resize
+	* Added date time label
+
+	13 Apr 2012; Zeno R.R. Davatz <zdavatz@ywesee.com>:
+	* Updated tableCell layout, alert View.
+	* Fixed null handling in price.
+	* Updated some text.
+
+	13 Apr 2012; Zeno R.R. Davatz <zdavatz@ywesee.com>:
+	* Releasing History File, V1.0 ;)

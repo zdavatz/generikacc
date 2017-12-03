@@ -1,10 +1,18 @@
 # Generika.cc
 
-* App auf dem iPhone / iPad installieren
-* EAN-13 Scannen
-* Preisvergleich anschauen ;)
+## Features
 
-* Jedes Medikament, das gescannt wurde, wird lokal gespeichert.
+* iPhone/iPad Support
+* EAN-13 Barcord Scan
+* Drug Preis Comparison Viewer
+* Fachinformation/Patienteninformation Viewer
+* Side effects Viewer
+* Expiry date Saving
+
+
+## Repository
+
+https://github.com/zdavatz/generikacc
 
 
 ## Setup
@@ -12,6 +20,7 @@
 ### Requirements
 
 * Xcode 9
+* XCTest (for testing)
 * Ruby 2.3 (for [Cocoapods](https://cocoapods.org/) installed via Bundler)
 
 ### Dependencies
@@ -99,10 +108,9 @@ Check all schemas exists and its are valid from `Edit Scheme...` and
 
 ```txt
 # Edit Scheme... > Build
-
-> Pods-Generika
+▶ Pods-Generika
   Generika
-> GenerikaTests
+▶ GenerikaTests
 
 
 # Manage Schemes
@@ -112,6 +120,13 @@ JSONKit-NoWarning
 NTMonthYearPicker
 Pods-Generika
 ZBarSDK
+```
+
+## Test
+
+Run [XCTest](https://developer.apple.com/documentation/xctest?language=objc)
+
+```zsh
 ```
 
 
