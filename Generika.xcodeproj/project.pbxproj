@@ -16,6 +16,7 @@
 		812E6F19153DB7E500009A04 /* icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 812E6F16153DB7E500009A04 /* icon-72.png */; };
 		812E6F1A153DB7E500009A04 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 812E6F17153DB7E500009A04 /* icon.png */; };
 		812E6F1B153DB7E500009A04 /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 812E6F18153DB7E500009A04 /* icon@2x.png */; };
+		8145D9EC1FD3D959002779FD /* ProductTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8145D9EB1FD3D958002779FD /* ProductTests.m */; };
 		8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
 		8148C65C17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
 		818CED2B1A3AF1B800A68885 /* ReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 818CED2A1A3AF1B800A68885 /* ReaderViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -76,6 +77,7 @@
 		812E6F16153DB7E500009A04 /* icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-72.png"; path = "resources/icon-72.png"; sourceTree = "<group>"; };
 		812E6F17153DB7E500009A04 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = resources/icon.png; sourceTree = "<group>"; };
 		812E6F18153DB7E500009A04 /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon@2x.png"; path = "resources/icon@2x.png"; sourceTree = "<group>"; };
+		8145D9EB1FD3D958002779FD /* ProductTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductTests.m; sourceTree = "<group>"; };
 		8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsDetailViewController.h; sourceTree = "<group>"; };
 		8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsDetailViewController.m; sourceTree = "<group>"; };
 		8181AD8A1A31BB9D004454C8 /* generika.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = generika.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -230,6 +232,7 @@
 		819273911535D56E0060859C /* GenerikaTests */ = {
 			isa = PBXGroup;
 			children = (
+				8145D9EB1FD3D958002779FD /* ProductTests.m */,
 				819273981535D56E0060859C /* GenerikaTests.m */,
 				819273921535D56E0060859C /* Supporting Files */,
 			);
@@ -551,6 +554,7 @@
 				819273991535D56E0060859C /* GenerikaTests.m in Sources */,
 				81B8CEBA17D46EDE00DF463B /* Product.m in Sources */,
 				819E165A17B20E8B00B315B3 /* Constant.m in Sources */,
+				8145D9EC1FD3D959002779FD /* ProductTests.m in Sources */,
 				818CED2C1A3AF1B800A68885 /* ReaderViewController.m in Sources */,
 				812B9A4E17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
 			);
