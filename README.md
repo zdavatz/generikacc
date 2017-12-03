@@ -127,6 +127,7 @@ ZBarSDK
 Run [XCTest](https://developer.apple.com/documentation/xctest?language=objc)
 
 ```zsh
+% make test
 ```
 
 
