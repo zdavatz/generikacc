@@ -1,0 +1,75 @@
+#!/bin/sh
+
+print_usage() {
+  cat <<USG
+
+Usage: ${1} <target>
+
+Cli command to run tests via xcodebuild for \`GenerikaTests\`.
+
+Options:
+  -h, --help    display this help and exit
+
+Arguments:
+  <target>    test target (through only-testing) [optional]
+
+Examples:
+  $ test-runner All
+  $ test-runner ProductTests
+  $ test-runner ProductTests/testInit
+USG
+}
+
+
+function run_test() {
+  set -x
+  platform="iOS Simulator"
+  name="iPhone 6"
+  sdk="iphonesimulator"
+  os="11.1"
+
+  destination="platform=${platform},name=${name},OS=${os}"
+
+  if [ "${1}" != "All" ]; then
+    action="-only-testing:GenerikaTests/${1} test"
+  else
+    action="test"
+  fi
+
+  xcodebuild -workspace Generika.xcworkspace \
+    -scheme GenerikaTests \
+    -sdk $sdk \
+    -destination ''"${destination}"'' \
+    $action
+}
+
+
+getopt --test > /dev/null
+if [ $? -ne 4 ]; then
+  echo "-- old getopt(1) --"
+fi
+
+set -e
+
+_options=h
+_longoptions=help
+
+_=`getopt --name "${0}" \
+--options "${_options}" --longoptions "${_longoptions}" --unquoted -- "${@}"`
+
+if [ $? -ne 0 ]; then
+  exit 2
+fi
+
+while [ $# -gt 0 ]; do
+  case $1 in
+    -h|--help)
+      print_usage `basename $0`
+      exit 0
+      ;;
+    *)
+      run_test "${1}"
+      exit 0
+      ;;
+  esac
+done

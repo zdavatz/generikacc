@@ -127,7 +127,11 @@ ZBarSDK
 Run [XCTest](https://developer.apple.com/documentation/xctest?language=objc)
 
 ```zsh
+# same as ./bin/test-runner All, see `test-runner` script
 % make test
+
+# run single test case
+% ./bin/test-runner ProductTest/testInit
 ```
 
 
