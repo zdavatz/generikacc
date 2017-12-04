@@ -11,7 +11,9 @@
 #endif
 
 #ifdef DEBUG
+  // usage: DLog(@"%@", object);
   #define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+  // usage: DLogMethod;
   #define DLogMethod NSLog(@"%s", __func__);
 #else
   #define DLog(...);
