@@ -1,0 +1,6 @@
+#language: objective-2
+notifications:
+ email:
+    recipients:
+      - yasuhiro.asaka@grauwoelfchen.net
+      - zdavatz@ywesee.com
