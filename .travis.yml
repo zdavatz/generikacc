@@ -1,11 +1,9 @@
-<<<<<<< HEAD
 #language: objective-2
 notifications:
  email:
     recipients:
       - yasuhiro.asaka@grauwoelfchen.net
       - zdavatz@ywesee.com
-=======
 os: osx
 language: objective-c
 sudo: enabled
@@ -27,4 +25,3 @@ before_install:
 
 script:
   - make test
->>>>>>> 816a6d53a866df82828828d9760fa8e1d7542487
