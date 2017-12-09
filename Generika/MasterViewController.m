@@ -29,14 +29,15 @@ static const float kCellHeight = 83.0;
 @property (nonatomic, strong, readwrite) ReaderViewController *reader;
 @property (nonatomic, strong, readwrite) WebViewController *browser;
 @property (nonatomic, strong, readwrite) SettingsViewController *settings;
-@property (nonatomic, strong, readwrite) UISearchDisplayController *search;
+@property (nonatomic, strong, readwrite) UISearchController *search;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *productsView;
 @property (nonatomic, strong, readwrite) NSMutableArray *filtered;
 // datepicker
 @property (nonatomic, strong, readwrite) NSIndexPath *pickerIndexPath;
 @property (nonatomic, strong, readwrite) NTMonthYearPicker *datePicker;
-@property (nonatomic, strong, readwrite) UIPopoverController *popOverForDatePicker;
+@property (nonatomic, strong, readwrite)
+  UIPopoverController *popOverForDatePicker;
 
 - (void)scanButtonTapped:(UIButton *)button;
 - (void)settingsButtonTapped:(UIButton *)button;
@@ -104,7 +105,8 @@ static const float kCellHeight = 83.0;
   if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
     cell.separatorInset = UIEdgeInsetsZero;
   }
-  if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+  if ([cell respondsToSelector:@selector(
+    setPreservesSuperviewLayoutMargins:)]) {
     cell.preservesSuperviewLayoutMargins = NO;
   }
   if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
@@ -135,7 +137,8 @@ static const float kCellHeight = 83.0;
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  if (self.productsView && [self.productsView respondsToSelector:@selector(setCellLayoutMarginsFallowReadableWidth:)]) {
+  if (self.productsView && [self.productsView respondsToSelector:@selector(
+      setCellLayoutMarginsFallowReadableWidth:)]) {
     self.productsView.cellLayoutMarginsFollowReadableWidth = NO;
   }
   // navigation item
@@ -147,19 +150,29 @@ static const float kCellHeight = 83.0;
   self.navigationItem.rightBarButtonItem = scanButton;
   // toolbar
   [self layoutToolbar];
+
+  self.search = [[UISearchController alloc]
+                 initWithSearchResultsController:nil];
   // searchbar
-  UISearchBar *searchBar = [[UISearchBar alloc]
-    initWithFrame:CGRectMake(0,0,self.productsView.frame.size.width, 44.0)];
-  searchBar.tintColor = [UIColor lightGrayColor];
-  searchBar.delegate = self;
-  searchBar.placeholder = @"Medikament";
-  [searchBar sizeToFit];
-  self.productsView.tableHeaderView = searchBar;
-  self.search = [[UISearchDisplayController alloc]
-    initWithSearchBar:searchBar contentsController:self];
+  self.search.searchBar.tintColor = [UIColor lightGrayColor];
+  self.search.searchBar.delegate = self;
+  self.search.searchBar.placeholder = @"Medikament";
+  // fix ugly rounded field
+  UITextField *searchField = [self.search.searchBar valueForKey:@"_searchField"];
+  searchField.layer.borderColor = [[UIColor whiteColor] CGColor];
+  searchField.layer.borderWidth = 3;
+  searchField.layer.cornerRadius = 4.0;
+  [self.search.searchBar sizeToFit];
+  self.productsView.tableHeaderView = self.search.searchBar;
+
+  self.search.searchResultsUpdater = self;
   self.search.delegate = self;
-  self.search.searchResultsDelegate = self;
-  self.search.searchResultsDataSource = self;
+  self.search.dimsBackgroundDuringPresentation = NO;
+  // fix wrong position (fixed position)
+  self.search.hidesNavigationBarDuringPresentation = NO;
+
+  self.definesPresentationContext = YES;
+
   // reader
   if (!self.reader) {
     self.reader = [[ReaderViewController alloc] init];
@@ -252,7 +265,8 @@ static const float kCellHeight = 83.0;
 {
   if (enabled) {
     if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
-      [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+      [button setTitleColor:[UIColor whiteColor]
+                   forState:UIControlStateNormal];
     } else { // iOS 7 or later
       [button setTitleColor:[UIColor colorWithRed:6/255.0
                                             green:121/255.0
@@ -335,18 +349,22 @@ static const float kCellHeight = 83.0;
 {
   if (!self.editing) {
     // open in safari
-    NSInteger selectedLangIndex = [self.userDefaults integerForKey:@"search.result.lang"];
+    NSInteger selectedLangIndex = [self.userDefaults
+                                   integerForKey:@"search.result.lang"];
     NSString *lang = [[Constant searchLangs] objectAtIndex:selectedLangIndex];
     NSArray *uniqueEANs;
-    uniqueEANs = [[ProductManager sharedManager].products valueForKeyPath:@"@distinctUnionOfObjects.ean"];
+    uniqueEANs = [[ProductManager sharedManager].products
+                  valueForKeyPath:@"@distinctUnionOfObjects.ean"];
     NSMutableString *productEANs = [NSMutableString string];
     for (NSString *ean in uniqueEANs) {
       [productEANs appendString:[NSString stringWithFormat:@",%@", ean]];
     }
     if ([productEANs length] != 0) {
-      productEANs = [productEANs substringWithRange:NSMakeRange(1, ([productEANs length] - 1))];
+      productEANs = [productEANs substringWithRange:NSMakeRange(
+        1, ([productEANs length] - 1))];
       NSString *url;
-      url = [NSString stringWithFormat:@"%@/%@/gcc/home_interactions/%@", kOddbBaseURL, lang, productEANs];
+      url = [NSString stringWithFormat:
+        @"%@/%@/gcc/home_interactions/%@", kOddbBaseURL, lang, productEANs];
       [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
     }
   }
@@ -367,7 +385,8 @@ static const float kCellHeight = 83.0;
     self.settings = [[SettingsViewController alloc] init];
   }
   self.settings.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  UINavigationController *settingsNavigation = [[UINavigationController alloc] initWithRootViewController: self.settings];
+  UINavigationController *settingsNavigation = [[UINavigationController alloc]
+    initWithRootViewController: self.settings];
   [self presentViewController:settingsNavigation animated:YES completion:nil];
 }
 
@@ -384,11 +403,12 @@ static const float kCellHeight = 83.0;
 didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   if (![self isReachable]) {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Keine Verbindung zum Internet!"
-                                                    message:nil
-                                                   delegate:self
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc]
+      initWithTitle:@"Keine Verbindung zum Internet!"
+            message:nil
+           delegate:self
+  cancelButtonTitle:@"OK"
+  otherButtonTitles:nil];
     [alert show];
     return;
   }
@@ -399,14 +419,17 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     break;
   }
   NSString *ean = [NSString stringWithString:symbol.data];
-  NSInteger selectedTypeIndex = [self.userDefaults integerForKey:@"search.result.type"];
+  NSInteger selectedTypeIndex = [self.userDefaults
+    integerForKey:@"search.result.type"];
   NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
   if ([ean length] != 13) {
     [self notFoundEan:ean];
   } else {
     // API Request
-    UIImage *barcode = [info objectForKey: UIImagePickerControllerOriginalImage];
-    NSString *searchURL = [NSString stringWithFormat:@"%@/%@", kOddbProductSearchBaseURL, ean];
+    UIImage *barcode = [info objectForKey:
+      UIImagePickerControllerOriginalImage];
+    NSString *searchURL = [NSString stringWithFormat:
+      @"%@/%@", kOddbProductSearchBaseURL, ean];
     NSURL *productSearch = [NSURL URLWithString:searchURL];
     AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
     session.requestSerializer = [AFJSONRequestSerializer serializer];
@@ -434,7 +457,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self.reader dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)didFinishPicking:(id)json withEan:(NSString *)ean barcode:(UIImage *)barcode
+- (void)didFinishPicking:(id)json
+                 withEan:(NSString *)ean
+                 barcode:(UIImage *)barcode
 {
   if (json == nil || [(NSArray *)json count] == 0) {
     [self notFoundEan:ean];
@@ -454,7 +479,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       @"size"      : [json valueForKeyPath:@"size"],
       @"deduction" : [json valueForKeyPath:@"deduction"],
       @"price"     : [json valueForKeyPath:@"price"],
-      @"category"  : [[json valueForKeyPath:@"category"] stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "],
+      @"category"  : [[json valueForKeyPath:@"category"]
+        stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "],
       @"barcode"   : [manager storeBarcode:barcode ofEan:ean to:@"both"],
       @"ean"       : ean,
       @"datetime"  : datetime,
@@ -478,12 +504,14 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       } else {
         publicPrice = [NSString stringWithFormat:@"CHF: %@", product.price];
       }
-      NSString *message = [NSString stringWithFormat:@"%@,\n%@\n%@", product.name, product.size, publicPrice];
-      UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Generika.cc sagt:"
-                                                      message:message
-                                                     delegate:self
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles:nil];
+      NSString *message = [NSString stringWithFormat:
+        @"%@,\n%@\n%@", product.name, product.size, publicPrice];
+      UIAlertView *alert = [[UIAlertView alloc]
+        initWithTitle:@"Generika.cc sagt:"
+              message:message
+             delegate:self
+    cancelButtonTitle:@"OK"
+    otherButtonTitles:nil];
       [alert show];
     }
   }
@@ -492,11 +520,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)notFoundEan:(NSString *)ean
 {
   NSString *message = [NSString stringWithFormat:@"\"%@\"", ean];
-  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Kein Medikament gefunden auf Generika.cc mit dem folgenden EAN-Code:"
-                                                  message:message
-                                                 delegate:self
-                                        cancelButtonTitle:@"OK"
-                                        otherButtonTitles:nil];
+  UIAlertView *alert = [[UIAlertView alloc]
+    initWithTitle:
+    @"Kein Medikament gefunden auf Generika.cc mit dem folgenden EAN-Code:"
+          message:message
+         delegate:self
+  cancelButtonTitle:@"OK"
+  otherButtonTitles:nil];
   [alert show];
 }
 
@@ -530,17 +560,22 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)searchInfoForProduct:(Product *)product
 {
-  NSInteger selectedTypeIndex = [self.userDefaults integerForKey:@"search.result.type"];
+  NSInteger selectedTypeIndex = [self.userDefaults integerForKey:
+    @"search.result.type"];
   NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
-  NSInteger selectedLangIndex = [self.userDefaults integerForKey:@"search.result.lang"];
+  NSInteger selectedLangIndex = [self.userDefaults integerForKey:
+    @"search.result.lang"];
   NSString *lang = [[Constant searchLangs] objectAtIndex:selectedLangIndex];
   NSString *url;
   if ([type isEqualToString:@"Preisvergleich"]) {
-    url = [NSString stringWithFormat:@"%@/%@/mobile/compare/ean13/%@", kOddbBaseURL, lang, product.ean];
+    url = [NSString stringWithFormat:@"%@/%@/mobile/compare/ean13/%@",
+           kOddbBaseURL, lang, product.ean];
   } else if ([type isEqualToString:@"PI"]) {
-    url = [NSString stringWithFormat:@"%@/%@/mobile/patinfo/reg/%@/seq/%@", kOddbBaseURL, lang, product.reg, product.seq];
+    url = [NSString stringWithFormat:@"%@/%@/mobile/patinfo/reg/%@/seq/%@",
+           kOddbBaseURL, lang, product.reg, product.seq];
   } else if ([type isEqualToString:@"FI"]) {
-    url = [NSString stringWithFormat:@"%@/%@/mobile/fachinfo/reg/%@", kOddbBaseURL, lang, product.reg];
+    url = [NSString stringWithFormat:@"%@/%@/mobile/fachinfo/reg/%@",
+           kOddbBaseURL, lang, product.reg];
   }
   [self openWebViewWithURL:[NSURL URLWithString:url]];
 }
@@ -548,9 +583,12 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)openWebViewWithURL:(NSURL *)url
 {
   // User-Agent
-  NSString *originAgent = [[NSURLRequest requestWithURL:url] valueForHTTPHeaderField:@"User-Agent"];
-  NSString *userAgent = [NSString stringWithFormat:@"%@ %@", originAgent, kOddbMobileFlavorUserAgent];
-  NSDictionary *dictionnary = [NSDictionary dictionaryWithObjectsAndKeys:userAgent, @"UserAgent", nil];
+  NSString *originAgent = [[NSURLRequest requestWithURL:url]
+                           valueForHTTPHeaderField:@"User-Agent"];
+  NSString *userAgent = [NSString stringWithFormat:
+    @"%@ %@", originAgent, kOddbMobileFlavorUserAgent];
+  NSDictionary *dictionnary = [NSDictionary
+    dictionaryWithObjectsAndKeys:userAgent, @"UserAgent", nil];
   [_userDefaults registerDefaults:dictionnary];
 
   if (!self.browser) {
@@ -568,50 +606,58 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   return 1;
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell
+- (void)tableView:(UITableView *)tableView
+  willDisplayCell:(UITableViewCell *)cell
 {
   [self layoutCellSeparator:cell];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView
+  numberOfRowsInSection:(NSInteger)section
 {
-  if (tableView == self.search.searchResultsTableView) {
+  if (self.search.active) {
     return self.filtered.count;
   } else {
     return [[ProductManager sharedManager].products count];
   }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView
+  heightForRowAtIndexPath:(NSIndexPath *)indexPath {
   return kCellHeight;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   static NSString *cellIdentifier = @"Cell";
   CGRect cellFrame = CGRectMake(0, 0, tableView.frame.size.width, 100);
-  UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                 reuseIdentifier:cellIdentifier];
+  UITableViewCell *cell = [[UITableViewCell alloc]
+    initWithStyle:UITableViewCellStyleDefault
+  reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
+  UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(
+      0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:productView];
 
   // gesture
   UILongPressGestureRecognizer *longPressGesture;
-  if (tableView == self.search.searchResultsTableView) {
+  if (self.search.active) {
     // TODO (currently does nothing)
-    longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:nil];
+    longPressGesture = [[UILongPressGestureRecognizer alloc]
+      initWithTarget:self action:nil];
     longPressGesture.minimumPressDuration = 0.9; // seconds
     longPressGesture.delegate = self;
   } else {
-    longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
+    longPressGesture = [[UILongPressGestureRecognizer alloc]
+      initWithTarget:self action:@selector(longPress:)];
     longPressGesture.minimumPressDuration = 1.2; // seconds
     longPressGesture.delegate = self;
   }
   [cell addGestureRecognizer:longPressGesture];
 
   Product *product;
-  if (tableView == self.search.searchResultsTableView) {
+  if (self.search.active) {
     product = [self.filtered objectAtIndex:indexPath.row];
   } else {
     product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
@@ -619,7 +665,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   NSString *barcodePath = product.barcode;
   if (barcodePath) { // replace absolute path
     NSRange range = [barcodePath rangeOfString:@"/Documents/"];
-    if (range.location != NSNotFound) { // like stringByAbbreviatingWithTildeInPath
+    // like stringByAbbreviatingWithTildeInPath
+    if (range.location != NSNotFound) {
       barcodePath = [NSString stringWithFormat:@"~%@",
         [barcodePath substringFromIndex:range.location]];
     }
@@ -627,20 +674,24 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL exist = [fileManager fileExistsAtPath:barcodePath isDirectory:NO];
     if (exist) {
-      UIImage *barcodeImage = [[UIImage alloc] initWithContentsOfFile:barcodePath];
-      UIImageView *barcodeView = [[UIImageView alloc] initWithImage:barcodeImage];
+      UIImage *barcodeImage = [[UIImage alloc]
+        initWithContentsOfFile:barcodePath];
+      UIImageView *barcodeView = [[UIImageView alloc]
+        initWithImage:barcodeImage];
       [cell.contentView addSubview:barcodeView];
     }
   }
   // name
-  UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 2.0, 230.0, 25.0)];
+  UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+      70.0, 2.0, 230.0, 25.0)];
   nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
   nameLabel.textAlignment = kTextAlignmentLeft;
   nameLabel.textColor = [UIColor blackColor];
   nameLabel.text = product.name;
   [cell.contentView addSubview:nameLabel];
   // size
-  UILabel *sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 26.0, 110.0, 16.0)];
+  UILabel *sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+      70.0, 26.0, 110.0, 16.0)];
   sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
   sizeLabel.textAlignment = kTextAlignmentLeft;
   sizeLabel.textColor = [UIColor blackColor];
@@ -648,7 +699,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [cell.contentView addSubview:sizeLabel];
   // datetime
   if (product.datetime) {
-    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(175.0, 27.0, 100.0, 16.0)];
+    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        175.0, 27.0, 100.0, 16.0)];
     dateLabel.font = [UIFont systemFontOfSize:12.0];
     dateLabel.textAlignment = kTextAlignmentLeft;
     dateLabel.textColor = [UIColor grayColor];
@@ -656,7 +708,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [cell.contentView addSubview:dateLabel];
   }
   // price
-  UILabel *priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 45.0, 60.0, 16.0)];
+  UILabel *priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+      70.0, 45.0, 60.0, 16.0)];
   priceLabel.font = [UIFont systemFontOfSize:12.0];
   priceLabel.textAlignment = kTextAlignmentLeft;
   priceLabel.textColor = [UIColor grayColor];
@@ -666,7 +719,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
   [cell.contentView addSubview:priceLabel];
   // deduction
-  UILabel *deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(125.0, 45.0, 60.0, 16.0)];
+  UILabel *deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+      125.0, 45.0, 60.0, 16.0)];
   deductionLabel.font = [UIFont systemFontOfSize:12.0];
   deductionLabel.textAlignment = kTextAlignmentLeft;
   deductionLabel.textColor = [UIColor grayColor];
@@ -676,21 +730,24 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
   [cell.contentView addSubview:deductionLabel];
   // category
-  UILabel *categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(176.0, 45.0, 190.0, 16.0)];
+  UILabel *categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+      176.0, 45.0, 190.0, 16.0)];
   categoryLabel.font = [UIFont systemFontOfSize:12.0];
   categoryLabel.textAlignment = kTextAlignmentLeft;
   categoryLabel.textColor = [UIColor grayColor];
   categoryLabel.text = product.category;
   [cell.contentView addSubview:categoryLabel];
   // ean
-  UILabel *eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 62.0, 110.0, 16.0)];
+  UILabel *eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+      70.0, 62.0, 110.0, 16.0)];
   eanLabel.font = [UIFont systemFontOfSize:12.0];
   eanLabel.textAlignment = kTextAlignmentLeft;
   eanLabel.textColor = [UIColor grayColor];
   eanLabel.text = product.ean;
   [cell.contentView addSubview:eanLabel];
   // expires_at
-  UILabel *expiresAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(175.0, 62.0, 100.0, 16.0)];
+  UILabel *expiresAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+      175.0, 62.0, 100.0, 16.0)];
   expiresAtLabel.textAlignment = kTextAlignmentLeft;
   expiresAtLabel.tag = 7;
   if (product.expiresAt && [product.expiresAt length] != 0) {
@@ -701,7 +758,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
     [dateFormat setDateFormat:@"dd.MM.yyyy HH:mm:ss"];
-    NSDate *expiresAt = [dateFormat dateFromString:[NSString stringWithFormat:@"01.%@ 02:00:00", product.expiresAt]];
+    NSDate *expiresAt = [dateFormat
+      dateFromString:[NSString stringWithFormat:
+                      @"01.%@ 02:00:00", product.expiresAt]];
     if ([current compare: expiresAt] == NSOrderedDescending) {
       // current date is already later than expiration date
       expiresAtLabel.textColor = [UIColor redColor];
@@ -719,20 +778,23 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   return cell;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)tableView:(UITableView *)tableView
+  canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (tableView == self.search.searchResultsTableView) {
+  if (self.search.active) {
     return NO;
   } else {
     return YES;
   }
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-                                            forRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView
+  commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+   forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    Product *product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
+    Product *product = [[ProductManager sharedManager]
+      productAtIndex:indexPath.row];
     NSString *barcodePath = product.barcode;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
@@ -741,7 +803,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [fileManager removeItemAtPath:barcodePath error:&error];
     ProductManager* manager = [ProductManager sharedManager];
     // manager removes product
-    //[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    // [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+    //                  withRowAnimation:UITableViewRowAnimationFade];
     [manager removeProductAtIndex:indexPath.row];
     [self refresh];
   } else {
@@ -764,16 +827,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)tableView:(UITableView *)tableView
+  canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (tableView == self.search.searchResultsTableView) {
+  if (self.search.active) {
     return NO;
   } else {
     return YES;
   }
 }
 
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+- (void)tableView:(UITableView *)tableView
+  moveRowAtIndexPath:(NSIndexPath *)fromIndexPath
+         toIndexPath:(NSIndexPath *)toIndexPath
 {
   if (fromIndexPath.section == toIndexPath.section) {
     ProductManager *manager = [ProductManager sharedManager];
@@ -783,10 +849,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView
+  didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
   Product *product;
-  if (tableView == self.search.searchResultsTableView) {
+  if (self.search.active) {
     product = [self.filtered objectAtIndex:indexPath.row];
   } else {
     product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
@@ -797,7 +864,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath: (NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView
+  didDeselectRowAtIndexPath: (NSIndexPath *)indexPath
 {
   self.navigationItem.rightBarButtonItem.enabled = YES;
 }
@@ -815,48 +883,65 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     UITableViewCell *cell = (UITableViewCell *)[gesture view];
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     self.pickerIndexPath = indexPath;
-    
+
     if (!self.datePicker) {
-      self.datePicker = [[NTMonthYearPicker alloc] initWithFrame:CGRectMake(0, 0, 300, 140)];
+      self.datePicker = [[NTMonthYearPicker alloc] initWithFrame:CGRectMake(
+          0, 0, 300, 140)];
       self.datePicker.hidden = NO;
     }
     Product *product;
-    if (self.view == self.search.searchResultsTableView) {
+    if (self.search.active) {
       product = [self.filtered objectAtIndex:indexPath.row];
     } else {
       product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
     }
     // for min value
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDate *currentDate = [NSDate date]; 
-    NSDateComponents *dateComponents = [calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay)
-						   fromDate:currentDate];
+    NSCalendar *calendar = [[NSCalendar alloc]
+      initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDate *currentDate = [NSDate date];
+    NSDateComponents *dateComponents = [calendar components:(
+        NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay)
+			  fromDate:currentDate];
     // set 01.01.2017 as minimum date
     [dateComponents setYear:-(dateComponents.year - 2017)];
     [dateComponents setMonth:-(dateComponents.month - 1)];
     [dateComponents setDay:-(dateComponents.day - 1)];
-    NSDate *minDate = [calendar dateByAddingComponents:dateComponents toDate:currentDate options:0];
+    NSDate *minDate = [calendar dateByAddingComponents:dateComponents
+                                                toDate:currentDate
+                                               options:0];
     [self.datePicker setMinimumDate:minDate];
     // set date as initial value
     if (product.expiresAt && [product.expiresAt length] != 0) {
       NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
       [dateFormat setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
       [dateFormat setDateFormat:@"dd.MM.yyyy HH:mm:ss"];
-      NSDate *expiresAt = [dateFormat dateFromString:[NSString stringWithFormat:@"01.%@ 00:00:00", product.expiresAt]];
+      NSDate *expiresAt = [dateFormat dateFromString:[NSString
+        stringWithFormat:@"01.%@ 00:00:00", product.expiresAt]];
       self.datePicker.date = expiresAt;
     } else {
       self.datePicker.date = currentDate;
     }
 
-    [self.datePicker addTarget:self action:@selector(changeDate:) forControlEvents:UIControlEventValueChanged];
-    UIView *viewForDatePicker = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 140)];
+    [self.datePicker addTarget:self
+                        action:@selector(changeDate:)
+              forControlEvents:UIControlEventValueChanged];
+    UIView *viewForDatePicker = [[UIView alloc]
+      initWithFrame:CGRectMake(0, 0, 300, 140)];
     [viewForDatePicker addSubview:self.datePicker];
     UIViewController *viewController = [[UIViewController alloc] init];
     [viewController.view addSubview:viewForDatePicker];
 
-    self.popOverForDatePicker = [[UIPopoverController alloc] initWithContentViewController:viewController];
-    [self.popOverForDatePicker setPopoverContentSize:CGSizeMake(300, 140) animated:NO];
-    [self.popOverForDatePicker presentPopoverFromRect:cell.frame inView:self.view permittedArrowDirections:(UIPopoverArrowDirectionUp|UIPopoverArrowDirectionDown) animated:YES];
+    self.popOverForDatePicker = [[UIPopoverController alloc]
+      initWithContentViewController:viewController];
+    [self.popOverForDatePicker
+      setPopoverContentSize:CGSizeMake(300, 140)
+                   animated:NO];
+    [self.popOverForDatePicker
+      presentPopoverFromRect:cell.frame
+                      inView:self.view
+    permittedArrowDirections:(
+        UIPopoverArrowDirectionUp|UIPopoverArrowDirectionDown)
+                    animated:YES];
   }
 }
 
@@ -864,58 +949,65 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
   [dateFormat setDateFormat:@"MM.YYYY"];
-  NSString *value = [NSString stringWithFormat:@"%@", [dateFormat stringFromDate:self.datePicker.date]];
+  NSString *value = [NSString stringWithFormat:@"%@",
+    [dateFormat stringFromDate:self.datePicker.date]];
 
   if (self.popOverForDatePicker) {
     NSIndexPath *indexPath = self.pickerIndexPath;
-    UITableViewCell *cell = [self.productsView cellForRowAtIndexPath:indexPath];
+    UITableViewCell *cell = [self.productsView
+                             cellForRowAtIndexPath:indexPath];
     if (cell) {
       ProductManager *manager = [ProductManager sharedManager];
       Product *product;
-      if (self.view == self.search.searchResultsTableView) {
-	product = [self.filtered objectAtIndex:indexPath.row];
+      if (self.search.active) {
+	      product = [self.filtered objectAtIndex:indexPath.row];
       } else {
-	product = [manager productAtIndex:indexPath.row];
+	      product = [manager productAtIndex:indexPath.row];
       }
       if (value && [value length] != 0) {
-	product.expiresAt = value;
-	[manager save];
+        product.expiresAt = value;
+        [manager save];
 
-	// expires_at
-	UILabel *expiresAtLabel = [cell.contentView viewWithTag:7];
-        expiresAtLabel.font = [UIFont boldSystemFontOfSize:12.0];
-	expiresAtLabel.textAlignment = kTextAlignmentLeft;
-	expiresAtLabel.text = value;
+        // expires_at
+        UILabel *expiresAtLabel = [cell.contentView viewWithTag:7];
+              expiresAtLabel.font = [UIFont boldSystemFontOfSize:12.0];
+        expiresAtLabel.textAlignment = kTextAlignmentLeft;
+        expiresAtLabel.text = value;
       }
     }
   }
 }
 
-#pragma mark - Searchbar
+#pragma mark - UISearchbar delegate
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
   [self setEditing:NO animated:YES];
-
-  [self layoutTableViewSeparator:self.search.searchResultsTableView];
 }
 
-- (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope
+- (void)filterContentForSearchText:(NSString *)searchText
+                             scope:(NSString *)scope
 {
   [self.filtered removeAllObjects];
-  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K contains[cd] %@", @"name", searchText];
-  self.filtered = [NSMutableArray arrayWithArray:[[ProductManager sharedManager].products filteredArrayUsingPredicate:predicate]];
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:
+    @"%K contains[cd] %@", @"name", searchText];
+  self.filtered = [NSMutableArray arrayWithArray:[
+    [ProductManager sharedManager].products
+      filteredArrayUsingPredicate:predicate]];
 }
 
 
-#pragma mark - UISearchDisplaycontroller delegate
+#pragma mark - UISearchResultUpdating delegate
 
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
+- (void)updateSearchResultsForSearchController:
+    (UISearchController *)searchController
 {
+  NSString *searchString = searchController.searchBar.text;
   [self filterContentForSearchText:searchString
                              scope:[[self.search.searchBar scopeButtonTitles]
-                     objectAtIndex:[self.search.searchBar selectedScopeButtonIndex]]];
-  return YES;
+                     objectAtIndex:
+    [self.search.searchBar selectedScopeButtonIndex]]];
+  [self refresh];
 }
 
 @end

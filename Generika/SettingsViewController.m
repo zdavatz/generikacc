@@ -281,7 +281,7 @@ static const float kCellHeight = 44.0; // default = 44.0
       break;
     default:
       // unexpected
-      return [NSDictionary dictionaryWithObjectsAndKeys:nil];
+      return @{};
       break;
   }
 }
