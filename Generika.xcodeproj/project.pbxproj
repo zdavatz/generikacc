@@ -44,6 +44,8 @@
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */; };
 		9384B5291FDC1BB900E50637 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9384B5281FDC1BB900E50637 /* Images-2.xcassets */; };
+		9384B52B1FDC1D4100E50637 /* generika in Resources */ = {isa = PBXBuildFile; fileRef = 9384B52A1FDC1D4000E50637 /* generika */; };
+		9384B52D1FDC1FFA00E50637 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9384B52C1FDC1FFA00E50637 /* Default-568h@2x.png */; };
 		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
 /* End PBXBuildFile section */
 
@@ -105,6 +107,8 @@
 		8BE0B9CB1F547A2800B68E3B /* UIPopoverController+iPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIPopoverController+iPhone.h"; sourceTree = "<group>"; };
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
 		9384B5281FDC1BB900E50637 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Images-2.xcassets"; sourceTree = "<group>"; };
+		9384B52A1FDC1D4000E50637 /* generika */ = {isa = PBXFileReference; lastKnownFileType = folder; name = generika; path = resources/generika; sourceTree = "<group>"; };
+		9384B52C1FDC1FFA00E50637 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.release.xcconfig"; sourceTree = "<group>"; };
 		B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
@@ -168,6 +172,7 @@
 		819273581535D56D0060859C = {
 			isa = PBXGroup;
 			children = (
+				9384B52C1FDC1FFA00E50637 /* Default-568h@2x.png */,
 				8192736D1535D56E0060859C /* Generika */,
 				819273911535D56E0060859C /* GenerikaTests */,
 				819273661535D56E0060859C /* Frameworks */,
@@ -284,6 +289,7 @@
 		81FEDA1F1538962900756CAE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9384B52A1FDC1D4000E50637 /* generika */,
 				81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */,
 			);
 			name = Resources;
@@ -381,6 +387,8 @@
 			files = (
 				819273721535D56E0060859C /* InfoPlist.strings in Resources */,
 				9384B5291FDC1BB900E50637 /* Images-2.xcassets in Resources */,
+				9384B52B1FDC1D4100E50637 /* generika in Resources */,
+				9384B52D1FDC1FFA00E50637 /* Default-568h@2x.png in Resources */,
 				81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
