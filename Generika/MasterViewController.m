@@ -431,11 +431,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     NSString *searchURL = [NSString stringWithFormat:
       @"%@/%@", kOddbProductSearchBaseURL, ean];
     NSURL *productSearch = [NSURL URLWithString:searchURL];
+    // https://github.com/AFNetworking/AFNetworking/wiki/ \
+    //   AFNetworking-3.0-Migration-Guide#afnetworking-3x-1
     AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
     session.requestSerializer = [AFJSONRequestSerializer serializer];
     [session GET:[productSearch absoluteString]
       parameters:nil
-      success:^(NSURLSessionDataTask *task, id responseObject) {
+         success:^(NSURLSessionTask *task, id responseObject) {
         ProductManager *manager = [ProductManager sharedManager];
         NSUInteger before = [manager.products count];
         [self didFinishPicking:responseObject withEan:ean barcode:barcode];
@@ -445,7 +447,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
           [self searchInfoForProduct:product];
         }
       }
-      failure:^(NSURLSessionDataTask *task, NSError *error) {
+      failure:^(NSURLSessionTask *task, NSError *error) {
         // pass
       }];
     // open oddb.org
