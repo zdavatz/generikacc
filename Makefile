@@ -1,7 +1,10 @@
 # -- testing
+ifeq (, $(OS_VERSION))
+	OS_VERSION=latest
+endif
 
 test:
-	./bin/test-runner All
+	OS_VERSION=$(OS_VERSION) ./bin/test-runner All
 .PHONY: test
 
 .DEFAULT_GOAL = test

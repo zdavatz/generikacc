@@ -128,15 +128,21 @@ ZBarSDK
 
 ## Test
 
-Run [XCTest](https://developer.apple.com/documentation/xctest?language=objc)
+Run [XCTest](https://developer.apple.com/documentation/xctest?language=objc).
+
+`test-runner` script supports multiple versions of _iphonesimulator_.
 
 ```zsh
-# same as ./bin/test-runner All, see `test-runner` script
+# same as OS_VERSION="latest" ./bin/test-runner All, see `test-runner` script
 % make test
+% OS_VERSION="10.3.1" make test
 
 # run single test case
-% ./bin/test-runner ProductTest/testInit
+% OS_VERSION="latest" ./bin/test-runner ProductTest/testInit
+% OS_VERSION="10.3.1" ./bin/test-runner ProductTest/testInit
 ```
+
+About target versions, see also _matrix_ in `.travis.yml`.
 
 
 ## Licence
