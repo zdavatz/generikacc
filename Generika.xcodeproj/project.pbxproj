@@ -13,6 +13,9 @@
 		8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8129BA58153D480100CB5896 /* SystemConfiguration.framework */; };
 		812B9A4D17AF7DF50001A5A8 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */; };
 		812B9A4E17AF7DF50001A5A8 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */; };
+		812C846F1FDCEB660020AD87 /* images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 812C846E1FDCEB650020AD87 /* images.xcassets */; };
+		812C84741FDCEB7B0020AD87 /* screen in Resources */ = {isa = PBXBuildFile; fileRef = 812C84711FDCEB7B0020AD87 /* screen */; };
+		812C84751FDCEB7B0020AD87 /* icon in Resources */ = {isa = PBXBuildFile; fileRef = 812C84721FDCEB7B0020AD87 /* icon */; };
 		8145D9EC1FD3D959002779FD /* ProductTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8145D9EB1FD3D958002779FD /* ProductTests.m */; };
 		8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
 		8148C65C17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
@@ -43,10 +46,6 @@
 		81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */; };
-		9384B5291FDC1BB900E50637 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9384B5281FDC1BB900E50637 /* Images-2.xcassets */; };
-		9384B52D1FDC1FFA00E50637 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9384B52C1FDC1FFA00E50637 /* Default-568h@2x.png */; };
-		9384B52F1FDC230E00E50637 /* icon in Resources */ = {isa = PBXBuildFile; fileRef = 9384B52E1FDC230E00E50637 /* icon */; };
-		9384B5311FDC231800E50637 /* screen in Resources */ = {isa = PBXBuildFile; fileRef = 9384B5301FDC231800E50637 /* screen */; };
 		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
 /* End PBXBuildFile section */
 
@@ -71,6 +70,9 @@
 		8129BA58153D480100CB5896 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		812B9A4B17AF7DF50001A5A8 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		812C846E1FDCEB650020AD87 /* images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = images.xcassets; path = resources/images.xcassets; sourceTree = "<group>"; };
+		812C84711FDCEB7B0020AD87 /* screen */ = {isa = PBXFileReference; lastKnownFileType = folder; name = screen; path = resources/screen; sourceTree = "<group>"; };
+		812C84721FDCEB7B0020AD87 /* icon */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icon; path = resources/icon; sourceTree = "<group>"; };
 		8145D9EB1FD3D958002779FD /* ProductTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductTests.m; sourceTree = "<group>"; };
 		8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsDetailViewController.h; sourceTree = "<group>"; };
 		8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsDetailViewController.m; sourceTree = "<group>"; };
@@ -82,7 +84,7 @@
 		819273691535D56E0060859C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8192736B1535D56E0060859C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		8192736F1535D56E0060859C /* Generika-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Generika-Info.plist"; sourceTree = "<group>"; };
-		819273711535D56E0060859C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		819273711535D56E0060859C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = resources/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		819273731535D56E0060859C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		819273751535D56E0060859C /* Generika-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Generika-Prefix.pch"; sourceTree = "<group>"; };
 		819273761535D56E0060859C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -90,7 +92,7 @@
 		8192737F1535D56E0060859C /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
 		819273801535D56E0060859C /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
 		819273931535D56E0060859C /* GenerikaTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GenerikaTests-Info.plist"; sourceTree = "<group>"; };
-		819273951535D56E0060859C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		819273951535D56E0060859C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = resources/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		819273981535D56E0060859C /* GenerikaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GenerikaTests.m; sourceTree = "<group>"; };
 		819273A21535D5D90060859C /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		819273A41535D6780060859C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -107,10 +109,6 @@
 		81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "fontawesome-webfont.ttf"; path = "resources/fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		8BE0B9CB1F547A2800B68E3B /* UIPopoverController+iPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIPopoverController+iPhone.h"; sourceTree = "<group>"; };
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
-		9384B5281FDC1BB900E50637 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Images-2.xcassets"; sourceTree = "<group>"; };
-		9384B52C1FDC1FFA00E50637 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		9384B52E1FDC230E00E50637 /* icon */ = {isa = PBXFileReference; lastKnownFileType = folder; path = icon; sourceTree = "<group>"; };
-		9384B5301FDC231800E50637 /* screen */ = {isa = PBXFileReference; lastKnownFileType = folder; path = screen; sourceTree = "<group>"; };
 		9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.release.xcconfig"; sourceTree = "<group>"; };
 		B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
@@ -174,7 +172,6 @@
 		819273581535D56D0060859C = {
 			isa = PBXGroup;
 			children = (
-				9384B52C1FDC1FFA00E50637 /* Default-568h@2x.png */,
 				8192736D1535D56E0060859C /* Generika */,
 				819273911535D56E0060859C /* GenerikaTests */,
 				819273661535D56E0060859C /* Frameworks */,
@@ -208,7 +205,6 @@
 				81B8CEBC17D473C300DF463B /* UI */,
 				81B8CEBD17D4762600DF463B /* Utility */,
 				81FEDA1F1538962900756CAE /* Resources */,
-				9384B5281FDC1BB900E50637 /* Images-2.xcassets */,
 				8192736E1535D56E0060859C /* Supporting Files */,
 			);
 			path = Generika;
@@ -291,8 +287,9 @@
 		81FEDA1F1538962900756CAE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9384B52E1FDC230E00E50637 /* icon */,
-				9384B5301FDC231800E50637 /* screen */,
+				812C84721FDCEB7B0020AD87 /* icon */,
+				812C84711FDCEB7B0020AD87 /* screen */,
+				812C846E1FDCEB650020AD87 /* images.xcassets */,
 				81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */,
 			);
 			name = Resources;
@@ -388,11 +385,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9384B5311FDC231800E50637 /* screen in Resources */,
+				812C84741FDCEB7B0020AD87 /* screen in Resources */,
+				812C846F1FDCEB660020AD87 /* images.xcassets in Resources */,
 				819273721535D56E0060859C /* InfoPlist.strings in Resources */,
-				9384B52F1FDC230E00E50637 /* icon in Resources */,
-				9384B5291FDC1BB900E50637 /* Images-2.xcassets in Resources */,
-				9384B52D1FDC1FFA00E50637 /* Default-568h@2x.png in Resources */,
+				812C84751FDCEB7B0020AD87 /* icon in Resources */,
 				81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -686,6 +682,7 @@
 			baseConfigurationReference = D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
@@ -739,6 +736,7 @@
 			baseConfigurationReference = 0CF9631F19C2569452A76CE5 /* Pods-Generika.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
@@ -892,6 +890,7 @@
 			baseConfigurationReference = B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
