@@ -2,13 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Icon-App-Small-50.png",
+      "filename" : "Icon-App-76.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Icon-App-Small-50@2x.png",
+      "filename" : "Icon-App-76@2x.png",
       "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {
