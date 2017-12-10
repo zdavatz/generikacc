@@ -14,9 +14,9 @@ Arguments:
   <target>    test target (through only-testing) [optional]
 
 Examples:
-  $ test-runner All
-  $ test-runner ProductTests
-  $ test-runner ProductTests/testInit
+  $ OS_VERSION="latest" test-runner All
+  $ OS_VERSION="11.2" test-runner ProductTests
+  $ OS_VERSION="11.2" test-runner ProductTests/testInit
 USG
 }
 
@@ -26,7 +26,12 @@ function run_test() {
   platform="iOS Simulator"
   name="iPhone 6"
   sdk="iphonesimulator"
-  os="11.2"
+  if [ "${OS_VERSION}" == "" || "${OS_VERSION}" == "latest" ]; then
+    # set latest version
+    os="11.2"
+  else
+    os="${OS_VERSION}"
+  fi
 
   destination="platform=${platform},name=${name},OS=${os}"
 
