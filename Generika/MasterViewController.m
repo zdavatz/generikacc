@@ -67,7 +67,8 @@ static const float kCellHeight = 83.0;
 
 - (void)dealloc
 {
-  [_filtered removeAllObjects], _filtered = nil;
+  [_filtered removeAllObjects];
+  _filtered = nil;
   _userDefaults = nil;
   _reachability = nil;
   [self didReceiveMemoryWarning];
@@ -138,7 +139,7 @@ static const float kCellHeight = 83.0;
 {
   [super viewDidLoad];
   if (self.productsView && [self.productsView respondsToSelector:@selector(
-      setCellLayoutMarginsFallowReadableWidth:)]) {
+      setCellLayoutMarginsFollowReadableWidth:)]) {
     self.productsView.cellLayoutMarginsFollowReadableWidth = NO;
   }
   // navigation item

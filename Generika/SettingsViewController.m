@@ -13,7 +13,8 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 @interface SettingsViewController ()
 
-@property (nonatomic, strong, readwrite) SettingsDetailViewController *settingsDetail;
+@property (nonatomic, strong, readwrite) SettingsDetailViewController
+  *settingsDetail;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *settingsView;
 @property (nonatomic, strong, readwrite) NSArray *entries;
@@ -30,7 +31,8 @@ static const float kCellHeight = 44.0; // default = 44.0
   self = [super initWithNibName:nil
                          bundle:nil];
   _userDefaults = [NSUserDefaults standardUserDefaults];
-  _entries = [NSArray arrayWithObjects:@"Search", @"Language", @"iCloud Sync", nil];
+  _entries = [NSArray arrayWithObjects:
+    @"Search", @"Language", @"iCloud Sync", nil];
   return self;
 }
 
@@ -86,13 +88,16 @@ static const float kCellHeight = 44.0; // default = 44.0
 {
   [super loadView];
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  self.settingsView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
+  self.settingsView = [[UITableView alloc]
+    initWithFrame:screenBounds
+            style:UITableViewStyleGrouped];
   self.settingsView.delegate = self;
   self.settingsView.dataSource = self;
   self.settingsView.rowHeight = kCellHeight;
-  self.view = self.settingsView;
 
-  [self layoutTableViewSeparator:self.view];
+  // attach settingsView as view
+  self.view = self.settingsView;
+  [self layoutTableViewSeparator:self.settingsView];
 }
 
 - (void)viewDidLayoutSubviews
@@ -105,10 +110,11 @@ static const float kCellHeight = 44.0; // default = 44.0
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"close"
-                                                                  style:UIBarButtonItemStylePlain
-                                                                 target:self
-                                                                 action:@selector(closeSettings)];
+  UIBarButtonItem *closeButton = [[UIBarButtonItem alloc]
+    initWithTitle:@"close"
+            style:UIBarButtonItemStylePlain
+           target:self
+           action:@selector(closeSettings)];
   self.navigationItem.leftBarButtonItem = closeButton;
 }
 
@@ -117,7 +123,8 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 - (void)closeSettings
 {
-  [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+  [self.presentingViewController dismissViewControllerAnimated:YES
+                                                    completion:nil];
 }
 
 
@@ -128,34 +135,44 @@ static const float kCellHeight = 44.0; // default = 44.0
   return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView
+  numberOfRowsInSection:(NSInteger)section
 {
   return 3;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)tableView:(UITableView *)tableView
+  heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   return kCellHeight;
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell
+- (void)tableView:(UITableView *)tableView
+  willDisplayCell:(UITableViewCell *)cell
 {
   [self layoutCellSeparator:cell];
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+- (UIView *)tableView:(UITableView *)tableView
+  viewForHeaderInSection:(NSInteger)section
 {
   CGFloat width  = tableView.frame.size.width;
   CGFloat height = [self tableView:tableView heightForHeaderInSection:section];
   CGRect headerRect = CGRectMake(0, 0, width, height);
   UIView *headerView = [[UIView alloc] initWithFrame:headerRect];
   headerView.backgroundColor = [UIColor clearColor];
-  float leftMargin = (tableView.frame.size.width - CGSizeMake(tableView.frame.size.width - 40.0, MAXFLOAT).width) / 2;
+  float leftMargin = (tableView.frame.size.width -
+                      CGSizeMake(
+                        tableView.frame.size.width - 40.0, MAXFLOAT
+                      ).width) / 2;
   UIFont  *sectionFont;
   UIColor *sectionColor;
   if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
     sectionFont = [UIFont boldSystemFontOfSize:17.0];
-    sectionColor = [UIColor colorWithRed:0.29 green:0.33 blue:0.42 alpha:1]; // default color
+    sectionColor = [UIColor colorWithRed:0.29
+                                   green:0.33
+                                    blue:0.42
+                                   alpha:1]; // default color
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
       leftMargin += 30.0;
     }
@@ -164,7 +181,8 @@ static const float kCellHeight = 44.0; // default = 44.0
     sectionColor = [UIColor grayColor];
     leftMargin -= 5.0;
   }
-  UILabel *sectionLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftMargin, 0, 300.0, height)];
+  UILabel *sectionLabel = [[UILabel alloc]
+    initWithFrame:CGRectMake(leftMargin, 0, 300.0, height)];
   sectionLabel.font = sectionFont;
   sectionLabel.textColor = sectionColor;
   sectionLabel.textAlignment = kTextAlignmentLeft;
@@ -181,16 +199,19 @@ static const float kCellHeight = 44.0; // default = 44.0
   return headerView;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+- (CGFloat)tableView:(UITableView *)tableView
+  heightForHeaderInSection:(NSInteger)section
 {
   return 50.0;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   static NSString *cellIdentifier = @"Cell";
-  UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                 reuseIdentifier:cellIdentifier];
+  UITableViewCell *cell = [[UITableViewCell alloc]
+    initWithStyle:UITableViewCellStyleDefault
+  reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   CGRect frame = cell.frame;
   // name
@@ -209,7 +230,8 @@ static const float kCellHeight = 44.0; // default = 44.0
   nameLabel.font = nameFont;
   nameLabel.textAlignment = kTextAlignmentLeft;
   nameLabel.textColor = [UIColor blackColor];
-  [nameLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
+  [nameLabel setAutoresizingMask:
+   UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
   nameLabel.backgroundColor = [UIColor clearColor];
   nameLabel.text = [self.entries objectAtIndex:indexPath.row];
   [cell.contentView addSubview:nameLabel];
@@ -233,15 +255,19 @@ static const float kCellHeight = 44.0; // default = 44.0
   optionLabel.textAlignment = kTextAlignmentRight;
   optionLabel.textColor = optionColor;
   optionLabel.backgroundColor = [UIColor clearColor];
-  [optionLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
+  [optionLabel setAutoresizingMask:
+   UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
   NSDictionary *context = [self contextFor:indexPath];
-  NSInteger selectedRow = [self.userDefaults integerForKey:[context objectForKey:@"key"]];
-  optionLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
+  NSInteger selectedRow = [self.userDefaults
+                           integerForKey:[context objectForKey:@"key"]];
+  optionLabel.text = [[context objectForKey:@"options"]
+                      objectAtIndex:selectedRow];
   [cell.contentView addSubview:optionLabel];
   return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView
+  didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
   // next
@@ -254,7 +280,8 @@ static const float kCellHeight = 44.0; // default = 44.0
   }
   self.settingsDetail.options    = [context objectForKey:@"options"];
   self.settingsDetail.defaultKey = [context objectForKey:@"key"];
-  [self.navigationController pushViewController:self.settingsDetail animated:YES];
+  [self.navigationController
+   pushViewController:self.settingsDetail animated:YES];
 }
 
 - (NSDictionary *)contextFor:(NSIndexPath *)indexPath
@@ -280,8 +307,7 @@ static const float kCellHeight = 44.0; // default = 44.0
                               nil];
       break;
     default:
-      // unexpected
-      return @{};
+      return @{}; // unexpected
       break;
   }
 }
