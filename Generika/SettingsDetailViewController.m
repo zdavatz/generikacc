@@ -55,13 +55,16 @@ static const float kCellHeight = 44.0; // default = 44.0
   [super loadView];
 
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  self.detailView = [[UITableView alloc] initWithFrame:screenBounds style:UITableViewStyleGrouped];
+  self.detailView = [[UITableView alloc]
+    initWithFrame:screenBounds
+            style:UITableViewStyleGrouped];
   self.detailView.delegate = self;
   self.detailView.dataSource = self;
   self.detailView.rowHeight = kCellHeight;
-  self.view = self.detailView;
 
-  [self layoutTableViewSeparator:self.view];
+  // attach detailView as self.view
+  self.view = self.detailView;
+  [self layoutTableViewSeparator:self.detailView];
 }
 
 - (void)viewDidLayoutSubviews
@@ -89,7 +92,8 @@ static const float kCellHeight = 44.0; // default = 44.0
   if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
     cell.separatorInset = UIEdgeInsetsZero;
   }
-  if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+  if ([cell respondsToSelector:@selector(
+      setPreservesSuperviewLayoutMargins:)]) {
     cell.preservesSuperviewLayoutMargins = NO;
   }
   if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
@@ -112,7 +116,8 @@ static const float kCellHeight = 44.0; // default = 44.0
   return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section
 {
   if ([self isSwitch]) {
     return 1;
@@ -121,21 +126,25 @@ static const float kCellHeight = 44.0; // default = 44.0
   }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)tableView:(UITableView *)tableView
+  heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   return kCellHeight;
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell
+- (void)tableView:(UITableView *)tableView
+  willDisplayCell:(UITableViewCell *)cell
 {
   [self layoutCellSeparator:cell];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   static NSString *cellIdentifier = @"Cell";
-  UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                 reuseIdentifier:cellIdentifier];
+  UITableViewCell *cell = [[UITableViewCell alloc]
+    initWithStyle:UITableViewCellStyleDefault
+  reuseIdentifier:cellIdentifier];
   // name
   CGRect nameFrame;
   UIFont *nameFont;
@@ -174,13 +183,15 @@ static const float kCellHeight = 44.0; // default = 44.0
   return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView
+  didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (![self isSwitch]) {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.row != self.selectedPath.row) {
       // uncheck
-      UITableViewCell *prev = [tableView cellForRowAtIndexPath:self.selectedPath];
+      UITableViewCell *prev = [tableView
+        cellForRowAtIndexPath:self.selectedPath];
       prev.accessoryType = UITableViewCellAccessoryNone;
       // check & store
       UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
@@ -207,9 +218,12 @@ static const float kCellHeight = 44.0; // default = 44.0
   [self.userDefaults synchronize];
   if ([value boolValue]) {
     ProductManager *manager = [ProductManager sharedManager];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-      [manager load];
-    });
+    dispatch_async(
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+      ^(void) {
+        [manager load];
+      }
+    );
   }
 }
 

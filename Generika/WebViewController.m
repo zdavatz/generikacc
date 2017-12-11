@@ -16,6 +16,7 @@
 @property (nonatomic, strong, readwrite) UIActivityIndicatorView *indicator;
 @property (nonatomic, strong, readwrite) UIView *indicatorBackground;
 @property (nonatomic, strong, readwrite) UIWebView *browserView;
+@property (nonatomic, strong, readwrite) MasterViewController *parent;
 @property (nonatomic, strong, readwrite) NSMutableArray *requests;
 @property (nonatomic, strong, readwrite) NSString *history;
 
@@ -38,8 +39,10 @@
 
 - (void)dealloc
 {
-  [_requests removeAllObjects], _requests = nil;
+  [_requests removeAllObjects];
+  _requests = nil;
   _history = nil;
+  _parent = nil;
   [self didReceiveMemoryWarning];
 }
 
@@ -140,7 +143,7 @@
 
 - (void)goBack
 {
-  int requests_count = [self.requests count] - 1;
+  int requests_count = (int)([self.requests count]) - 1;
   if (requests_count > 0) {
     [self.requests removeObjectAtIndex:0];
     [self.browserView goBack];
