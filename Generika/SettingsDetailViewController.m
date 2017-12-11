@@ -171,7 +171,7 @@ static const float kCellHeight = 44.0; // default = 44.0
     nameLabel.text = self.label;
     UISwitch *toggleSwitch = [[UISwitch alloc] init];
     toggleSwitch.frame = CGRectMake(1.0, 1.0, 20.0, 20.0);
-    NSNumber *value = [NSNumber numberWithInt:self.selectedPath.row];
+    NSNumber *value = [NSNumber numberWithInt:(int)self.selectedPath.row];
     toggleSwitch.on = [value boolValue];
     [toggleSwitch addTarget:self
                      action:@selector(changeSwitch:)

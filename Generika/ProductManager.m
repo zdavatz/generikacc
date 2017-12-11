@@ -90,8 +90,11 @@ static ProductManager *_sharedInstance = nil;
     [self.products removeObjectAtIndex:index];
     if ([self iCloudOn]) {
         NSString *barcodePath = product.barcode;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-          [self removeFile:[barcodePath lastPathComponent] fromiCloudDirectory:@"barcodes"];
+        dispatch_async(
+          dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+          ^(void){
+          [self removeFile:[barcodePath lastPathComponent]
+       fromiCloudDirectory:@"barcodes"];
         });
       [self updateChangeCount:UIDocumentChangeDone];
     }
@@ -99,7 +102,8 @@ static ProductManager *_sharedInstance = nil;
   return [self save];
 }
 
-- (BOOL)moveProductAtIndex:(unsigned int)fromIndex toIndex:(unsigned int)toIndex
+- (BOOL)moveProductAtIndex:(unsigned int)fromIndex
+                   toIndex:(unsigned int)toIndex
 {
   if (fromIndex > ([self.products count] - 1)) {
     return false;
@@ -125,7 +129,9 @@ static ProductManager *_sharedInstance = nil;
   return [self.products objectAtIndex:index];
 }
 
-- (NSString *)storeBarcode:(UIImage *)barcode ofEan:(NSString *)ean to:(NSString *)destination
+- (NSString *)storeBarcode:(UIImage *)barcode
+                     ofEan:(NSString *)ean
+                        to:(NSString *)destination
 {
   // resize
   CGRect barcodeRect = CGRectMake(0.0, 0.0, 66.0, 83.0);
@@ -135,9 +141,11 @@ static ProductManager *_sharedInstance = nil;
   UIGraphicsEndImageContext();
 
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(
+      NSDocumentDirectory, NSUserDomainMask, YES);
   NSString *documentsDirectory = [paths objectAtIndex:0];
-  NSString *path = [documentsDirectory stringByAppendingPathComponent:@"barcodes"];
+  NSString *path = [documentsDirectory
+    stringByAppendingPathComponent:@"barcodes"];
   NSError *error;
   [fileManager createDirectoryAtPath:path
          withIntermediateDirectories:YES
@@ -145,13 +153,16 @@ static ProductManager *_sharedInstance = nil;
                                error:&error];
   if (error) { return false; }
   time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
-  NSString *fileName = [NSString stringWithFormat:@"%@_%d.png", ean, (int)timestamp];
+  NSString *fileName = [NSString stringWithFormat:
+    @"%@_%d.png", ean, (int)timestamp];
   NSString *filePath = [path stringByAppendingPathComponent:fileName];
   NSData *barcodeData = UIImagePNGRepresentation(barcodeImage);
   BOOL saved = [barcodeData writeToFile:filePath atomically:YES];
   if (saved) {
     if ([destination isEqualToString:@"both"] && [self iCloudOn]) {
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+      dispatch_async(
+          dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+          ^(void) {
         [self copyFileInPath:filePath toiCloudDirectory:@"barcodes"];
       });
     }
@@ -198,16 +209,19 @@ static ProductManager *_sharedInstance = nil;
 - (BOOL)iCloudOn
 {
   NSInteger selected = [self.userDefaults integerForKey:@"sync.icloud"];
-  NSNumber *value = [NSNumber numberWithInt:selected];
+  NSNumber *value = [NSNumber numberWithInt:(int)selected];
   return [value boolValue];
 }
 
 - (NSString *)iCloudFilePath
 {
-  NSURL *ubiq = [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:nil];
+  NSURL *ubiq = [[NSFileManager defaultManager]
+    URLForUbiquityContainerIdentifier:nil];
   if (ubiq) {
-    NSURL *plist = [[ubiq URLByAppendingPathComponent:@"Documents" isDirectory:YES]
-                          URLByAppendingPathComponent:@"products.plist"];
+    NSURL *plist = [[ubiq
+      URLByAppendingPathComponent:@"Documents"
+                      isDirectory:YES]
+      URLByAppendingPathComponent:@"products.plist"];
     return [plist absoluteString];
   } else {
     return nil;
@@ -216,7 +230,8 @@ static ProductManager *_sharedInstance = nil;
 
 - (NSString *)localFilePath
 {
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(
+      NSDocumentDirectory, NSUserDomainMask, YES);
   if ([paths count] < 1) {
     return nil;
   }
@@ -244,7 +259,8 @@ static ProductManager *_sharedInstance = nil;
 
 - (NSString *)productsPath
 {
-  NSURL *ubiq = [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:nil];
+  NSURL *ubiq = [[NSFileManager defaultManager]
+    URLForUbiquityContainerIdentifier:nil];
   if ([self iCloudOn] && ubiq) {
     return [self iCloudFilePath];
   } else {
@@ -256,7 +272,8 @@ static ProductManager *_sharedInstance = nil;
 {
   NSMutableArray *productDicts = [[NSMutableArray alloc] init];
   for (Product *product in self.products) {
-    NSDictionary *productDict = [product dictionaryWithValuesForKeys:[product productKeys]];
+    NSDictionary *productDict = [product
+      dictionaryWithValuesForKeys:[product productKeys]];
     [productDicts addObject:productDict];
   }
   NSString *filePath = [self localFilePath];
@@ -273,8 +290,7 @@ static ProductManager *_sharedInstance = nil;
 {
   NSString *filePath = [self localFilePath];
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  BOOL exist = [fileManager fileExistsAtPath:filePath isDirectory:NO];
-  if (exist) {
+  if ([fileManager fileExistsAtPath:filePath]) {
     [self.products removeAllObjects];
     NSArray *productDicts = [[NSArray alloc] initWithContentsOfFile:filePath];
     for (NSDictionary *productDict in productDicts) {
@@ -285,13 +301,17 @@ static ProductManager *_sharedInstance = nil;
   }
 }
 
-- (BOOL)copyFileInPath:(NSString *)filePath toiCloudDirectory:(NSString *)directory
+- (BOOL)copyFileInPath:(NSString *)filePath
+     toiCloudDirectory:(NSString *)directory
 {
   BOOL saved = false;
-  NSURL *ubiq = [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:nil];
+  NSURL *ubiq = [[NSFileManager defaultManager]
+    URLForUbiquityContainerIdentifier:nil];
   if (ubiq) {
-    NSURL *dir = [[ubiq URLByAppendingPathComponent:@"Documents" isDirectory:YES]
-                        URLByAppendingPathComponent:directory isDirectory:YES];
+    NSURL *dir = [[ubiq
+      URLByAppendingPathComponent:@"Documents"
+                      isDirectory:YES]
+      URLByAppendingPathComponent:directory isDirectory:YES];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *creationError;
     [fileManager createDirectoryAtURL:dir
@@ -301,9 +321,10 @@ static ProductManager *_sharedInstance = nil;
     if (creationError) { return false; }
     NSError *copyError = nil;
     NSString *fileName = [filePath lastPathComponent];
-    saved = [fileManager copyItemAtURL:[NSURL fileURLWithPath:filePath]
-                                 toURL:[dir URLByAppendingPathComponent:fileName]
-                                 error:&copyError];
+    saved = [fileManager
+      copyItemAtURL:[NSURL fileURLWithPath:filePath]
+              toURL:[dir URLByAppendingPathComponent:fileName]
+              error:&copyError];
     if (copyError != nil) {
       return false;
     }
@@ -311,17 +332,22 @@ static ProductManager *_sharedInstance = nil;
   return saved;
 }
 
-- (BOOL)removeFile:(NSString *)fileName fromiCloudDirectory:(NSString *)directory
+- (BOOL)removeFile:(NSString *)fileName
+  fromiCloudDirectory:(NSString *)directory
 {
   BOOL saved = false;
-  NSURL *ubiq = [[NSFileManager defaultManager] URLForUbiquityContainerIdentifier:nil];
+  NSURL *ubiq = [[NSFileManager defaultManager]
+    URLForUbiquityContainerIdentifier:nil];
   if (ubiq) {
-    NSURL *dir = [[ubiq URLByAppendingPathComponent:@"Documents" isDirectory:YES]
-                        URLByAppendingPathComponent:directory isDirectory:YES];
+    NSURL *dir = [[ubiq
+      URLByAppendingPathComponent:@"Documents"
+                      isDirectory:YES]
+      URLByAppendingPathComponent:directory isDirectory:YES];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = nil;
-    saved = [fileManager removeItemAtURL:[dir URLByAppendingPathComponent:fileName]
-                                   error:&error];
+    saved = [fileManager
+      removeItemAtURL:[dir URLByAppendingPathComponent:fileName]
+                error:&error];
   }
   return saved;
 }
@@ -332,8 +358,10 @@ static ProductManager *_sharedInstance = nil;
 {
   NSMetadataQuery *query = [[NSMetadataQuery alloc] init];
   self.query = query;
-  [query setSearchScopes:[NSArray arrayWithObject:NSMetadataQueryUbiquitousDocumentsScope]];
-  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K == %@", NSMetadataItemFSNameKey, fileName];
+  [query setSearchScopes:[NSArray
+    arrayWithObject:NSMetadataQueryUbiquitousDocumentsScope]];
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:
+    @"%K == %@", NSMetadataItemFSNameKey, fileName];
   [query setPredicate:predicate];
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -354,52 +382,67 @@ static ProductManager *_sharedInstance = nil;
     NSMetadataItem *item = [query resultAtIndex:0];
     NSURL *url = [item valueForAttribute:NSMetadataItemURLKey];
     NSError *error = nil;
-    NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
+    NSFileCoordinator *coordinator = [[NSFileCoordinator alloc]
+      initWithFilePresenter:nil];
     if ([[url lastPathComponent] isEqualToString:@"products.plist"]) {
-      [coordinator coordinateReadingItemAtURL:url
-                                      options:NSFileCoordinatorReadingWithoutChanges
-                                        error:&error
-                                   byAccessor:^(NSURL *readingURL) {
-                                     // TODO check conflict
-                                     NSMutableData *data = [[NSMutableData alloc] initWithContentsOfURL:readingURL];
-                                     NSKeyedUnarchiver *archiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-                                     NSArray *products = [archiver decodeObjectForKey:@"data"];
-                                     [archiver finishDecoding];
-                                     if (products != nil && [products count] > 0) {
-                                       [self.products removeAllObjects];
-                                       for (Product *product in products) {
-                                         NSString *barcode = product.barcode;
-                                         if (barcode) {
-                                           [self loadRemoteFile:[barcode lastPathComponent]];
-                                         }
-                                         [self.products addObject:product];
-                                       }
-                                       [self saveToLocal];
-                                     }
-                                   }];
+      [coordinator
+        coordinateReadingItemAtURL:url
+                           options:NSFileCoordinatorReadingWithoutChanges
+                             error:&error
+                        byAccessor:^(NSURL *readingURL) {
+                          // TODO check conflict
+                          NSMutableData *data = [[NSMutableData alloc]
+                            initWithContentsOfURL:readingURL];
+                          NSKeyedUnarchiver *archiver = [
+                            [NSKeyedUnarchiver alloc]
+                            initForReadingWithData:data];
+                          NSArray *products = [archiver
+                            decodeObjectForKey:@"data"];
+                          [archiver finishDecoding];
+                          if (products != nil && [products count] > 0) {
+                            [self.products removeAllObjects];
+                            for (Product *product in products) {
+                              NSString *barcode = product.barcode;
+                              if (barcode) {
+                                [self loadRemoteFile:
+                                 [barcode lastPathComponent]];
+                              }
+                              [self.products addObject:product];
+                            }
+                            [self saveToLocal];
+                          }
+      }];
     } else { // barcode image
-      [coordinator coordinateReadingItemAtURL:url
-                                      options:NSFileCoordinatorReadingWithoutChanges
-                                        error:&error
-                                   byAccessor:^(NSURL *readingURL) {
-                                     NSString *ean = @"";
-                                     NSError *error = nil;
-                                     NSRegularExpression *regexp = 
-                                       [NSRegularExpression regularExpressionWithPattern:@"/(\\d{13})_\\d+\\.png"
-                                                                                 options:0
-                                                                                   error:&error];
-                                     if (error == nil) {
-                                       NSString *urlString = [url absoluteString];
-                                       NSTextCheckingResult *match =
-                                         [regexp firstMatchInString:urlString options:0 range:NSMakeRange(0, urlString.length)];
-                                       if (match.numberOfRanges > 1) {
-                                         ean = [urlString substringWithRange:[match rangeAtIndex:1]];
-                                       }
-                                     }
-                                     NSData *data = [[NSData alloc] initWithContentsOfURL:readingURL];
-                                     UIImage *barcode = [[UIImage alloc] initWithData:data];
-                                     [self storeBarcode:barcode ofEan:ean to:@"local"];
-                                   }];
+      [coordinator
+        coordinateReadingItemAtURL:url
+                           options:NSFileCoordinatorReadingWithoutChanges
+                             error:&error
+                        byAccessor:^(NSURL *readingURL) {
+                          NSString *ean = @"";
+                          NSError *error = nil;
+                          NSRegularExpression *regexp = [NSRegularExpression
+                            regularExpressionWithPattern:
+                              @"/(\\d{13})_\\d+\\.png"
+                                                 options:0
+                                                   error:&error];
+                          if (error == nil) {
+                            NSString *urlString = [url absoluteString];
+                            NSTextCheckingResult *match = [regexp
+                              firstMatchInString:urlString
+                                         options:0
+                                           range:NSMakeRange(
+                                               0, urlString.length)];
+                            if (match.numberOfRanges > 1) {
+                              ean = [urlString substringWithRange:
+                                [match rangeAtIndex:1]];
+                            }
+                          }
+                          NSData *data = [[NSData alloc]
+                            initWithContentsOfURL:readingURL];
+                          UIImage *barcode = [[UIImage alloc]
+                            initWithData:data];
+                          [self storeBarcode:barcode ofEan:ean to:@"local"];
+      }];
     }
     [[NSNotificationCenter defaultCenter]
       postNotificationName:@"productsDidLoaded"
@@ -429,16 +472,23 @@ static ProductManager *_sharedInstance = nil;
                 error:(NSError **)error
 {
   if ([self iCloudOn]) {
-    return [super writeContents:contents toURL:url forSaveOperation:operation originalContentsURL:originalContentsURL error:error];
+    return [super writeContents:contents
+                          toURL:url
+               forSaveOperation:operation
+            originalContentsURL:originalContentsURL
+                          error:error];
   } else {
     return YES;
   }
 }
 
-- (BOOL)loadFromContents:(id)contents ofType:(NSString *)typeName error:(NSError **)error
+- (BOOL)loadFromContents:(id)contents
+                  ofType:(NSString *)typeName
+                   error:(NSError **)error
 {
   if ([contents isKindOfClass:[NSData class]]) {
-     NSKeyedUnarchiver *archiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:contents];
+     NSKeyedUnarchiver *archiver = [[NSKeyedUnarchiver alloc]
+       initForReadingWithData:contents];
      NSArray *products = [archiver decodeObjectForKey:@"data"];
      [archiver finishDecoding];
      if (products != nil && [products count] > 0) {
@@ -462,13 +512,15 @@ static ProductManager *_sharedInstance = nil;
 - (id)contentsForType:(NSString *)typeName error:(NSError **)error
 {
   NSMutableData *data = [NSMutableData data];
-  NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+  NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc]
+    initForWritingWithMutableData:data];
   [archiver encodeObject:self.products forKey:@"data"];
   [archiver finishEncoding];
   return data;
 }
 
-- (void)handleError:(NSError *)error userInteractionPermitted:(BOOL)userInteractionPermitted
+- (void)handleError:(NSError *)error
+  userInteractionPermitted:(BOOL)userInteractionPermitted
 {
   // pass
 }
