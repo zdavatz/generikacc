@@ -138,8 +138,8 @@ Run [XCTest](https://developer.apple.com/documentation/xctest?language=objc).
 % OS_VERSION="10.3.1" make test
 
 # run single test case
-% OS_VERSION="latest" ./bin/test-runner ProductTest/testInit
-% OS_VERSION="10.3.1" ./bin/test-runner ProductTest/testInit
+% OS_VERSION="latest" ./bin/test-runner ProductTests/testInit
+% OS_VERSION="10.3.1" ./bin/test-runner ProductTests/testInit
 ```
 
 About target versions, see also _matrix_ in `.travis.yml`.
