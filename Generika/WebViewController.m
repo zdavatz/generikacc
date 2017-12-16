@@ -70,14 +70,16 @@
 {
   [super viewDidLoad];
   // navigationbar
-  UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"back"
-                                                                 style:UIBarButtonItemStylePlain
-                                                                target:self
-                                                                action:@selector(goBack)];
+  UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
+    initWithTitle:@"back"
+            style:UIBarButtonItemStylePlain
+           target:self
+           action:@selector(goBack)];
   self.navigationItem.leftBarButtonItem = backButton;
-  UIBarButtonItem *actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                                target:self
-                                                                                action:@selector(showActions)];
+  UIBarButtonItem *actionButton = [[UIBarButtonItem alloc]
+    initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                         target:self
+                         action:@selector(showActions)];
   self.navigationItem.rightBarButtonItem = actionButton;
   // indicator
   self.indicatorBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100.0, 100.0)];
@@ -144,7 +146,7 @@
 - (void)goBack
 {
   int requests_count = (int)([self.requests count]) - 1;
-  if (requests_count > 0) {
+  if (requests_count > 0 && [self.browserView canGoBack]) {
     [self.requests removeObjectAtIndex:0];
     [self.browserView goBack];
   } else {
@@ -209,6 +211,12 @@
   if (title) {
     self.title = title;
   }
+  // Fix for wrong state of back button on iPhone X (iOS 11.2)
+  // set disabled first, and then set re-enabled
+  self.navigationItem.hidesBackButton = YES;
+  self.navigationItem.leftBarButtonItem.enabled = NO;
+  self.navigationItem.hidesBackButton = NO;
+  self.navigationItem.leftBarButtonItem.enabled = YES;
 }
 
 - (void)webView:(UIWebView *)view didFailLoadWithError:(NSError *)err
