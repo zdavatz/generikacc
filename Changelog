@@ -1,5 +1,11 @@
 *Generika.cc (03 Dec 2017)
 
+	17 Dec 2017; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
+	* Fix History back button state on iPhone X
+
+	16 Dec 2017; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
+	* Release v2.0.1
+
 	09 Dec 2017; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
 	* Fix UISearchBar position and style
 	* Reduce warnings against UITableView and UISearchBar
