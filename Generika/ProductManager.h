@@ -15,7 +15,7 @@
 + (ProductManager *)sharedManager;
 
 - (BOOL)addProduct:(Product *)product;
-- (BOOL)insertProduct:(Product *)project atIndex:(unsigned int)index;
+- (BOOL)insertProduct:(Product *)product atIndex:(unsigned int)index;
 - (BOOL)removeProductAtIndex:(unsigned int)index;
 - (BOOL)moveProductAtIndex:(unsigned int)fromIndex
                    toIndex:(unsigned int)toIndex;

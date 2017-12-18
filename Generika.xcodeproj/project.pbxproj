@@ -16,6 +16,8 @@
 		812C846F1FDCEB660020AD87 /* images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 812C846E1FDCEB650020AD87 /* images.xcassets */; };
 		812C84741FDCEB7B0020AD87 /* screen in Resources */ = {isa = PBXBuildFile; fileRef = 812C84711FDCEB7B0020AD87 /* screen */; };
 		812C84751FDCEB7B0020AD87 /* icon in Resources */ = {isa = PBXBuildFile; fileRef = 812C84721FDCEB7B0020AD87 /* icon */; };
+		813316681FE66E62002B07D8 /* Receipt.m in Sources */ = {isa = PBXBuildFile; fileRef = 813316671FE66E62002B07D8 /* Receipt.m */; };
+		8133166A1FE66E70002B07D8 /* ReceiptManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 813316691FE66E70002B07D8 /* ReceiptManager.m */; };
 		8145D9EC1FD3D959002779FD /* ProductTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8145D9EB1FD3D958002779FD /* ProductTests.m */; };
 		8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
 		8148C65C17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
@@ -74,6 +76,10 @@
 		812C846E1FDCEB650020AD87 /* images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = images.xcassets; path = resources/images.xcassets; sourceTree = "<group>"; };
 		812C84711FDCEB7B0020AD87 /* screen */ = {isa = PBXFileReference; lastKnownFileType = folder; name = screen; path = resources/screen; sourceTree = "<group>"; };
 		812C84721FDCEB7B0020AD87 /* icon */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icon; path = resources/icon; sourceTree = "<group>"; };
+		813316651FE66BB8002B07D8 /* Receipt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Receipt.h; sourceTree = "<group>"; };
+		813316661FE66BC2002B07D8 /* ReceiptManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiptManager.h; sourceTree = "<group>"; };
+		813316671FE66E62002B07D8 /* Receipt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Receipt.m; sourceTree = "<group>"; };
+		813316691FE66E70002B07D8 /* ReceiptManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiptManager.m; sourceTree = "<group>"; };
 		8145D9EB1FD3D958002779FD /* ProductTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductTests.m; sourceTree = "<group>"; };
 		8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsDetailViewController.h; sourceTree = "<group>"; };
 		8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsDetailViewController.m; sourceTree = "<group>"; };
@@ -246,6 +252,10 @@
 		81B8CEBB17D4724E00DF463B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				813316651FE66BB8002B07D8 /* Receipt.h */,
+				813316671FE66E62002B07D8 /* Receipt.m */,
+				813316661FE66BC2002B07D8 /* ReceiptManager.h */,
+				813316691FE66E70002B07D8 /* ReceiptManager.m */,
 				81B8CEB717D46EDE00DF463B /* Product.h */,
 				81B8CEB817D46EDE00DF463B /* Product.m */,
 				81B8CEBE17D4767500DF463B /* ProductManager.h */,
@@ -517,6 +527,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8133166A1FE66E70002B07D8 /* ReceiptManager.m in Sources */,
 				819273741535D56E0060859C /* main.m in Sources */,
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
 				8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */,
@@ -524,6 +535,7 @@
 				81B8CEB917D46EDE00DF463B /* Product.m in Sources */,
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
 				81B86220153704330054EA0A /* WebViewController.m in Sources */,
+				813316681FE66E62002B07D8 /* Receipt.m in Sources */,
 				8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */,
 				8129BA56153D46F100CB5896 /* Reachability.m in Sources */,
 				81B8CEC017D4767500DF463B /* ProductManager.m in Sources */,

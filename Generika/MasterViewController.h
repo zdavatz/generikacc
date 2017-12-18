@@ -8,8 +8,14 @@
 #import <ZBarSDK/ZBarSDK.h>
 
 @class Product;
-@class Reachability, WebViewController, SettingsViewController, ReaderViewController;
+@class Receipt;
+@class Reachability,
+  WebViewController, SettingsViewController, ReaderViewController;
 
-@interface MasterViewController : UITableViewController <ZBarReaderDelegate, UISearchDisplayDelegate, UISearchBarDelegate, UIPopoverControllerDelegate>
+@interface MasterViewController : UITableViewController <
+  ZBarReaderDelegate,
+  UISearchDisplayDelegate,
+  UISearchBarDelegate,
+  UIPopoverControllerDelegate>
 
 @end
