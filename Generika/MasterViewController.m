@@ -1207,4 +1207,14 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self refresh];
 }
 
+# pragma mark - File Importing
+
+- (void)handleOpenURL:(NSURL *)url
+{
+  DLogMethod
+  // TODO
+  // ReceiptManager *manager = [ReceiptManager sharedManager];
+  // import receipt using mangaer
+}
+
 @end

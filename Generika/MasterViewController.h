@@ -18,4 +18,6 @@
   UISearchBarDelegate,
   UIPopoverControllerDelegate>
 
+- (void)handleOpenURL:(NSURL *)url;
+
 @end
