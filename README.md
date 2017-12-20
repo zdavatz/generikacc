@@ -147,7 +147,7 @@ About target versions, see also _matrix_ in `.travis.yml`.
 
 ## Licence
 
-`LGPL-2.1`
+`GPL-3.0`
 
 ```txt
 Generika.cc
