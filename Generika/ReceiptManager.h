@@ -19,7 +19,8 @@
 - (BOOL)removeReceiptAtIndex:(unsigned int)index;
 - (BOOL)moveReceiptAtIndex:(unsigned int)fromIndex
                    toIndex:(unsigned int)toIndex;
-- (NSString *)storeAmkFile:(NSString *)amkFile
+- (NSString *)storeAMKData:(NSData *)amkData
+                    ofFile:(NSString *)fileName
                         to:(NSString *)destination;
 - (Receipt *)receiptAtIndex:(unsigned int)index;
 

@@ -44,6 +44,8 @@ static const int kSegmentReceipt = 1;
 @property (nonatomic, strong, readwrite) NTMonthYearPicker *datePicker;
 @property (nonatomic, strong, readwrite)
   UIPopoverController *popOverForDatePicker;
+// import file
+@property (nonatomic, assign, readwrite) NSInteger selectedSegmentIndex;
 
 - (void)segmentChanged:(UISegmentedControl *)control;
 - (void)layoutToolbar;
@@ -74,9 +76,6 @@ static const int kSegmentReceipt = 1;
                          bundle:nil];
   _userDefaults = [NSUserDefaults standardUserDefaults];
   _reachability = [Reachability reachabilityForInternetConnection];
-  // product (default)
-  NSArray *products = [ProductManager sharedManager].products;
-  _filtered = [NSMutableArray arrayWithCapacity:[products count]];
   return self;
 }
 
@@ -106,6 +105,15 @@ static const int kSegmentReceipt = 1;
 - (void)loadView
 {
   [super loadView];
+
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    NSArray *receipts = [ReceiptManager sharedManager].receipts;
+    self.filtered = [NSMutableArray arrayWithCapacity:[receipts count]];
+  } else { // product (default)
+    NSArray *products = [ProductManager sharedManager].products;
+    self.filtered = [NSMutableArray arrayWithCapacity:[products count]];
+  }
+
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   self.itemsView = [[UITableView alloc] initWithFrame:screenBounds];
   self.itemsView.delegate = self;
@@ -142,6 +150,8 @@ static const int kSegmentReceipt = 1;
   segmentedControl.selectedSegmentIndex = 0;
   segmentedControl.tintColor = [self activeColor];
   segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+  // set initial selected state
+  segmentedControl.selectedSegmentIndex = self.selectedSegmentIndex;
   segmentedControl.tag = kSegmentedControlTag;
   [segmentedControl addTarget:self
                        action:@selector(segmentChanged:)
@@ -161,7 +171,8 @@ static const int kSegmentReceipt = 1;
   self.search.searchBar.delegate = self;
   self.search.searchBar.placeholder = @"Suchen";
   // fix ugly rounded field
-  UITextField *searchField = [self.search.searchBar valueForKey:@"_searchField"];
+  UITextField *searchField = [
+    self.search.searchBar valueForKey:@"_searchField"];
   searchField.layer.borderColor = [[UIColor whiteColor] CGColor];
   searchField.layer.borderWidth = 3;
   searchField.layer.cornerRadius = 4.0;
@@ -176,31 +187,34 @@ static const int kSegmentReceipt = 1;
 
   self.definesPresentationContext = YES;
 
-  // reader
-  if (!self.reader) {
-    self.reader = [[ReaderViewController alloc] init];
-  }
   [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(didRotate:)
            name:UIDeviceOrientationDidChangeNotification
          object:nil];
-  // notification
-  // product (default)
-  ProductManager *manager = [ProductManager sharedManager];
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(refresh)
-           name:@"productsDidLoaded"
-         object:manager];
-  // delay
-  double delayInSeconds = 0.1;
-  dispatch_time_t popTime = dispatch_time(
-      DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-  dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-    [self openReader];
-  });
+  if (self.selectedSegmentIndex == kSegmentReceipt) {
+
+  } else {  // product (default)
+    // notification
+    ProductManager *manager = [ProductManager sharedManager];
+    [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(refresh)
+             name:@"productsDidLoaded"
+           object:manager];
+    // reader
+    if (!self.reader) {
+      self.reader = [[ReaderViewController alloc] init];
+    }
+    // delay
+    double delayInSeconds = 0.1;
+    dispatch_time_t popTime = dispatch_time(
+        DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+      [self openReader];
+    });
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -249,9 +263,11 @@ static const int kSegmentReceipt = 1;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)orient
                                 duration:(NSTimeInterval) duration
 {
-  self.reader.readerView.captureReader.enableReader = NO;
-  [self.reader.readerView willRotateToInterfaceOrientation:orient
-                                                  duration:0];
+  if ([self currentSegmentedType] == kSegmentProduct) {
+    self.reader.readerView.captureReader.enableReader = NO;
+    [self.reader.readerView willRotateToInterfaceOrientation:orient
+                                                    duration:0];
+  }
   [super willRotateToInterfaceOrientation:orient
                                  duration:duration];
 }
@@ -259,7 +275,9 @@ static const int kSegmentReceipt = 1;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)orient
 {
   [super didRotateFromInterfaceOrientation:orient];
-  self.reader.readerView.captureReader.enableReader = YES;
+  if ([self currentSegmentedType] == kSegmentProduct) {
+    self.reader.readerView.captureReader.enableReader = YES;
+  }
 }
 
 # pragma mark - Components
@@ -418,15 +436,14 @@ static const int kSegmentReceipt = 1;
 
 - (int)currentSegmentedType
 {
-  if (self.navigationItem) {
+  if (self.navigationItem && self.navigationItem.titleView) {
     UIView *titleView = self.navigationItem.titleView;
     UISegmentedControl *control = (UISegmentedControl *)[
       titleView viewWithTag:kSegmentedControlTag];
-    if (control.selectedSegmentIndex == kSegmentReceipt) {
-      return kSegmentReceipt;
-    }
+    return control.selectedSegmentIndex;
+  } else {
+    return (int)self.selectedSegmentIndex;
   }
-  return kSegmentProduct;
 }
 
 # pragma mark - Segmented Control
@@ -434,7 +451,14 @@ static const int kSegmentReceipt = 1;
 - (void)segmentChanged:(UISegmentedControl *)control
 {
   DLogMethod
-  DLog(@"%@", control);
+
+  [self setEditing:NO animated:YES]; // tableview
+  if (self.reader) { // dissmiss reader if exists
+    [self.reader dismissViewControllerAnimated:NO completion:nil];
+  }
+  if (self.search) { // cancel search
+    [self.search setActive:NO];
+  }
 
   // toolbar: space, interaction, space, settings, space
   UIBarButtonItem *interactionItem = [self.toolbarItems objectAtIndex:1];
@@ -457,6 +481,7 @@ static const int kSegmentReceipt = 1;
     [self setBarButton:interactionButton enabled:YES];
     interactionButton.hidden = NO;
   }
+  _filtered = nil;
   [self refresh];
 }
 
@@ -544,7 +569,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     return;
   }
   id<NSFastEnumeration> results =
-  [info objectForKey: ZBarReaderControllerResults];
+    [info objectForKey: ZBarReaderControllerResults];
   ZBarSymbol *symbol = nil;
   for (symbol in results) {
     break;
@@ -640,11 +665,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       NSString *message = [NSString stringWithFormat:
         @"%@,\n%@\n%@", product.name, product.size, publicPrice];
       UIAlertView *alert = [[UIAlertView alloc]
-        initWithTitle:@"Generika.cc sagt:"
-              message:message
-             delegate:self
-    cancelButtonTitle:@"OK"
-    otherButtonTitles:nil];
+          initWithTitle:@"Generika.cc sagt:"
+                message:message
+               delegate:self
+      cancelButtonTitle:@"OK"
+      otherButtonTitles:nil];
       [alert show];
     }
   }
@@ -724,7 +749,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     @"%@ %@", originAgent, kOddbMobileFlavorUserAgent];
   NSDictionary *dictionnary = [NSDictionary
     dictionaryWithObjectsAndKeys:userAgent, @"UserAgent", nil];
-  [_userDefaults registerDefaults:dictionnary];
+  [self.userDefaults registerDefaults:dictionnary];
 
   if (!self.browser) {
     self.browser = [[WebViewController alloc] init];
@@ -757,8 +782,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (NSInteger)tableView:(UITableView *)tableView
   numberOfRowsInSection:(NSInteger)section
 {
-  DLogMethod;
-
   if (self.search.active) {
     return self.filtered.count;
   }
@@ -789,9 +812,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [cell.contentView addSubview:itemView];
 
   // build cell
-  int segment = [self currentSegmentedType];
-  if (segment == kSegmentReceipt) {
+  if ([self currentSegmentedType] == kSegmentReceipt) {
     // TODO
+
   } else {  // product
     // gesture
     UILongPressGestureRecognizer *longPressGesture;
@@ -946,6 +969,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
     if ([self currentSegmentedType] == kSegmentReceipt) {
+      // TODO
       [self refresh];
     } else { // product
       Product *product = [[ProductManager sharedManager]
@@ -1189,9 +1213,16 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self.filtered removeAllObjects];
   NSPredicate *predicate = [NSPredicate predicateWithFormat:
     @"%K contains[cd] %@", @"name", searchText];
-  self.filtered = [NSMutableArray arrayWithArray:[
-    [ProductManager sharedManager].products
-      filteredArrayUsingPredicate:predicate]];
+
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    self.filtered = [NSMutableArray arrayWithArray:[
+      [ReceiptManager sharedManager].receipts
+        filteredArrayUsingPredicate:predicate]];
+  } else {
+    self.filtered = [NSMutableArray arrayWithArray:[
+      [ProductManager sharedManager].products
+        filteredArrayUsingPredicate:predicate]];
+  }
 }
 
 # pragma mark - Search Results
@@ -1209,12 +1240,60 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 # pragma mark - File Importing
 
-- (void)handleOpenURL:(NSURL *)url
+- (void)setSelectedSegmentIndex:(NSInteger)index
 {
-  DLogMethod
+  _selectedSegmentIndex = index;
+
+  // invoke `segmentChanged:control` manually
+  if (self.navigationItem && self.navigationItem.titleView) {
+    UIView *titleView = self.navigationItem.titleView;
+    UISegmentedControl *control = (UISegmentedControl *)[
+      titleView viewWithTag:kSegmentedControlTag];
+    control.selectedSegmentIndex = _selectedSegmentIndex;
+    [self segmentChanged:control];
+  }
+}
+
+- (void)handleOpenAMKFileURL:(NSURL *)url
+{
+  [self setSelectedSegmentIndex: (NSInteger)kSegmentReceipt];
+
+  NSData *now = [NSDate date];
+  NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+  [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
+  NSString *datetime = [dateFormat stringFromDate:now];
+  NSString *fileName = [[url absoluteString] lastPathComponent];
+
+  NSData *encryptedData = [NSData dataWithContentsOfURL:url];
+  NSData *decryptedData = [encryptedData
+    initWithBase64EncodedData:encryptedData
+                      options:NSDataBase64DecodingIgnoreUnknownCharacters];
+
+  //DLog(@"\n\ddecrypted ndata -> %@\n\n", decryptedData);
+  ReceiptManager *manager = [ReceiptManager sharedManager];
+  NSDictionary *dict = @{
+    @"amkfile"   : [manager storeAMKData:encryptedData
+                                  ofFile:fileName
+                                      to:@"both"],
+    @"datetime"  : datetime,
+    @"expiresAt" : @""
+  };
+
+  DLog(@"%@", dict);
+
+  Receipt *receipt = [[Receipt alloc] init];
+  //for (NSString *key in [dict allKeys]) {
+  //  NSString *value = nil;
+  //  if ([dict[key] isEqual:[NSNull null]]) {
+  //    value = @"";
+  //  } else {
+  //    value = dict[key];
+  //  }
+  //  [receipt setValue:value forKey:key];
+  //}
+
   // TODO
-  // ReceiptManager *manager = [ReceiptManager sharedManager];
-  // import receipt using mangaer
+  //DLog(@"%@", receipt);
 }
 
 @end

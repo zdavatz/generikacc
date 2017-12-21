@@ -8,6 +8,7 @@
 #import "AppDelegate.h"
 #import "MasterViewController.h"
 #import "ProductManager.h"
+#import "ReceiptManager.h"
 
 
 @interface AppDelegate ()
@@ -29,8 +30,11 @@
       nil];
   [[NSUserDefaults standardUserDefaults]
     registerDefaults:userDefaultsDefaults];
-  // products
+
+  // load products & receipts
   [[ProductManager sharedManager] load];
+  [[ReceiptManager sharedManager] load];
+
   // view
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   _window = [[UIWindow alloc] initWithFrame:screenBounds];
@@ -73,17 +77,17 @@
 
 - (void)importURL:(NSURL *)url to:(MasterViewController *)masterViewController
 {
-  // handling `*.amk` receipt file (defined in Generika-info.plist)
-  if ([[url pathExtension] isEqualToString:@"amk"]) {
-    DLogMethod
+  // The handling for `*.amk` receipt file (defined in Generika-info.plist)
+  // This block imports file from amiko, like: `RZ_YYYY-MM-DDTNNNNNN.amk`.
+  NSString *fileName = [[url absoluteString] lastPathComponent];
+  NSString *extName = [url pathExtension];
 
-    // TODO
-    DLog(@"URL:%@", [url absoluteString]);
+  // check format RZ_(.*)?.amk
+  if ([extName isEqualToString:@"amk"] && [fileName hasPrefix:@"RZ_"]) {
+    DLog(@"fileName -> %@", fileName);
 
-    NSData *encryptedData = [NSData dataWithContentsOfURL:url];
-    DLog(@"%@", encryptedData);
-
-    [masterViewController handleOpenURL:url];
+    [masterViewController setSelectedSegmentIndex:(NSInteger)1];
+    [masterViewController handleOpenAMKFileURL:url];
   }
 }
 

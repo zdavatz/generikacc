@@ -25,10 +25,10 @@
 
 - (void)dealloc
 {
-  _datetime  = nil;
+  _amkfile = nil;
+  _datetime = nil;
   _expiresAt = nil;
 }
-
 
 #pragma mark - NSCoding Interface
 
@@ -38,7 +38,8 @@
   if (!self) {
     return nil;
   }
-  _datetime  = [decoder decodeObjectForKey:@"datetime"];
+  _amkfile = [decoder decodeObjectForKey:@"amkfile"];
+  _datetime = [decoder decodeObjectForKey:@"datetime"];
 
   if ([decoder containsValueForKey:@"expiresAt"]) {
     _expiresAt = [decoder decodeObjectForKey:@"expiresAt"];
@@ -48,9 +49,9 @@
   return self;
 }
 
-
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
+  [encoder encodeObject:self.amkfile forKey:@"amkfile"];
   [encoder encodeObject:self.datetime forKey:@"datetime"];
 
   if (self.expiresAt && [self.expiresAt length] != 0) {
@@ -65,6 +66,7 @@
 - (NSArray *)receiptKeys
 {
   return @[
+    @"amkfile",
     @"datetime", @"expiresAt"
   ];
 }

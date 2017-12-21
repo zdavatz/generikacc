@@ -8,6 +8,7 @@
 
 @interface Receipt : NSObject <NSCoding>
 
+@property (nonatomic, strong, readwrite) NSString *amkfile;
 @property (nonatomic, strong, readwrite) NSString *datetime;
 @property (nonatomic, strong, readwrite) NSString *expiresAt;
 

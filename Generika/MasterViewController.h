@@ -18,6 +18,8 @@
   UISearchBarDelegate,
   UIPopoverControllerDelegate>
 
-- (void)handleOpenURL:(NSURL *)url;
+// for app delegate
+- (void)setSelectedSegmentIndex:(NSInteger)index;
+- (void)handleOpenAMKFileURL:(NSURL *)url;
 
 @end
