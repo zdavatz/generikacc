@@ -122,7 +122,7 @@ static ReceiptManager *_sharedInstance = nil;
   return [self.receipts objectAtIndex:index];
 }
 
-- (NSString *)storeAMKData:(NSData *)amkData
+- (NSString *)storeAmkData:(NSData *)amkData
                     ofFile:(NSString *)fileName
                         to:(NSString *)destination
 {
