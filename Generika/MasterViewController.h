@@ -10,7 +10,8 @@
 @class Product;
 @class Receipt;
 @class Reachability,
-  WebViewController, SettingsViewController, ReaderViewController;
+  WebViewController, AmkViewController,
+  SettingsViewController, ReaderViewController;
 
 @interface MasterViewController : UITableViewController <
   ZBarReaderDelegate,
@@ -20,6 +21,6 @@
 
 // for app delegate
 - (void)setSelectedSegmentIndex:(NSInteger)index;
-- (void)handleOpenAMKFileURL:(NSURL *)url;
+- (void)handleOpenAmkFileURL:(NSURL *)url animated:(BOOL)animated;
 
 @end

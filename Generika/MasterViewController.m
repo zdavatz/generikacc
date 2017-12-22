@@ -18,10 +18,11 @@
 #import "Receipt.h"
 #import "ReceiptManager.h"
 
-#import "MasterViewController.h"
 #import "WebViewController.h"
+#import "AmkViewController.h"
 #import "SettingsViewController.h"
 #import "ReaderViewController.h"
+#import "MasterViewController.h"
 
 
 static const float kCellHeight = 83.0;
@@ -32,13 +33,14 @@ static const int kSegmentReceipt = 1;
 @interface MasterViewController ()
 
 @property (nonatomic, strong, readwrite) Reachability *reachability;
-@property (nonatomic, strong, readwrite) ReaderViewController *reader;
-@property (nonatomic, strong, readwrite) WebViewController *browser;
-@property (nonatomic, strong, readwrite) SettingsViewController *settings;
-@property (nonatomic, strong, readwrite) UISearchController *search;
+@property (nonatomic, strong, readwrite) NSMutableArray *filtered;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *itemsView;
-@property (nonatomic, strong, readwrite) NSMutableArray *filtered;
+@property (nonatomic, strong, readwrite) UISearchController *search;
+@property (nonatomic, strong, readwrite) ReaderViewController *reader;
+@property (nonatomic, strong, readwrite) WebViewController *browser;
+@property (nonatomic, strong, readwrite) AmkViewController *viewer;
+@property (nonatomic, strong, readwrite) SettingsViewController *settings;
 // datepicker
 @property (nonatomic, strong, readwrite) NSIndexPath *pickerIndexPath;
 @property (nonatomic, strong, readwrite) NTMonthYearPicker *datePicker;
@@ -60,10 +62,10 @@ static const int kSegmentReceipt = 1;
 // plus (import)
 - (void)plusButtonTapped:(UIButton *)button;
 - (void)openImporter;
-// product
+// item:product
 - (void)openWebViewWithURL:(NSURL *)url;
 - (void)searchInfoForProduct:(Product *)product;
-// receipt
+// item:receipt
 - (void)openAmkFile;
 
 @end
@@ -106,14 +108,6 @@ static const int kSegmentReceipt = 1;
 {
   [super loadView];
 
-  if ([self currentSegmentedType] == kSegmentReceipt) {
-    NSArray *receipts = [ReceiptManager sharedManager].receipts;
-    self.filtered = [NSMutableArray arrayWithCapacity:[receipts count]];
-  } else { // product (default)
-    NSArray *products = [ProductManager sharedManager].products;
-    self.filtered = [NSMutableArray arrayWithCapacity:[products count]];
-  }
-
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   self.itemsView = [[UITableView alloc] initWithFrame:screenBounds];
   self.itemsView.delegate = self;
@@ -134,6 +128,15 @@ static const int kSegmentReceipt = 1;
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    NSArray *receipts = [ReceiptManager sharedManager].receipts;
+    self.filtered = [NSMutableArray arrayWithCapacity:[receipts count]];
+  } else { // product (default)
+    NSArray *products = [ProductManager sharedManager].products;
+    self.filtered = [NSMutableArray arrayWithCapacity:[products count]];
+  }
+
   if (self.itemsView && [self.itemsView respondsToSelector:@selector(
       setCellLayoutMarginsFollowReadableWidth:)]) {
     self.itemsView.cellLayoutMarginsFollowReadableWidth = NO;
@@ -148,7 +151,7 @@ static const int kSegmentReceipt = 1;
     initWithItems:[NSArray arrayWithObjects:@"Medikamente", @"Rezepte", nil]];
   segmentedControl.frame = CGRectMake(0, 0, 196, 24);
   segmentedControl.selectedSegmentIndex = 0;
-  segmentedControl.tintColor = [self activeColor];
+  segmentedControl.tintColor = [Constant activeUIColor];
   segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
   // set initial selected state
   segmentedControl.selectedSegmentIndex = self.selectedSegmentIndex;
@@ -282,15 +285,6 @@ static const int kSegmentReceipt = 1;
 
 # pragma mark - Components
 
-- (UIColor *)activeColor
-{
-  UIColor *color = [UIColor colorWithRed:6/255.0
-                                   green:121/255.0
-                                    blue:251/255.0
-                                   alpha:1.0];
-  return color;
-}
-
 - (UIBarButtonItem *)buildScanButtonItem
 {
     UIButton *scanButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -299,7 +293,7 @@ static const int kSegmentReceipt = 1;
     [scanButton.titleLabel setFont:scanFont];
     // FIXME: right margin
     [scanButton setTitle:@"  \uF030" forState:UIControlStateNormal];
-    [scanButton setTitleColor:[self activeColor]
+    [scanButton setTitleColor:[Constant activeUIColor]
                      forState:UIControlStateNormal];
     [scanButton addTarget:self
                    action:@selector(scanButtonTapped:)
@@ -403,7 +397,7 @@ static const int kSegmentReceipt = 1;
       [button setTitleColor:[UIColor whiteColor]
                    forState:UIControlStateNormal];
     } else { // iOS 7 or later
-      [button setTitleColor:[self activeColor]
+      [button setTitleColor:[Constant activeUIColor]
                    forState:UIControlStateNormal];
     }
     button.alpha = 1.0;
@@ -1023,7 +1017,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     }
   } else {
     control.userInteractionEnabled = YES;
-    control.tintColor = [self activeColor];
+    control.tintColor = [Constant activeUIColor];
     control.alpha = 1.0;
 
     [self setBarButton:settingsButton enabled:YES];
@@ -1033,7 +1027,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     if ([self currentSegmentedType] == kSegmentProduct) {
       UIButton *scanButton = [self.navigationItem.rightBarButtonItem
                               customView];
-      [scanButton setTitleColor:[self activeColor]
+      [scanButton setTitleColor:[Constant activeUIColor]
                        forState:UIControlStateNormal];
       scanButton.alpha = 1.0;
       [self setBarButton:interactionButton enabled:YES];
@@ -1254,10 +1248,12 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-- (void)handleOpenAMKFileURL:(NSURL *)url
+- (void)handleOpenAmkFileURL:(NSURL *)url animated:(BOOL)animated
 {
   [self setSelectedSegmentIndex: (NSInteger)kSegmentReceipt];
 
+  // TODO
+  // move the extraction to receipt manager
   NSData *now = [NSDate date];
   NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
   [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
@@ -1272,7 +1268,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   //DLog(@"\n\ddecrypted ndata -> %@\n\n", decryptedData);
   ReceiptManager *manager = [ReceiptManager sharedManager];
   NSDictionary *dict = @{
-    @"amkfile"   : [manager storeAMKData:encryptedData
+    @"amkfile"   : [manager storeAmkData:encryptedData
                                   ofFile:fileName
                                       to:@"both"],
     @"datetime"  : datetime,
@@ -1282,18 +1278,24 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   DLog(@"%@", dict);
 
   Receipt *receipt = [[Receipt alloc] init];
-  //for (NSString *key in [dict allKeys]) {
-  //  NSString *value = nil;
-  //  if ([dict[key] isEqual:[NSNull null]]) {
-  //    value = @"";
-  //  } else {
-  //    value = dict[key];
-  //  }
-  //  [receipt setValue:value forKey:key];
-  //}
+  for (NSString *key in [dict allKeys]) {
+    NSString *value = nil;
+    if ([dict[key] isEqual:[NSNull null]]) {
+      value = @"";
+    } else {
+      value = dict[key];
+    }
+    [receipt setValue:value forKey:key];
+  }
+  DLog(@"%@", receipt);
 
-  // TODO
-  //DLog(@"%@", receipt);
+  if (!self.viewer) {
+    self.viewer = [[AmkViewController alloc] init];
+  }
+  // If animated is NO (at boot), This generates `Unbalanced calls to begin/end
+  // appearance transitions for ...`. But, it's trivial matter, here :-D
+  [self.navigationController pushViewController:self.viewer
+                                       animated:animated];
 }
 
 @end
