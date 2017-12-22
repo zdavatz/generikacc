@@ -56,4 +56,13 @@ NSString *const kSearchLangs[] = { // short name
   return langs;
 }
 
++ (UIColor *)activeUIColor
+{
+  UIColor *color = [UIColor colorWithRed:6/255.0
+                                   green:121/255.0
+                                    blue:251/255.0
+                                   alpha:1.0];
+  return color;
+}
+
 @end

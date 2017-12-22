@@ -28,4 +28,6 @@ extern NSString *const kOddbMobileFlavorUserAgent;
 + (NSArray *)searchLanguages;
 + (NSArray *)searchLangs;
 
++ (UIColor *)activeUIColor;
+
 @end
