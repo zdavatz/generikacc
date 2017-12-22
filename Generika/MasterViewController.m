@@ -15,6 +15,9 @@
 #import "Product.h"
 #import "ProductManager.h"
 
+#import "Receipt.h"
+#import "ReceiptManager.h"
+
 #import "MasterViewController.h"
 #import "WebViewController.h"
 #import "SettingsViewController.h"
@@ -22,6 +25,9 @@
 
 
 static const float kCellHeight = 83.0;
+static const int kSegmentedControlTag = 100;
+static const int kSegmentProduct = 0;
+static const int kSegmentReceipt = 1;
 
 @interface MasterViewController ()
 
@@ -31,23 +37,34 @@ static const float kCellHeight = 83.0;
 @property (nonatomic, strong, readwrite) SettingsViewController *settings;
 @property (nonatomic, strong, readwrite) UISearchController *search;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
-@property (nonatomic, strong, readwrite) UITableView *productsView;
+@property (nonatomic, strong, readwrite) UITableView *itemsView;
 @property (nonatomic, strong, readwrite) NSMutableArray *filtered;
 // datepicker
 @property (nonatomic, strong, readwrite) NSIndexPath *pickerIndexPath;
 @property (nonatomic, strong, readwrite) NTMonthYearPicker *datePicker;
 @property (nonatomic, strong, readwrite)
   UIPopoverController *popOverForDatePicker;
+// import file
+@property (nonatomic, assign, readwrite) NSInteger selectedSegmentIndex;
 
-- (void)scanButtonTapped:(UIButton *)button;
-- (void)settingsButtonTapped:(UIButton *)button;
-- (void)openReader;
-- (void)openSettings;
-- (void)searchInfoForProduct:(Product *)product;
-- (void)openWebViewWithURL:(NSURL *)url;
+- (void)segmentChanged:(UISegmentedControl *)control;
 - (void)layoutToolbar;
-- (void)setToolbarButton:(UIButton *)button enabled:(BOOL)enabled;
+- (void)setBarButton:(UIButton *)button enabled:(BOOL)enabled;
 - (BOOL)isReachable;
+// settings
+- (void)settingsButtonTapped:(UIButton *)button;
+- (void)openSettings;
+// scan (camera)
+- (void)scanButtonTapped:(UIButton *)button;
+- (void)openReader;
+// plus (import)
+- (void)plusButtonTapped:(UIButton *)button;
+- (void)openImporter;
+// product
+- (void)openWebViewWithURL:(NSURL *)url;
+- (void)searchInfoForProduct:(Product *)product;
+// receipt
+- (void)openAmkFile;
 
 @end
 
@@ -59,9 +76,6 @@ static const float kCellHeight = 83.0;
                          bundle:nil];
   _userDefaults = [NSUserDefaults standardUserDefaults];
   _reachability = [Reachability reachabilityForInternetConnection];
-  // products
-  NSArray *products = [ProductManager sharedManager].products;
-  _filtered = [NSMutableArray arrayWithCapacity:[products count]];
   return self;
 }
 
@@ -77,53 +91,35 @@ static const float kCellHeight = 83.0;
 - (void)didReceiveMemoryWarning
 {
   if ([self isViewLoaded] && [self.view window] == nil) {
-    _productsView = nil;
-    _browser      = nil;
-    _settings     = nil;
-    _search       = nil;
-    _pickerIndexPath      = nil;
-    _datePicker           = nil;
+    _itemsView = nil;
+    _browser = nil;
+    _settings = nil;
+    _search = nil;
+    _pickerIndexPath = nil;
+    _datePicker = nil;
     _popOverForDatePicker = nil;
   }
   [super didReceiveMemoryWarning];
 }
 
-- (void)layoutTableViewSeparator:(UITableView *)tableView
-{
-  if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-    [tableView setSeparatorInset:UIEdgeInsetsZero];
-  }
-  if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
-    [tableView setLayoutMargins:UIEdgeInsetsZero];
-  }
-  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
-    tableView.cellLayoutMarginsFollowReadableWidth = NO;
-  }
-}
-
-- (void)layoutCellSeparator:(UITableViewCell *)cell
-{
-  if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-    cell.separatorInset = UIEdgeInsetsZero;
-  }
-  if ([cell respondsToSelector:@selector(
-    setPreservesSuperviewLayoutMargins:)]) {
-    cell.preservesSuperviewLayoutMargins = NO;
-  }
-  if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-    cell.layoutMargins = UIEdgeInsetsZero;
-  }
-}
-
 - (void)loadView
 {
   [super loadView];
+
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    NSArray *receipts = [ReceiptManager sharedManager].receipts;
+    self.filtered = [NSMutableArray arrayWithCapacity:[receipts count]];
+  } else { // product (default)
+    NSArray *products = [ProductManager sharedManager].products;
+    self.filtered = [NSMutableArray arrayWithCapacity:[products count]];
+  }
+
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  self.productsView = [[UITableView alloc] initWithFrame:screenBounds];
-  self.productsView.delegate = self;
-  self.productsView.dataSource = self;
-  self.productsView.rowHeight = kCellHeight;
-  self.view = self.productsView;
+  self.itemsView = [[UITableView alloc] initWithFrame:screenBounds];
+  self.itemsView.delegate = self;
+  self.itemsView.dataSource = self;
+  self.itemsView.rowHeight = kCellHeight;
+  self.view = self.itemsView;
 
   [self layoutTableViewSeparator:self.view];
 }
@@ -132,23 +128,39 @@ static const float kCellHeight = 83.0;
 {
   [super viewDidLayoutSubviews];
 
-  [self layoutTableViewSeparator:self.productsView];
+  [self layoutTableViewSeparator:self.itemsView];
 }
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  if (self.productsView && [self.productsView respondsToSelector:@selector(
+  if (self.itemsView && [self.itemsView respondsToSelector:@selector(
       setCellLayoutMarginsFollowReadableWidth:)]) {
-    self.productsView.cellLayoutMarginsFollowReadableWidth = NO;
+    self.itemsView.cellLayoutMarginsFollowReadableWidth = NO;
   }
   // navigation item
+  // edit
   self.navigationItem.leftBarButtonItem = self.editButtonItem;
-  UIBarButtonItem *scanButton = [[UIBarButtonItem alloc]
-    initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                         target:self
-                         action:@selector(scanButtonTapped:)];
-  self.navigationItem.rightBarButtonItem = scanButton;
+  // segmented control
+  UIView *segmentView = [[UIView alloc]
+                         initWithFrame:CGRectMake(0, 0, 196, 24)];
+  UISegmentedControl *segmentedControl = [[UISegmentedControl alloc]
+    initWithItems:[NSArray arrayWithObjects:@"Medikamente", @"Rezepte", nil]];
+  segmentedControl.frame = CGRectMake(0, 0, 196, 24);
+  segmentedControl.selectedSegmentIndex = 0;
+  segmentedControl.tintColor = [self activeColor];
+  segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+  // set initial selected state
+  segmentedControl.selectedSegmentIndex = self.selectedSegmentIndex;
+  segmentedControl.tag = kSegmentedControlTag;
+  [segmentedControl addTarget:self
+                       action:@selector(segmentChanged:)
+             forControlEvents:UIControlEventValueChanged];
+  [segmentView addSubview:segmentedControl];
+  self.navigationItem.titleView = segmentView;
+  // camera
+  UIBarButtonItem *scanButtonItem = [self buildScanButtonItem];
+  self.navigationItem.rightBarButtonItem = scanButtonItem;
   // toolbar
   [self layoutToolbar];
 
@@ -157,14 +169,15 @@ static const float kCellHeight = 83.0;
   // searchbar
   self.search.searchBar.tintColor = [UIColor lightGrayColor];
   self.search.searchBar.delegate = self;
-  self.search.searchBar.placeholder = @"Medikament";
+  self.search.searchBar.placeholder = @"Suchen";
   // fix ugly rounded field
-  UITextField *searchField = [self.search.searchBar valueForKey:@"_searchField"];
+  UITextField *searchField = [
+    self.search.searchBar valueForKey:@"_searchField"];
   searchField.layer.borderColor = [[UIColor whiteColor] CGColor];
   searchField.layer.borderWidth = 3;
   searchField.layer.cornerRadius = 4.0;
   [self.search.searchBar sizeToFit];
-  self.productsView.tableHeaderView = self.search.searchBar;
+  self.itemsView.tableHeaderView = self.search.searchBar;
 
   self.search.searchResultsUpdater = self;
   self.search.delegate = self;
@@ -174,37 +187,41 @@ static const float kCellHeight = 83.0;
 
   self.definesPresentationContext = YES;
 
-  // reader
-  if (!self.reader) {
-    self.reader = [[ReaderViewController alloc] init];
-  }
   [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(didRotate:)
            name:UIDeviceOrientationDidChangeNotification
          object:nil];
-  // notification
-  ProductManager *manager = [ProductManager sharedManager];
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(refresh)
-           name:@"productsDidLoaded"
-         object:manager];
-  // delay
-  double delayInSeconds = 0.1;
-  dispatch_time_t popTime = dispatch_time(
-      DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-  dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-    [self openReader];
-  });
+  if (self.selectedSegmentIndex == kSegmentReceipt) {
+
+  } else {  // product (default)
+    // notification
+    ProductManager *manager = [ProductManager sharedManager];
+    [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(refresh)
+             name:@"productsDidLoaded"
+           object:manager];
+    // reader
+    if (!self.reader) {
+      self.reader = [[ReaderViewController alloc] init];
+    }
+    // delay
+    double delayInSeconds = 0.1;
+    dispatch_time_t popTime = dispatch_time(
+        DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+      [self openReader];
+    });
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-  NSIndexPath *selection = [self.productsView indexPathForSelectedRow];
+  NSIndexPath *selection = [self.itemsView indexPathForSelectedRow];
   if (selection) {
-    [self.productsView deselectRowAtIndexPath:selection animated:YES];
+    [self.itemsView deselectRowAtIndexPath:selection animated:YES];
   }
   [self refresh];
   [super viewWillAppear:animated];
@@ -212,73 +229,8 @@ static const float kCellHeight = 83.0;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-  [self.productsView flashScrollIndicators];
+  [self.itemsView flashScrollIndicators];
   [super viewDidAppear:animated];
-}
-
-- (void)layoutToolbar
-{
-  [self.navigationController setToolbarHidden:NO animated:NO];
-  // wheel icon button
-  UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  settingsButton.frame = CGRectMake(0, 0, 40, 40);
-  UIFont *settingsFont = [UIFont fontWithName:@"FontAwesome" size:20.0];
-  [settingsButton.titleLabel setFont:settingsFont];
-  [settingsButton setTitle:@"\uF013" forState:UIControlStateNormal];
-  [self setToolbarButton:settingsButton enabled:YES];
-  [settingsButton addTarget:self
-                     action:@selector(settingsButtonTapped:)
-           forControlEvents:UIControlEventTouchUpInside];
-  UIBarButtonItem *settingsBarButton = [[UIBarButtonItem alloc]
-    initWithCustomView:settingsButton];
-  // interaction link
-  UIButton *interactionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  interactionButton.frame = CGRectMake(0, 0, 120, 40);
-  UIFont *interactionFont = [UIFont fontWithName:@"Helvetica" size:15.5];
-  [interactionButton.titleLabel setFont:interactionFont];
-  [interactionButton setTitle:@"Interaktionen" forState:UIControlStateNormal];
-  [self setToolbarButton:interactionButton enabled:YES];
-  [interactionButton addTarget:self
-                        action:@selector(interactionButtonTapped:)
-              forControlEvents:UIControlEventTouchUpInside];
-  UIBarButtonItem *interactionBarButton = [[UIBarButtonItem alloc]
-    initWithCustomView:interactionButton];
-
-  UIBarButtonItem *space = [[UIBarButtonItem alloc]
-    initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                         target:nil
-                         action:nil];
-  UIBarButtonItem *lMargin = [[UIBarButtonItem alloc]
-    initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                         target:nil
-                         action:nil];
-  lMargin.width = -24;
-  UIBarButtonItem *rMargin = [[UIBarButtonItem alloc]
-    initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                         target:nil
-                         action:nil];
-  rMargin.width = -12;
-  self.toolbarItems = [NSArray arrayWithObjects:
-    lMargin, interactionBarButton, space, settingsBarButton, rMargin, nil];
-}
-
-- (void)setToolbarButton:(UIButton *)button enabled:(BOOL)enabled
-{
-  if (enabled) {
-    if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
-      [button setTitleColor:[UIColor whiteColor]
-                   forState:UIControlStateNormal];
-    } else { // iOS 7 or later
-      [button setTitleColor:[UIColor colorWithRed:6/255.0
-                                            green:121/255.0
-                                             blue:251/255.0
-                                            alpha:1.0]
-                   forState:UIControlStateNormal];
-    }
-  } else {
-    [button setTitleColor:[UIColor clearColor] forState:UIControlStateNormal];
-  }
-  [button setEnabled:enabled];
 }
 
 - (BOOL)shouldAutorotate
@@ -311,9 +263,11 @@ static const float kCellHeight = 83.0;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)orient
                                 duration:(NSTimeInterval) duration
 {
-  self.reader.readerView.captureReader.enableReader = NO;
-  [self.reader.readerView willRotateToInterfaceOrientation:orient
-                                                  duration:0];
+  if ([self currentSegmentedType] == kSegmentProduct) {
+    self.reader.readerView.captureReader.enableReader = NO;
+    [self.reader.readerView willRotateToInterfaceOrientation:orient
+                                                    duration:0];
+  }
   [super willRotateToInterfaceOrientation:orient
                                  duration:duration];
 }
@@ -321,11 +275,147 @@ static const float kCellHeight = 83.0;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)orient
 {
   [super didRotateFromInterfaceOrientation:orient];
-  self.reader.readerView.captureReader.enableReader = YES;
+  if ([self currentSegmentedType] == kSegmentProduct) {
+    self.reader.readerView.captureReader.enableReader = YES;
+  }
 }
 
+# pragma mark - Components
 
-#pragma mark - Util
+- (UIColor *)activeColor
+{
+  UIColor *color = [UIColor colorWithRed:6/255.0
+                                   green:121/255.0
+                                    blue:251/255.0
+                                   alpha:1.0];
+  return color;
+}
+
+- (UIBarButtonItem *)buildScanButtonItem
+{
+    UIButton *scanButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    scanButton.frame = CGRectMake(0, 0, 20, 20);
+    UIFont *scanFont = [UIFont fontWithName:@"FontAwesome" size:19.0];
+    [scanButton.titleLabel setFont:scanFont];
+    // FIXME: right margin
+    [scanButton setTitle:@"  \uF030" forState:UIControlStateNormal];
+    [scanButton setTitleColor:[self activeColor]
+                     forState:UIControlStateNormal];
+    [scanButton addTarget:self
+                   action:@selector(scanButtonTapped:)
+         forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *scanButtonItem = [[UIBarButtonItem alloc]
+      initWithCustomView:scanButton];
+    scanButtonItem.width = 26;
+    return scanButtonItem;
+}
+
+- (UIBarButtonItem *)buildPlusButtonItem
+{
+  UIBarButtonItem *plusButtonItem = [[UIBarButtonItem alloc]
+    initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                         target:self
+                         action:@selector(plusButtonTapped:)];
+  return plusButtonItem;
+}
+
+# pragma mark - Layout
+
+- (void)layoutTableViewSeparator:(UITableView *)tableView
+{
+  if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+    [tableView setSeparatorInset:UIEdgeInsetsZero];
+  }
+  if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+    [tableView setLayoutMargins:UIEdgeInsetsZero];
+  }
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
+    tableView.cellLayoutMarginsFollowReadableWidth = NO;
+  }
+}
+
+- (void)layoutCellSeparator:(UITableViewCell *)cell
+{
+  if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+    cell.separatorInset = UIEdgeInsetsZero;
+  }
+  if ([cell respondsToSelector:@selector(
+    setPreservesSuperviewLayoutMargins:)]) {
+    cell.preservesSuperviewLayoutMargins = NO;
+  }
+  if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+    cell.layoutMargins = UIEdgeInsetsZero;
+  }
+}
+
+- (void)layoutToolbar
+{
+  [self.navigationController setToolbarHidden:NO animated:NO];
+  // wheel icon button
+  UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  settingsButton.frame = CGRectMake(0, 0, 40, 40);
+  UIFont *settingsFont = [UIFont fontWithName:@"FontAwesome" size:22.0];
+  [settingsButton.titleLabel setFont:settingsFont];
+  [settingsButton setTitle:@"\uF013" forState:UIControlStateNormal];
+  [self setBarButton:settingsButton enabled:YES];
+  [settingsButton addTarget:self
+                     action:@selector(settingsButtonTapped:)
+           forControlEvents:UIControlEventTouchUpInside];
+  UIBarButtonItem *settingsBarButton = [[UIBarButtonItem alloc]
+    initWithCustomView:settingsButton];
+  // interaction link
+  UIButton *interactionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  interactionButton.frame = CGRectMake(0, 0, 120, 40);
+  // balance-scale icon
+  UIFont *interactionFont = [UIFont fontWithName:@"FontAwesome" size:18.0];
+  [interactionButton.titleLabel setFont:interactionFont];
+  [interactionButton setTitle:@"\uF24e" forState:UIControlStateNormal];
+
+  [self setBarButton:interactionButton enabled:YES];
+  [interactionButton addTarget:self
+                        action:@selector(interactionButtonTapped:)
+              forControlEvents:UIControlEventTouchUpInside];
+  UIBarButtonItem *interactionBarButton = [[UIBarButtonItem alloc]
+    initWithCustomView:interactionButton];
+
+  UIBarButtonItem *space = [[UIBarButtonItem alloc]
+    initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                         target:nil
+                         action:nil];
+  UIBarButtonItem *lMargin = [[UIBarButtonItem alloc]
+    initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                         target:nil
+                         action:nil];
+  lMargin.width = -48;
+  UIBarButtonItem *rMargin = [[UIBarButtonItem alloc]
+    initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                         target:nil
+                         action:nil];
+  rMargin.width = -9;
+  self.toolbarItems = [NSArray arrayWithObjects:
+    lMargin, interactionBarButton, space, settingsBarButton, rMargin, nil];
+}
+
+- (void)setBarButton:(UIButton *)button enabled:(BOOL)enabled
+{
+  if (enabled) {
+    if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
+      [button setTitleColor:[UIColor whiteColor]
+                   forState:UIControlStateNormal];
+    } else { // iOS 7 or later
+      [button setTitleColor:[self activeColor]
+                   forState:UIControlStateNormal];
+    }
+    button.alpha = 1.0;
+  } else { // disabled
+    [button setTitleColor:[UIColor grayColor]
+                 forState:UIControlStateDisabled];
+    button.alpha = 0.6;
+  }
+  [button setEnabled:enabled];
+}
+
+# pragma mark - Util
 
 - (BOOL)isReachable
 {
@@ -344,7 +434,58 @@ static const float kCellHeight = 83.0;
   return NO;
 }
 
-#pragma mark - Interaction Link
+- (int)currentSegmentedType
+{
+  if (self.navigationItem && self.navigationItem.titleView) {
+    UIView *titleView = self.navigationItem.titleView;
+    UISegmentedControl *control = (UISegmentedControl *)[
+      titleView viewWithTag:kSegmentedControlTag];
+    return control.selectedSegmentIndex;
+  } else {
+    return (int)self.selectedSegmentIndex;
+  }
+}
+
+# pragma mark - Segmented Control
+
+- (void)segmentChanged:(UISegmentedControl *)control
+{
+  DLogMethod
+
+  [self setEditing:NO animated:YES]; // tableview
+  if (self.reader) { // dissmiss reader if exists
+    [self.reader dismissViewControllerAnimated:NO completion:nil];
+  }
+  if (self.search) { // cancel search
+    [self.search setActive:NO];
+  }
+
+  // toolbar: space, interaction, space, settings, space
+  UIBarButtonItem *interactionItem = [self.toolbarItems objectAtIndex:1];
+  UIButton *interactionButton = (UIButton *)interactionItem.customView;
+
+  if (control.selectedSegmentIndex == kSegmentReceipt) {
+    // navigationbar
+    // change button camera -> plus
+    UIBarButtonItem *plusButtonItem = [self buildPlusButtonItem];
+    self.navigationItem.rightBarButtonItem = plusButtonItem;
+    // toolbar
+    [self setBarButton:interactionButton enabled:NO];
+    interactionButton.hidden = YES;
+  } else { // product (default)
+    // navigationbar
+    // change button plus -> camera
+    UIBarButtonItem *scanButtonItem = [self buildScanButtonItem];
+    self.navigationItem.rightBarButtonItem = scanButtonItem;
+    // toolbar
+    [self setBarButton:interactionButton enabled:YES];
+    interactionButton.hidden = NO;
+  }
+  _filtered = nil;
+  [self refresh];
+}
+
+# pragma mark - Interaction Link
 
 - (void)interactionButtonTapped:(UIButton *)button
 {
@@ -371,7 +512,7 @@ static const float kCellHeight = 83.0;
   }
 }
 
-#pragma mark - Settings View
+# pragma mark - Settings View
 
 - (void)settingsButtonTapped:(UIButton *)button
 {
@@ -391,7 +532,21 @@ static const float kCellHeight = 83.0;
   [self presentViewController:settingsNavigation animated:YES completion:nil];
 }
 
-#pragma mark - Scan View
+# pragma mark - Plus View
+
+- (void)plusButtonTapped:(UIButton *)button
+{
+  if (!self.editing) {
+    [self openImporter];
+  }
+}
+
+- (void)openImporter
+{
+  // TODO
+}
+
+# pragma mark - Scan View
 
 - (void)scanButtonTapped:(UIButton *)button
 {
@@ -414,7 +569,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     return;
   }
   id<NSFastEnumeration> results =
-  [info objectForKey: ZBarReaderControllerResults];
+    [info objectForKey: ZBarReaderControllerResults];
   ZBarSymbol *symbol = nil;
   for (symbol in results) {
     break;
@@ -510,11 +665,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       NSString *message = [NSString stringWithFormat:
         @"%@,\n%@\n%@", product.name, product.size, publicPrice];
       UIAlertView *alert = [[UIAlertView alloc]
-        initWithTitle:@"Generika.cc sagt:"
-              message:message
-             delegate:self
-    cancelButtonTitle:@"OK"
-    otherButtonTitles:nil];
+          initWithTitle:@"Generika.cc sagt:"
+                message:message
+               delegate:self
+      cancelButtonTitle:@"OK"
+      otherButtonTitles:nil];
       [alert show];
     }
   }
@@ -561,6 +716,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self presentViewController:self.reader animated:YES completion: nil];
 }
 
+# pragma mark - Product
+
 - (void)searchInfoForProduct:(Product *)product
 {
   NSInteger selectedTypeIndex = [self.userDefaults integerForKey:
@@ -592,7 +749,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     @"%@ %@", originAgent, kOddbMobileFlavorUserAgent];
   NSDictionary *dictionnary = [NSDictionary
     dictionaryWithObjectsAndKeys:userAgent, @"UserAgent", nil];
-  [_userDefaults registerDefaults:dictionnary];
+  [self.userDefaults registerDefaults:dictionnary];
 
   if (!self.browser) {
     self.browser = [[WebViewController alloc] init];
@@ -602,7 +759,14 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                                        animated:YES];
 }
 
-#pragma mark - Table View
+# pragma mark - Receipt
+
+- (void)openAmkFile
+{
+  DLogMethod
+}
+
+# pragma mark - Table View
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -620,9 +784,12 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   if (self.search.active) {
     return self.filtered.count;
-  } else {
-    return [[ProductManager sharedManager].products count];
   }
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    return [[ReceiptManager sharedManager].receipts count];
+  }
+  // product (default)
+  return [[ProductManager sharedManager].products count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
@@ -639,145 +806,150 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     initWithStyle:UITableViewCellStyleDefault
   reuseIdentifier:cellIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  UIView *productView = [[UIView alloc] initWithFrame:CGRectMake(
+
+  UIView *itemView = [[UIView alloc] initWithFrame:CGRectMake(
       0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
-  [cell.contentView addSubview:productView];
+  [cell.contentView addSubview:itemView];
 
-  // gesture
-  UILongPressGestureRecognizer *longPressGesture;
-  if (self.search.active) {
-    // TODO (currently does nothing)
-    longPressGesture = [[UILongPressGestureRecognizer alloc]
-      initWithTarget:self action:nil];
-    longPressGesture.minimumPressDuration = 0.9; // seconds
-    longPressGesture.delegate = self;
-  } else {
-    longPressGesture = [[UILongPressGestureRecognizer alloc]
-      initWithTarget:self action:@selector(longPress:)];
-    longPressGesture.minimumPressDuration = 1.2; // seconds
-    longPressGesture.delegate = self;
-  }
-  [cell addGestureRecognizer:longPressGesture];
+  // build cell
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    // TODO
 
-  Product *product;
-  if (self.search.active) {
-    product = [self.filtered objectAtIndex:indexPath.row];
-  } else {
-    product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
-  }
-  NSString *barcodePath = product.barcode;
-  if (barcodePath) { // replace absolute path
-    NSRange range = [barcodePath rangeOfString:@"/Documents/"];
-    // like stringByAbbreviatingWithTildeInPath
-    if (range.location != NSNotFound) {
-      barcodePath = [NSString stringWithFormat:@"~%@",
-        [barcodePath substringFromIndex:range.location]];
-    }
-    barcodePath = [barcodePath stringByExpandingTildeInPath];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    BOOL exist = [fileManager fileExistsAtPath:barcodePath isDirectory:NO];
-    if (exist) {
-      UIImage *barcodeImage = [[UIImage alloc]
-        initWithContentsOfFile:barcodePath];
-      UIImageView *barcodeView = [[UIImageView alloc]
-        initWithImage:barcodeImage];
-      [cell.contentView addSubview:barcodeView];
-    }
-  }
-  // name
-  UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-      70.0, 2.0, 230.0, 25.0)];
-  nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
-  nameLabel.textAlignment = kTextAlignmentLeft;
-  nameLabel.textColor = [UIColor blackColor];
-  nameLabel.text = product.name;
-  [cell.contentView addSubview:nameLabel];
-  // size
-  UILabel *sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-      70.0, 26.0, 110.0, 16.0)];
-  sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
-  sizeLabel.textAlignment = kTextAlignmentLeft;
-  sizeLabel.textColor = [UIColor blackColor];
-  sizeLabel.text = product.size;
-  [cell.contentView addSubview:sizeLabel];
-  // datetime
-  if (product.datetime) {
-    UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        175.0, 27.0, 100.0, 16.0)];
-    dateLabel.font = [UIFont systemFontOfSize:12.0];
-    dateLabel.textAlignment = kTextAlignmentLeft;
-    dateLabel.textColor = [UIColor grayColor];
-    dateLabel.text = product.datetime;
-    [cell.contentView addSubview:dateLabel];
-  }
-  // price
-  UILabel *priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-      70.0, 45.0, 60.0, 16.0)];
-  priceLabel.font = [UIFont systemFontOfSize:12.0];
-  priceLabel.textAlignment = kTextAlignmentLeft;
-  priceLabel.textColor = [UIColor grayColor];
-  NSString *price = product.price;
-  if (![price isEqualToString:@"k.A."]) {
-    priceLabel.text = price;
-  }
-  [cell.contentView addSubview:priceLabel];
-  // deduction
-  UILabel *deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-      125.0, 45.0, 60.0, 16.0)];
-  deductionLabel.font = [UIFont systemFontOfSize:12.0];
-  deductionLabel.textAlignment = kTextAlignmentLeft;
-  deductionLabel.textColor = [UIColor grayColor];
-  NSString *deduction = product.deduction;
-  if (![deduction isEqualToString:@"k.A."]) {
-    deductionLabel.text = deduction;
-  }
-  [cell.contentView addSubview:deductionLabel];
-  // category
-  UILabel *categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-      176.0, 45.0, 190.0, 16.0)];
-  categoryLabel.font = [UIFont systemFontOfSize:12.0];
-  categoryLabel.textAlignment = kTextAlignmentLeft;
-  categoryLabel.textColor = [UIColor grayColor];
-  categoryLabel.text = product.category;
-  [cell.contentView addSubview:categoryLabel];
-  // ean
-  UILabel *eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-      70.0, 62.0, 110.0, 16.0)];
-  eanLabel.font = [UIFont systemFontOfSize:12.0];
-  eanLabel.textAlignment = kTextAlignmentLeft;
-  eanLabel.textColor = [UIColor grayColor];
-  eanLabel.text = product.ean;
-  [cell.contentView addSubview:eanLabel];
-  // expires_at
-  UILabel *expiresAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-      175.0, 62.0, 100.0, 16.0)];
-  expiresAtLabel.textAlignment = kTextAlignmentLeft;
-  expiresAtLabel.tag = 7;
-  if (product.expiresAt && [product.expiresAt length] != 0) {
-    expiresAtLabel.text = product.expiresAt;
-    expiresAtLabel.font = [UIFont boldSystemFontOfSize:12.0];
-    // comparison for color
-    NSDate *current = [NSDate date];
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-    [dateFormat setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
-    [dateFormat setDateFormat:@"dd.MM.yyyy HH:mm:ss"];
-    NSDate *expiresAt = [dateFormat
-      dateFromString:[NSString stringWithFormat:
-                      @"01.%@ 02:00:00", product.expiresAt]];
-    if ([current compare: expiresAt] == NSOrderedDescending) {
-      // current date is already later than expiration date
-      expiresAtLabel.textColor = [UIColor redColor];
+  } else {  // product
+    // gesture
+    UILongPressGestureRecognizer *longPressGesture;
+    if (self.search.active) {
+      // TODO (currently does nothing)
+      longPressGesture = [[UILongPressGestureRecognizer alloc]
+        initWithTarget:self action:nil];
+      longPressGesture.minimumPressDuration = 0.9; // seconds
+      longPressGesture.delegate = self;
     } else {
-      expiresAtLabel.textColor = [UIColor greenColor];
+      longPressGesture = [[UILongPressGestureRecognizer alloc]
+        initWithTarget:self action:@selector(longPress:)];
+      longPressGesture.minimumPressDuration = 1.2; // seconds
+      longPressGesture.delegate = self;
     }
-  } else {
-    expiresAtLabel.text = @"+ EXP; Verfalldatum";
-    expiresAtLabel.font = [UIFont systemFontOfSize:9.0];
-    expiresAtLabel.textColor = [UIColor grayColor];
+    [cell addGestureRecognizer:longPressGesture];
+
+    Product *product;
+    if (self.search.active) {
+      product = [self.filtered objectAtIndex:indexPath.row];
+    } else {
+      product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
+    }
+    NSString *barcodePath = product.barcode;
+    if (barcodePath) { // replace absolute path
+      NSRange range = [barcodePath rangeOfString:@"/Documents/"];
+      // like stringByAbbreviatingWithTildeInPath
+      if (range.location != NSNotFound) {
+        barcodePath = [NSString stringWithFormat:@"~%@",
+          [barcodePath substringFromIndex:range.location]];
+      }
+      barcodePath = [barcodePath stringByExpandingTildeInPath];
+      NSFileManager *fileManager = [NSFileManager defaultManager];
+      BOOL exist = [fileManager fileExistsAtPath:barcodePath isDirectory:NO];
+      if (exist) {
+        UIImage *barcodeImage = [[UIImage alloc]
+          initWithContentsOfFile:barcodePath];
+        UIImageView *barcodeView = [[UIImageView alloc]
+          initWithImage:barcodeImage];
+        [cell.contentView addSubview:barcodeView];
+      }
+    }
+    // name
+    UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        70.0, 2.0, 230.0, 25.0)];
+    nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
+    nameLabel.textAlignment = kTextAlignmentLeft;
+    nameLabel.textColor = [UIColor blackColor];
+    nameLabel.text = product.name;
+    [cell.contentView addSubview:nameLabel];
+    // size
+    UILabel *sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        70.0, 26.0, 110.0, 16.0)];
+    sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
+    sizeLabel.textAlignment = kTextAlignmentLeft;
+    sizeLabel.textColor = [UIColor blackColor];
+    sizeLabel.text = product.size;
+    [cell.contentView addSubview:sizeLabel];
+    // datetime
+    if (product.datetime) {
+      UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+          175.0, 27.0, 100.0, 16.0)];
+      dateLabel.font = [UIFont systemFontOfSize:12.0];
+      dateLabel.textAlignment = kTextAlignmentLeft;
+      dateLabel.textColor = [UIColor grayColor];
+      dateLabel.text = product.datetime;
+      [cell.contentView addSubview:dateLabel];
+    }
+    // price
+    UILabel *priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        70.0, 45.0, 60.0, 16.0)];
+    priceLabel.font = [UIFont systemFontOfSize:12.0];
+    priceLabel.textAlignment = kTextAlignmentLeft;
+    priceLabel.textColor = [UIColor grayColor];
+    NSString *price = product.price;
+    if (![price isEqualToString:@"k.A."]) {
+      priceLabel.text = price;
+    }
+    [cell.contentView addSubview:priceLabel];
+    // deduction
+    UILabel *deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        125.0, 45.0, 60.0, 16.0)];
+    deductionLabel.font = [UIFont systemFontOfSize:12.0];
+    deductionLabel.textAlignment = kTextAlignmentLeft;
+    deductionLabel.textColor = [UIColor grayColor];
+    NSString *deduction = product.deduction;
+    if (![deduction isEqualToString:@"k.A."]) {
+      deductionLabel.text = deduction;
+    }
+    [cell.contentView addSubview:deductionLabel];
+    // category
+    UILabel *categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        176.0, 45.0, 190.0, 16.0)];
+    categoryLabel.font = [UIFont systemFontOfSize:12.0];
+    categoryLabel.textAlignment = kTextAlignmentLeft;
+    categoryLabel.textColor = [UIColor grayColor];
+    categoryLabel.text = product.category;
+    [cell.contentView addSubview:categoryLabel];
+    // ean
+    UILabel *eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        70.0, 62.0, 110.0, 16.0)];
+    eanLabel.font = [UIFont systemFontOfSize:12.0];
+    eanLabel.textAlignment = kTextAlignmentLeft;
+    eanLabel.textColor = [UIColor grayColor];
+    eanLabel.text = product.ean;
+    [cell.contentView addSubview:eanLabel];
+    // expires_at
+    UILabel *expiresAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        175.0, 62.0, 100.0, 16.0)];
+    expiresAtLabel.textAlignment = kTextAlignmentLeft;
+    expiresAtLabel.tag = 7;
+    if (product.expiresAt && [product.expiresAt length] != 0) {
+      expiresAtLabel.text = product.expiresAt;
+      expiresAtLabel.font = [UIFont boldSystemFontOfSize:12.0];
+      // comparison for color
+      NSDate *current = [NSDate date];
+      NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+      [dateFormat setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+      [dateFormat setDateFormat:@"dd.MM.yyyy HH:mm:ss"];
+      NSDate *expiresAt = [dateFormat
+        dateFromString:[NSString stringWithFormat:
+                        @"01.%@ 02:00:00", product.expiresAt]];
+      if ([current compare: expiresAt] == NSOrderedDescending) {
+        // current date is already later than expiration date
+        expiresAtLabel.textColor = [UIColor redColor];
+      } else {
+        expiresAtLabel.textColor = [UIColor greenColor];
+      }
+    } else {
+      expiresAtLabel.text = @"+ EXP; Verfalldatum";
+      expiresAtLabel.font = [UIFont systemFontOfSize:9.0];
+      expiresAtLabel.textColor = [UIColor grayColor];
+    }
+    [cell.contentView addSubview:expiresAtLabel];
   }
-
-  [cell.contentView addSubview:expiresAtLabel];
-
   return cell;
 }
 
@@ -796,20 +968,25 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
    forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    Product *product = [[ProductManager sharedManager]
-      productAtIndex:indexPath.row];
-    NSString *barcodePath = product.barcode;
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if ([self currentSegmentedType] == kSegmentReceipt) {
+      // TODO
+      [self refresh];
+    } else { // product
+      Product *product = [[ProductManager sharedManager]
+        productAtIndex:indexPath.row];
+      NSString *barcodePath = product.barcode;
+      NSFileManager *fileManager = [NSFileManager defaultManager];
+      NSError *error;
+      [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    [fileManager removeItemAtPath:barcodePath error:&error];
-    ProductManager* manager = [ProductManager sharedManager];
-    // manager removes product
-    // [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-    //                  withRowAnimation:UITableViewRowAnimationFade];
-    [manager removeProductAtIndex:indexPath.row];
-    [self refresh];
+      [fileManager removeItemAtPath:barcodePath error:&error];
+      ProductManager* manager = [ProductManager sharedManager];
+      // manager removes product
+      // [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+      //                  withRowAnimation:UITableViewRowAnimationFade];
+      [manager removeProductAtIndex:indexPath.row];
+      [self refresh];
+    }
   } else {
     [self setEditing:NO animated:YES];
   }
@@ -818,15 +995,49 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated
 {
   [super setEditing:editing animated:animated];
-  [self.productsView setEditing:editing animated:animated];
-  UIBarButtonItem *settingsBarButtonItem = [self.toolbarItems objectAtIndex:1];
-  UIButton *button = (UIButton *)settingsBarButtonItem.customView;
+  [self.itemsView setEditing:editing animated:animated];
+  UIView *titleView = self.navigationItem.titleView;
+  UISegmentedControl *control = (UISegmentedControl *)[
+    titleView viewWithTag:kSegmentedControlTag];
+  // toolbar: space, interaction, space, settings, space
+  UIBarButtonItem *interactionItem = [self.toolbarItems objectAtIndex:1];
+  UIBarButtonItem *settingsItem = [self.toolbarItems objectAtIndex:3];
+  UIButton *interactionButton = (UIButton *)interactionItem.customView;
+  UIButton *settingsButton = (UIButton *)settingsItem.customView;
   if (editing) {
+    control.userInteractionEnabled = NO;
+    control.tintColor = [UIColor grayColor];
+    control.alpha = 0.5;
+
+    [self setBarButton:settingsButton enabled:NO];
+
     self.navigationItem.rightBarButtonItem.enabled = NO;
-    [self setToolbarButton:button enabled:NO];
+
+    if ([self currentSegmentedType] == kSegmentProduct) {
+      UIButton *scanButton = [self.navigationItem.rightBarButtonItem
+                              customView];
+      [scanButton setTitleColor:[UIColor grayColor]
+                       forState:UIControlStateDisabled];
+      scanButton.alpha = 0.5;
+      [self setBarButton:interactionButton enabled:NO];
+    }
   } else {
+    control.userInteractionEnabled = YES;
+    control.tintColor = [self activeColor];
+    control.alpha = 1.0;
+
+    [self setBarButton:settingsButton enabled:YES];
+
     self.navigationItem.rightBarButtonItem.enabled = YES;
-    [self setToolbarButton:button enabled:YES];
+
+    if ([self currentSegmentedType] == kSegmentProduct) {
+      UIButton *scanButton = [self.navigationItem.rightBarButtonItem
+                              customView];
+      [scanButton setTitleColor:[self activeColor]
+                       forState:UIControlStateNormal];
+      scanButton.alpha = 1.0;
+      [self setBarButton:interactionButton enabled:YES];
+    }
   }
 }
 
@@ -845,9 +1056,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
          toIndexPath:(NSIndexPath *)toIndexPath
 {
   if (fromIndexPath.section == toIndexPath.section) {
-    ProductManager *manager = [ProductManager sharedManager];
-    if (manager.products && toIndexPath.row < [manager.products count]) {
-      [manager moveProductAtIndex:fromIndexPath.row toIndex:toIndexPath.row];
+    if ([self currentSegmentedType] == kSegmentReceipt) {
+      // TODO
+    } else { // product (default)
+      ProductManager *manager = [ProductManager sharedManager];
+      if (manager.products && toIndexPath.row < [manager.products count]) {
+        [manager moveProductAtIndex:fromIndexPath.row toIndex:toIndexPath.row];
+      }
     }
   }
 }
@@ -855,15 +1070,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)tableView:(UITableView *)tableView
   didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  Product *product;
-  if (self.search.active) {
-    product = [self.filtered objectAtIndex:indexPath.row];
-  } else {
-    product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    // TODO
+  } else {  // product (default)
+    Product *product;
+    if (self.search.active) {
+      product = [self.filtered objectAtIndex:indexPath.row];
+    } else {
+      product = [[ProductManager sharedManager] productAtIndex:indexPath.row];
+    }
+    self.navigationItem.rightBarButtonItem.enabled = YES;
+    // open oddb.org
+    [self searchInfoForProduct:product];
   }
-  self.navigationItem.rightBarButtonItem.enabled = YES;
-  // open oddb.org
-  [self searchInfoForProduct:product];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -875,10 +1094,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)refresh
 {
-  [self.productsView reloadData];
+  [self.itemsView reloadData];
 }
 
-#pragma mark - Gesture
+# pragma mark - Gesture
 
 - (void)longPress:(UILongPressGestureRecognizer *)gesture
 {
@@ -957,7 +1176,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
   if (self.popOverForDatePicker) {
     NSIndexPath *indexPath = self.pickerIndexPath;
-    UITableViewCell *cell = [self.productsView
+    UITableViewCell *cell = [self.itemsView
                              cellForRowAtIndexPath:indexPath];
     if (cell) {
       ProductManager *manager = [ProductManager sharedManager];
@@ -981,7 +1200,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-#pragma mark - UISearchbar delegate
+# pragma mark - Searchbar
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
@@ -994,13 +1213,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self.filtered removeAllObjects];
   NSPredicate *predicate = [NSPredicate predicateWithFormat:
     @"%K contains[cd] %@", @"name", searchText];
-  self.filtered = [NSMutableArray arrayWithArray:[
-    [ProductManager sharedManager].products
-      filteredArrayUsingPredicate:predicate]];
+
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    self.filtered = [NSMutableArray arrayWithArray:[
+      [ReceiptManager sharedManager].receipts
+        filteredArrayUsingPredicate:predicate]];
+  } else {
+    self.filtered = [NSMutableArray arrayWithArray:[
+      [ProductManager sharedManager].products
+        filteredArrayUsingPredicate:predicate]];
+  }
 }
 
-
-#pragma mark - UISearchResultUpdating delegate
+# pragma mark - Search Results
 
 - (void)updateSearchResultsForSearchController:
     (UISearchController *)searchController
@@ -1011,6 +1236,64 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                      objectAtIndex:
     [self.search.searchBar selectedScopeButtonIndex]]];
   [self refresh];
+}
+
+# pragma mark - File Importing
+
+- (void)setSelectedSegmentIndex:(NSInteger)index
+{
+  _selectedSegmentIndex = index;
+
+  // invoke `segmentChanged:control` manually
+  if (self.navigationItem && self.navigationItem.titleView) {
+    UIView *titleView = self.navigationItem.titleView;
+    UISegmentedControl *control = (UISegmentedControl *)[
+      titleView viewWithTag:kSegmentedControlTag];
+    control.selectedSegmentIndex = _selectedSegmentIndex;
+    [self segmentChanged:control];
+  }
+}
+
+- (void)handleOpenAMKFileURL:(NSURL *)url
+{
+  [self setSelectedSegmentIndex: (NSInteger)kSegmentReceipt];
+
+  NSData *now = [NSDate date];
+  NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+  [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
+  NSString *datetime = [dateFormat stringFromDate:now];
+  NSString *fileName = [[url absoluteString] lastPathComponent];
+
+  NSData *encryptedData = [NSData dataWithContentsOfURL:url];
+  NSData *decryptedData = [encryptedData
+    initWithBase64EncodedData:encryptedData
+                      options:NSDataBase64DecodingIgnoreUnknownCharacters];
+
+  //DLog(@"\n\ddecrypted ndata -> %@\n\n", decryptedData);
+  ReceiptManager *manager = [ReceiptManager sharedManager];
+  NSDictionary *dict = @{
+    @"amkfile"   : [manager storeAMKData:encryptedData
+                                  ofFile:fileName
+                                      to:@"both"],
+    @"datetime"  : datetime,
+    @"expiresAt" : @""
+  };
+
+  DLog(@"%@", dict);
+
+  Receipt *receipt = [[Receipt alloc] init];
+  //for (NSString *key in [dict allKeys]) {
+  //  NSString *value = nil;
+  //  if ([dict[key] isEqual:[NSNull null]]) {
+  //    value = @"";
+  //  } else {
+  //    value = dict[key];
+  //  }
+  //  [receipt setValue:value forKey:key];
+  //}
+
+  // TODO
+  //DLog(@"%@", receipt);
 }
 
 @end

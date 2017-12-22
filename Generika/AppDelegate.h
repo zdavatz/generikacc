@@ -10,7 +10,11 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (nonatomic, strong, readwrite) UIWindow *window;
-@property (nonatomic, strong, readwrite) UINavigationController *navigationController;
+@property (nonatomic, strong, readwrite)
+  UIWindow *window;
+@property (nonatomic, strong, readwrite)
+  UINavigationController *navigationController;
+
+- (void)importURL:(NSURL *)url to:(MasterViewController *)masterViewController;
 
 @end
