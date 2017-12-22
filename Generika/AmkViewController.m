@@ -78,11 +78,6 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  // DLog(@"origin.y -> %d", self.view.bounds.origin.y);
-  // DLog(@"origin.x -> %d", self.view.bounds.origin.x);
-  // DLog(@"size.width -> %d", self.view.bounds.size.width);
-  // DLog(@"size.height -> %d", self.view.bounds.size.height);
-
   // navigationbar
   // < back button
   self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
@@ -136,8 +131,6 @@
 
 - (void)loadReceipt:(Receipt *)receipt
 {
-  DLogMethod;
-
   [self refresh];
 }
 

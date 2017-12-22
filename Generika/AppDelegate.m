@@ -49,7 +49,6 @@
   NSURL *url = (NSURL *)[launchOptions
                          valueForKey:UIApplicationLaunchOptionsURLKey];
   if (url != nil && [url isFileURL]) {
-    DLogMethod
     [self importURL:url to:masterViewController];
   }
 
@@ -67,7 +66,6 @@
          annotation:(id)annotation
 {
   if (url != nil && [url isFileURL]) {
-    DLogMethod
     MasterViewController *masterViewController = (MasterViewController *)[
       _navigationController.viewControllers objectAtIndex:0];
     [self importURL:url to:masterViewController];
@@ -84,8 +82,6 @@
 
   // check prefix und extension of file format like: `RZ_(.*)?.amk`
   if ([extName isEqualToString:@"amk"] && [fileName hasPrefix:@"RZ_"]) {
-    DLog(@"fileName -> %@", fileName);
-
     [masterViewController setSelectedSegmentIndex:(NSInteger)1];
     [masterViewController handleOpenAmkFileURL:url animated:NO];
   }

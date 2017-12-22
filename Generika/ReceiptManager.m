@@ -145,7 +145,6 @@ static ReceiptManager *_sharedInstance = nil;
   NSString *amkFile = [NSString stringWithFormat:
     @"%@_%d.amk", @"RZ", (int)timestamp];
   NSString *amkFilePath = [path stringByAppendingPathComponent:amkFile];
-  DLog(@".amk file path -> %@", amkFilePath);
   BOOL amkSaved = [amkData writeToFile:amkFilePath atomically:YES];
 
   // create signature `RZ_signature.png`
@@ -158,7 +157,6 @@ static ReceiptManager *_sharedInstance = nil;
   // signature key is required
   NSData *sigData;
   if (error != nil) {
-    DLog(@"%@", error);
     return nil;
   } else {
     NSDictionary *operator = [json valueForKey:@"operator"];
@@ -167,13 +165,12 @@ static ReceiptManager *_sharedInstance = nil;
       NSData *sigData = [NSKeyedArchiver archivedDataWithRootObject:signature];
     }
   }
-  
+
   // if amk data has signature (image as png)
   if (sigData != nil) {
     NSString *pngFile = [NSString stringWithFormat:
       @"%@_%d.png", @"RZ", (int)timestamp];
     NSString *pngFilePath = [path stringByAppendingPathComponent:pngFile];
-    DLog(@".png file path -> %@", pngFilePath);
     pngSaved = [sigData writeToFile:pngFilePath atomically:YES];
   }
 
@@ -292,7 +289,6 @@ static ReceiptManager *_sharedInstance = nil;
 
 - (BOOL)saveToLocal
 {
-  DLogMethod;
   NSMutableArray *receiptDicts = [[NSMutableArray alloc] init];
   for (Receipt *receipt in self.receipts) {
     NSDictionary *receiptDict = [receipt
@@ -302,7 +298,6 @@ static ReceiptManager *_sharedInstance = nil;
   NSString *filePath = [self localFilePath];
   [receiptDicts writeToFile:filePath atomically:YES];
   NSArray *saved = [[NSArray alloc] initWithContentsOfFile:filePath];
-  DLog(@"%@", saved);
   if ([saved count] > 0) {
     return YES;
   } else {
@@ -312,11 +307,8 @@ static ReceiptManager *_sharedInstance = nil;
 
 - (void)loadFromLocal
 {
-  DLogMethod;
   NSString *filePath = [self localFilePath];
   NSFileManager *fileManager = [NSFileManager defaultManager];
-
-  DLog(@"%@", filePath);
 
   if ([fileManager fileExistsAtPath:filePath]) {
     [self.receipts removeAllObjects];
@@ -487,7 +479,6 @@ static ReceiptManager *_sharedInstance = nil;
                   ofType:(NSString *)typeName
                    error:(NSError **)error
 {
-  DLogMethod;
   if ([contents isKindOfClass:[NSData class]]) {
      NSKeyedUnarchiver *archiver = [[NSKeyedUnarchiver alloc]
        initForReadingWithData:contents];
@@ -509,7 +500,6 @@ static ReceiptManager *_sharedInstance = nil;
 
 - (id)contentsForType:(NSString *)typeName error:(NSError **)error
 {
-  DLogMethod;
   NSMutableData *data = [NSMutableData data];
   NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc]
     initForWritingWithMutableData:data];

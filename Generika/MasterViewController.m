@@ -444,8 +444,6 @@ static const int kSegmentReceipt = 1;
 
 - (void)segmentChanged:(UISegmentedControl *)control
 {
-  DLogMethod
-
   [self setEditing:NO animated:YES]; // tableview
   if (self.reader) { // dissmiss reader if exists
     [self.reader dismissViewControllerAnimated:NO completion:nil];
@@ -757,7 +755,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)openAmkFile
 {
-  DLogMethod
+  // TODO
 }
 
 # pragma mark - Table View
@@ -1265,7 +1263,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     initWithBase64EncodedData:encryptedData
                       options:NSDataBase64DecodingIgnoreUnknownCharacters];
 
-  //DLog(@"\n\ddecrypted ndata -> %@\n\n", decryptedData);
   ReceiptManager *manager = [ReceiptManager sharedManager];
   NSDictionary *dict = @{
     @"amkfile"   : [manager storeAmkData:encryptedData
@@ -1274,8 +1271,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     @"datetime"  : datetime,
     @"expiresAt" : @""
   };
-
-  DLog(@"%@", dict);
 
   Receipt *receipt = [[Receipt alloc] init];
   for (NSString *key in [dict allKeys]) {
@@ -1287,7 +1282,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     }
     [receipt setValue:value forKey:key];
   }
-  DLog(@"%@", receipt);
 
   if (!self.viewer) {
     self.viewer = [[AmkViewController alloc] init];

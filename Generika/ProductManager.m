@@ -282,7 +282,6 @@ static ProductManager *_sharedInstance = nil;
   NSString *filePath = [self localFilePath];
   [productDicts writeToFile:filePath atomically:YES];
   NSArray *saved = [[NSArray alloc] initWithContentsOfFile:filePath];
-  DLog(@"%@", saved);
   if ([saved count] > 0) {
     return YES;
   } else {
