@@ -8,12 +8,6 @@
 #import "Product.h"
 
 
-@interface Product ()
-
-- (NSString *)detectNumberFromEanWithRegexpString:(NSString *)regexpString;
-
-@end
-
 @implementation Product
 
 - (id)init
@@ -36,6 +30,11 @@
 
 - (void)dealloc
 {
+  _barcode   = nil; // file path
+  _datetime  = nil; // scanned at
+  _expiresAt = nil; // value from picker
+
+  // fetched values
   _reg       = nil;
   _seq       = nil;
   _pack      = nil;
@@ -44,10 +43,7 @@
   _deduction = nil;
   _price     = nil;
   _category  = nil;
-  _barcode   = nil;
   _ean       = nil;
-  _datetime  = nil;
-  _expiresAt = nil;
 }
 
 
@@ -59,6 +55,8 @@
   if (!self) {
     return nil;
   }
+  _barcode   = [decoder decodeObjectForKey:@"barcode"];
+
   _reg       = [decoder decodeObjectForKey:@"reg"];
   _seq       = [decoder decodeObjectForKey:@"seq"];
   _pack      = [decoder decodeObjectForKey:@"pack"];
@@ -67,8 +65,8 @@
   _deduction = [decoder decodeObjectForKey:@"deduction"];
   _price     = [decoder decodeObjectForKey:@"price"];
   _category  = [decoder decodeObjectForKey:@"category"];
-  _barcode   = [decoder decodeObjectForKey:@"barcode"];
   _ean       = [decoder decodeObjectForKey:@"ean"];
+
   _datetime  = [decoder decodeObjectForKey:@"datetime"];
 
   if ([decoder containsValueForKey:@"expiresAt"]) {
@@ -82,6 +80,8 @@
 
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
+  [encoder encodeObject:self.barcode forKey:@"barcode"];
+
   [encoder encodeObject:self.reg forKey:@"reg"];
   [encoder encodeObject:self.seq forKey:@"seq"];
   [encoder encodeObject:self.pack forKey:@"pack"];
@@ -90,8 +90,8 @@
   [encoder encodeObject:self.deduction forKey:@"deduction"];
   [encoder encodeObject:self.price forKey:@"price"];
   [encoder encodeObject:self.category forKey:@"category"];
-  [encoder encodeObject:self.barcode forKey:@"barcode"];
   [encoder encodeObject:self.ean forKey:@"ean"];
+
   [encoder encodeObject:self.datetime forKey:@"datetime"];
 
   if (self.expiresAt && [self.expiresAt length] != 0) {
@@ -108,7 +108,8 @@
   if (_reg) {
     return _reg;
   } else if (self.ean) {
-    return [self detectNumberFromEanWithRegexpString:@"7680(\\d{5}).+"];
+    return [Constant detectStringWithRegexp:@"7680(\\d{5}).+"
+                                       from:self.ean];
   } else {
     return @"";
   }
@@ -119,28 +120,11 @@
   if (_seq) {
     return _seq;
   } else if (_ean) {
-    return [self detectNumberFromEanWithRegexpString:@"7680\\d{5}(\\d{3}).+"];
+    return [Constant detectStringWithRegexp:@"7680\\d{5}(\\d{3}).+"
+                                       from:self.ean];
   } else {
     return @"";
   }
-}
-
-- (NSString *)detectNumberFromEanWithRegexpString:(NSString *)regexpString
-{
-  NSString *num = @"";
-  NSError *error = nil;
-  NSRegularExpression *regexp = 
-    [NSRegularExpression regularExpressionWithPattern:regexpString
-                                              options:0
-                                                error:&error];
-  if (error == nil) {
-    NSTextCheckingResult *match =
-      [regexp firstMatchInString:self.ean options:0 range:NSMakeRange(0, self.ean.length)];
-    if (match.numberOfRanges > 1) {
-      num = [self.ean substringWithRange:[match rangeAtIndex:1]];
-    }
-  }
-  return num;
 }
 
 
@@ -151,7 +135,9 @@
   return @[
     @"reg", @"seq", @"pack",
     @"name", @"size", @"deduction",
-    @"price", @"category", @"barcode", @"ean",
+    @"price", @"category", @"ean",
+    @"barcode",
+
     @"datetime", @"expiresAt"
   ];
 }

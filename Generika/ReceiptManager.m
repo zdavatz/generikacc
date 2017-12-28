@@ -147,6 +147,8 @@ static ReceiptManager *_sharedInstance = nil;
   NSString *amkFilePath = [path stringByAppendingPathComponent:amkFile];
   BOOL amkSaved = [amkData writeToFile:amkFilePath atomically:YES];
 
+  // TODO:
+  // move the saving signature
   // create signature `RZ_signature.png`
   BOOL pngSaved = true;
   error = nil;
@@ -159,13 +161,12 @@ static ReceiptManager *_sharedInstance = nil;
   if (error != nil) {
     return nil;
   } else {
-    NSDictionary *operator = [json valueForKey:@"operator"];
-    if (operator != nil) {
-      NSString *signature = [operator valueForKey:@"signature"];
+    NSDictionary *operatorDict = [json valueForKey:@"operator"];
+    if (operatorDict != nil) {
+      NSString *signature = [operatorDict valueForKey:@"signature"];
       NSData *sigData = [NSKeyedArchiver archivedDataWithRootObject:signature];
     }
   }
-
   // if amk data has signature (image as png)
   if (sigData != nil) {
     NSString *pngFile = [NSString stringWithFormat:

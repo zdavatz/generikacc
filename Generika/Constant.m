@@ -56,6 +56,9 @@ NSString *const kSearchLangs[] = { // short name
   return langs;
 }
 
+
+#pragma UI Helpers
+
 + (UIColor *)activeUIColor
 {
   UIColor *color = [UIColor colorWithRed:6/255.0
@@ -63,6 +66,30 @@ NSString *const kSearchLangs[] = { // short name
                                     blue:251/255.0
                                    alpha:1.0];
   return color;
+}
+
+
+#pragma Utily Methods
+
++ (NSString *)detectStringWithRegexp:(NSString *)regexpString
+                                from:(NSString *)fromString
+{
+  NSString *str = @"";
+  NSError *error = nil;
+  NSRegularExpression *regexp = 
+    [NSRegularExpression regularExpressionWithPattern:regexpString
+                                              options:0
+                                                error:&error];
+  if (error == nil) {
+    NSTextCheckingResult *match =
+      [regexp firstMatchInString:fromString
+                         options:0
+                           range:NSMakeRange(0, fromString.length)];
+    if (match.numberOfRanges > 1) {
+      str = [fromString substringWithRange:[match rangeAtIndex:1]];
+    }
+  }
+  return str;
 }
 
 @end
