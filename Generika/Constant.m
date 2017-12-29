@@ -74,7 +74,7 @@ NSString *const kSearchLangs[] = { // short name
 + (NSString *)detectStringWithRegexp:(NSString *)regexpString
                                 from:(NSString *)fromString
 {
-  NSString *str = @"";
+  NSString *str;
   NSError *error = nil;
   NSRegularExpression *regexp = 
     [NSRegularExpression regularExpressionWithPattern:regexpString
@@ -88,6 +88,9 @@ NSString *const kSearchLangs[] = { // short name
     if (match.numberOfRanges > 1) {
       str = [fromString substringWithRange:[match rangeAtIndex:1]];
     }
+  }
+  if (str == nil) {
+    str = @"";
   }
   return str;
 }

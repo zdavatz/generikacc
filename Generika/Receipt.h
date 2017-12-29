@@ -5,8 +5,9 @@
 //  Copyright (c) 2013-2017 ywesee GmbH. All rights reserved.
 //
 
-
 @interface Operator : NSObject <NSCoding>
+
+@property (nonatomic, strong, readwrite) NSString *signature;
 
 @property (nonatomic, strong, readwrite) NSString *givenName;
 @property (nonatomic, strong, readwrite) NSString *familyName;
@@ -20,7 +21,8 @@
 @property (nonatomic, strong, readwrite) NSString *zipcode;
 @property (nonatomic, strong, readwrite) NSString *country;
 
-@property (nonatomic, strong, readwrite) NSString *signature;
++ (NSDictionary *)operatorKeyMaps;
++ (id)importFromDict:(NSDictionary *)dict;
 
 - (NSArray *)operatorKeys;
 
@@ -29,7 +31,7 @@
 
 @interface Patient : NSObject <NSCoding>
 
-@property (nonatomic, strong, readwrite) NSString *id;
+@property (nonatomic, strong, readwrite) NSString *identifier;
 @property (nonatomic, strong, readwrite) NSString *givenName;
 @property (nonatomic, strong, readwrite) NSString *familyName;
 @property (nonatomic, assign) int weight;
@@ -45,24 +47,10 @@
 @property (nonatomic, strong, readwrite) NSString *zipcode;
 @property (nonatomic, strong, readwrite) NSString *country;
 
++ (NSDictionary *)patientKeyMaps;
++ (id)importFromDict:(NSDictionary *)dict;
+
 - (NSArray *)patientKeys;
-
-@end
-
-
-@interface Medication : NSObject <NSCoding>
-
-@property (nonatomic, strong, readwrite) NSString *title;
-@property (nonatomic, strong, readwrite) NSString *comment;
-
-@property (nonatomic, strong, readwrite) NSString *reg;
-@property (nonatomic, strong, readwrite) NSString *atc;
-@property (nonatomic, strong, readwrite) NSString *ean;
-@property (nonatomic, strong, readwrite) NSString *pack;
-@property (nonatomic, strong, readwrite) NSString *name;
-@property (nonatomic, strong, readwrite) NSString *owner;
-
-- (NSArray *)medicationKeys;
 
 @end
 
@@ -76,10 +64,13 @@
 @property (nonatomic, strong, readwrite) NSString *placeDate;
 @property (nonatomic, strong, readwrite) Operator *operator;
 @property (nonatomic, strong, readwrite) Patient *patient;
-@property (nonatomic, strong, readwrite) NSArray *medications;
+@property (nonatomic, strong, readwrite) NSArray *products;
 
 @property (nonatomic, strong, readwrite) NSString *issuedPlace;
 @property (nonatomic, strong, readwrite) NSString *issuedDate;
+
++ (NSDictionary *)rereiptKeyMaps;
++ (id)importFromDict:(NSDictionary *)dict;
 
 - (NSArray *)receiptKeys;
 

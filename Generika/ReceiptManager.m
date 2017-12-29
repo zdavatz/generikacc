@@ -292,8 +292,25 @@ static ReceiptManager *_sharedInstance = nil;
 {
   NSMutableArray *receiptDicts = [[NSMutableArray alloc] init];
   for (Receipt *receipt in self.receipts) {
-    NSDictionary *receiptDict = [receipt
+    NSDictionary *operatorDict;
+    if (receipt.operator) {
+      operatorDict = [receipt.operator
+        dictionaryWithValuesForKeys:[receipt.operator operatorKeys]];
+    }
+    NSDictionary *patientDict;
+    if (receipt.patient) {
+      patientDict = [receipt.patient
+        dictionaryWithValuesForKeys:[receipt.patient patientKeys]];
+    }
+
+    NSDictionary *dict = [receipt
       dictionaryWithValuesForKeys:[receipt receiptKeys]];
+    NSMutableDictionary *receiptDict = [dict mutableCopy];
+
+    [receiptDict setObject:operatorDict forKey:@"operator"];
+    [receiptDict setObject:patientDict forKey:@"patient"];
+    [receiptDict setObject:@[] forKey:@"products"];
+
     [receiptDicts addObject:receiptDict];
   }
   NSString *filePath = [self localFilePath];

@@ -621,37 +621,33 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   if (json == nil || [(NSArray *)json count] == 0) {
     [self notFoundEan:ean];
   } else {
-    Product *product = [[Product alloc] init];
     NSDate *now = [NSDate date];
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
     NSString *datetime = [dateFormat stringFromDate:now];
     ProductManager *manager = [ProductManager sharedManager];
-    // more values
+
+    NSString *barcodePath = [manager storeBarcode:barcode
+                                            ofEan:ean
+                                               to:@"both"];
     NSDictionary *dict = @{
-      @"reg"       : [json valueForKeyPath:@"reg"],
-      @"seq"       : [json valueForKeyPath:@"seq"],
-      @"pack"      : [json valueForKeyPath:@"pack"],
-      @"name"      : [json valueForKeyPath:@"name"],
-      @"size"      : [json valueForKeyPath:@"size"],
-      @"deduction" : [json valueForKeyPath:@"deduction"],
-      @"price"     : [json valueForKeyPath:@"price"],
-      @"category"  : [[json valueForKeyPath:@"category"]
+      @"regnrs"       : [json valueForKeyPath:@"reg"],
+      @"seq"          : [json valueForKeyPath:@"seq"],
+      @"package"      : [json valueForKeyPath:@"pack"],
+      @"product_name" : [json valueForKeyPath:@"name"],
+      @"size"         : [json valueForKeyPath:@"size"],
+      @"deduction"    : [json valueForKeyPath:@"deduction"],
+      @"price"        : [json valueForKeyPath:@"price"],
+      @"category"     : [[json valueForKeyPath:@"category"]
         stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "],
-      @"barcode"   : [manager storeBarcode:barcode ofEan:ean to:@"both"],
-      @"ean"       : ean,
-      @"datetime"  : datetime,
-      @"expiresAt" : @""
+      @"eancode"      : ean
     };
-    for (NSString *key in [dict allKeys]) {
-      NSString *value = nil;
-      if ([dict[key] isEqual:[NSNull null]]) {
-        value = @"";
-      } else {
-        value = dict[key];
-      }
-      [product setValue:value forKey:key];
-    }
+    Product *product = [Product importFromDict:dict];
+    // additional values
+    [product setValue:barcodePath forKey:@"barcode"];
+    [product setValue:@"" forKey:@"expiresAt"];
+    [product setValue:datetime forKey:@"datetime"];
+
     BOOL saved = [manager insertProduct:product atIndex:0];
     if (saved) {
       // alert
@@ -1314,28 +1310,76 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     JSONObjectWithData:decryptedData
                options:NSJSONReadingAllowFragments
                  error:&error];
-  NSDictionary *dict = @{
-    @"amkfile"     : [manager storeAmkData:encryptedData
-                                    ofFile:fileName
-                                        to:@"both"],
-    @"datetime"    : datetime,
-    @"hashedKey"   : [receiptData valueForKey:@"prescription_hash"],
-    @"placeDate"   : [receiptData valueForKey:@"place_date"],
-    @"operator"    : [receiptData valueForKey:@"operator"],
-    @"patient"     : [receiptData valueForKey:@"patient"],
-    @"medications" : [receiptData valueForKey:@"medications"]
-  };
 
-  Receipt *receipt = [[Receipt alloc] init];
-  for (NSString *key in [dict allKeys]) {
-    NSString *value = nil;
-    if ([dict[key] isEqual:[NSNull null]]) {
-      value = @"";
-    } else {
-      value = dict[key];
+  Operator *operator;
+  Patient *patient;
+  NSMutableArray *medications = [[NSMutableArray alloc] init];
+  if (error == nil) {
+    // operator
+    NSDictionary *operatorDict = [
+      receiptData valueForKey:@"operator"] ?: [NSNull null];
+    if (operatorDict) {
+      operator = [Operator importFromDict:operatorDict];
     }
-    [receipt setValue:value forKey:key];
+    // patient
+    NSDictionary *patientDict = [
+      receiptData valueForKey:@"patient"] ?: [NSNull null];
+    if (patientDict) {
+      patient = [Patient importFromDict:patientDict];
+    }
+    // medications (products)
+    NSArray *medicationArray = [
+      receiptData valueForKey:@"medications"] ?: [NSNull null];
+    if (medicationArray) {
+      for (NSDictionary *medicationDict in medicationArray) {
+        [medications addObject:[Product importFromDict:medicationDict]];
+      }
+    }
   }
+
+  Receipt *receipt;
+  @try {
+    if (error || (operator == nil || patient == nil || medications == nil)) {
+      // DLog(@"%@", error); // original error
+      @throw [NSException exceptionWithName:@"Invalid keys or values"
+                                     reason:@""
+                                   userInfo:nil];
+    }
+    NSString *amkfile = [manager storeAmkData:encryptedData
+                                       ofFile:fileName
+                                           to:@"both"];
+    NSDictionary *receiptDict = @{
+      @"prescription_hash" : [
+        receiptData valueForKey:@"prescription_hash"] ?: [NSNull null],
+      @"place_date"        : [
+        receiptData valueForKey:@"place_date"] ?: [NSNull null],
+      @"operator"          : operator,
+      @"patient"           : patient,
+      @"medications"       : medications
+    };
+    receipt = [Receipt importFromDict:receiptDict];
+    // additional values
+    [receipt setValue:amkfile forKey:@"amkfile"];
+    [receipt setValue:datetime forKey:@"datetime"];
+  }
+  @catch (NSException *exception) {
+    error = [NSError errorWithDomain:@"receipt"
+                                code:100
+                            userInfo:@{
+           NSLocalizedDescriptionKey:@"Invalid .amk file"
+                            }];
+  }
+  if (error) {
+    UIAlertView *alert = [[UIAlertView alloc]
+        initWithTitle:[error localizedDescription]
+              message:nil
+             delegate:self
+    cancelButtonTitle:@"OK"
+    otherButtonTitles:nil];
+    [alert show];
+    return;
+  }
+
   BOOL saved = [manager insertReceipt:receipt atIndex:0];
   if (saved) {
     if (!self.viewer) {

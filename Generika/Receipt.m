@@ -9,6 +9,38 @@
 
 @implementation Operator
 
++ (NSDictionary *)operatorKeyMaps
+{
+  return @{ // property : importingKey
+    @"signature"  : @"signature",
+    @"givenName"  : @"given_name",
+    @"familyName" : @"family_name",
+    @"title"      : @"title",
+    @"email"      : @"email_address",
+    @"phone"      : @"phone_number",
+    @"address"    : @"postal_address",
+    @"city"       : @"city",
+    @"zipcode"    : @"zip_code",
+    @"country"    : @"country",
+  };
+}
+
++ (id)importFromDict:(NSDictionary *)dict
+{
+  Operator *operator = [[self alloc] init];
+  NSDictionary *keyMaps = [self operatorKeyMaps];
+  for (NSString *key in [keyMaps allKeys]) {
+    NSString *value;
+    // get value from dict using importing key
+    value = [dict valueForKey:keyMaps[key]] ?: [NSNull null];
+    if (value == nil || [value isEqual:[NSNull null]]) {
+      value = @"";
+    }
+    [operator setValue:value forKey:key];
+  }
+  return operator;
+}
+
 - (id)init
 {
   self = [super init];
@@ -20,6 +52,8 @@
 
 - (void)dealloc
 {
+  _signature = nil;
+
   _givenName = nil;
   _familyName = nil;
   _title = nil;
@@ -29,8 +63,6 @@
   _city = nil;
   _zipcode = nil;
   _country = nil;
-
-  _signature = nil;
 }
 
 #pragma mark - NSCoding Interface
@@ -41,52 +73,74 @@
   if (!self) {
     return nil;
   }
-  _givenName = [decoder decodeObjectForKey:@"given_name"];
-  _familyName = [decoder decodeObjectForKey:@"family_name"];
-  _title = [decoder decodeObjectForKey:@"title"];
-  _email = [decoder decodeObjectForKey:@"email_address"];
-  _phone = [decoder decodeObjectForKey:@"phone_number"];
-  _address = [decoder decodeObjectForKey:@"postal_address"];
-  _city = [decoder decodeObjectForKey:@"city"];
-  _zipcode = [decoder decodeObjectForKey:@"zip_code"];
-  _country = [decoder decodeObjectForKey:@"country"];
-
-  _signature = [decoder decodeObjectForKey:@"signature"];
-
+  for (NSString *key in [self operatorKeys]) {
+    NSString *value;
+    if ([decoder containsValueForKey:key]) {
+      value = [decoder decodeObjectForKey:key];
+    } else {
+      value = @"";
+    }
+    [self setValue:value forKey:key];
+  }
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
-  [encoder encodeObject:self.givenName forKey:@"given_name"];
-  [encoder encodeObject:self.familyName forKey:@"family_name"];
-  [encoder encodeObject:self.title forKey:@"title"];
-
-  [encoder encodeObject:self.email forKey:@"email_address"];
-  [encoder encodeObject:self.phone forKey:@"phone_number"];
-  [encoder encodeObject:self.address forKey:@"postal_address"];
-  [encoder encodeObject:self.city forKey:@"city"];
-  [encoder encodeObject:self.zipcode forKey:@"zip_code"];
-  [encoder encodeObject:self.country forKey:@"country"];
-  [encoder encodeObject:self.signature forKey:@"signature"];
+  for (NSString *key in [self operatorKeys]) {
+    NSString *value = [self valueForKey:key] ?: [NSNull null];
+    if (value == nil || [value isEqual:[NSNull null]]) {
+      value = @"";
+    }
+    [encoder encodeObject:value forKey:key];
+  }
 }
 
 #pragma mark - Conversion to Dictionary
 
 - (NSArray *)operatorKeys
 {
-  return @[
-    @"givenName", @"familyName", @"title"
-    @"email", @"phone",
-    @"address", @"city", @"zipcode", @"country",
-    @"signature"
-  ];
+  return [[[self class] operatorKeyMaps] allKeys];
 }
 
 @end
 
 
 @implementation Patient
+
++ (NSDictionary *)patientKeyMaps
+{
+  return @{ // property : importingKey
+    @"identifier" : @"patient_id",
+    @"givenName"  : @"given_name",
+    @"familyName" : @"family_name",
+    @"weight"     : @"weight_kg",
+    @"height"     : @"height_cm",
+    @"birthDate"  : @"birth_date",
+    @"gender"     : @"gender",
+    @"email"      : @"email_address",
+    @"phone"      : @"phone_number",
+    @"address"    : @"postal_address",
+    @"city"       : @"city",
+    @"zipcode"    : @"zip_code",
+    @"country"    : @"country",
+  };
+}
+
++ (id)importFromDict:(NSDictionary *)dict
+{
+  Patient *patient = [[self alloc] init];
+  NSDictionary *keyMaps = [self patientKeyMaps];
+  for (NSString *key in [keyMaps allKeys]) {
+    NSString *value;
+    value = [dict valueForKey:keyMaps[key]] ?: [NSNull null];
+    if (value == nil || [value isEqual:[NSNull null]]) {
+      value = @"";
+    }
+    [patient setValue:value forKey:key];
+  }
+  return patient;
+}
 
 - (id)init
 {
@@ -99,7 +153,7 @@
 
 - (void)dealloc
 {
-  _id = nil;
+  _identifier = nil;
   _givenName = nil;
   _familyName = nil;
   _birthDate = nil;
@@ -112,60 +166,74 @@
   _country = nil;
 }
 
-#pragma mark - Conversion to Dictionary
+#pragma mark - NSCoding Interface
 
-- (NSArray *)patientKeys
-{
-  return @[
-    @"id", @"givenName", @"familyName",
-    @"weight", @"height",
-    @"birthDate", @"gender",
-    @"email", @"phone",
-    @"address", @"city", @"zipcode", @"country",
-  ];
-}
-
-@end
-
-
-@implementation Medication
-
-- (id)init
+- (id)initWithCoder:(NSCoder *)decoder
 {
   self = [super init];
   if (!self) {
     return nil;
   }
+  for (NSString *key in [self patientKeys]) {
+    NSString *value;
+    if ([decoder containsValueForKey:key]) {
+      value = [decoder decodeObjectForKey:key];
+    } else {
+      value = @"";
+    }
+    [self setValue:value forKey:key];
+  }
   return self;
 }
 
-- (void)dealloc
+- (void)encodeWithCoder:(NSCoder *)encoder
 {
-  _title = nil;
-  _comment = nil;
-  _reg = nil;
-  _atc = nil;
-  _ean = nil;
-  _pack = nil;
-  _name = nil;
-  _owner = nil;
+  for (NSString *key in [self patientKeys]) {
+    NSString *value = [self valueForKey:key] ?: [NSNull null];
+    if (value == nil || [value isEqual:[NSNull null]]) {
+      value = @"";
+    }
+    [encoder encodeObject:value forKey:key];
+  }
 }
 
 #pragma mark - Conversion to Dictionary
 
-- (NSArray *)medicationKeys
+- (NSArray *)patientKeys
 {
-  return @[
-    @"title", @"comment",
-    @"reg", @"atc", @"ean", @"pack",
-    @"name", @"owner"
-  ];
+  return [[[self class] patientKeyMaps] allKeys];
 }
 
 @end
 
 
 @implementation Receipt
+
++ (NSDictionary *)receiptKeyMaps
+{
+  return @{ // property : importingKey
+    @"hashedKey" : @"prescription_hash",
+    @"placeDate" : @"place_date",
+    @"operator"  : @"operator",
+    @"patient"   : @"patient",
+    @"products"  : @"medications"
+  };
+}
+
++ (id)importFromDict:(NSDictionary *)dict
+{
+  Receipt *receipt = [[self alloc] init];
+  NSDictionary *keyMaps = [self receiptKeyMaps];
+  for (NSString *key in [keyMaps allKeys]) {
+    NSString *value;
+    value = [dict valueForKey:keyMaps[key]] ?: [NSNull null];
+    if (value == nil || [value isEqual:[NSNull null]]) {
+      value = @"";
+    }
+    [receipt setValue:value forKey:key];
+  }
+  return receipt;
+}
 
 - (id)init
 {
@@ -185,7 +253,7 @@
   _placeDate = nil;
   _operator = nil;
   _patient = nil;
-  _medications = nil;
+  _products = nil;
 
   // values from placeDate
   _issuedPlace = nil;
@@ -200,15 +268,15 @@
   if (!self) {
     return nil;
   }
-  _amkfile = [decoder decodeObjectForKey:@"amkfile"];
-  _datetime = [decoder decodeObjectForKey:@"datetime"];
-
-  // keys from amk file
-  _hashedKey = [decoder decodeObjectForKey:@"prescription_hash"];
-  _placeDate = [decoder decodeObjectForKey:@"place_date"];
-  _operator = [decoder decodeObjectForKey:@"operator"];
-  _patient = [decoder decodeObjectForKey:@"patient"];
-  _medications = [decoder decodeObjectForKey:@"medications"];
+  for (NSString *key in [self receiptKeys]) {
+    NSString *value;
+    if ([decoder containsValueForKey:key]) {
+      value = [decoder decodeObjectForKey:key];
+    } else {
+      value = @"";
+    }
+    [self setValue:value forKey:key];
+  }
 
   // "issuedPlace, issuedDate" are extracted from "place_date"
   _issuedPlace = nil;
@@ -218,14 +286,13 @@
 
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
-  [encoder encodeObject:self.amkfile forKey:@"amkfile"];
-  [encoder encodeObject:self.datetime forKey:@"datetime"];
-
-  [encoder encodeObject:self.hashedKey forKey:@"prescription_hash"];
-  [encoder encodeObject:self.placeDate forKey:@"place_date"];
-  [encoder encodeObject:self.operator forKey:@"operator"];
-  [encoder encodeObject:self.patient forKey:@"patient"];
-  [encoder encodeObject:self.medications forKey:@"medications"];
+  for (NSString *key in [self receiptKeys]) {
+    NSString *value = [self valueForKey:key] ?: [NSNull null];
+    if (value == nil || [value isEqual:[NSNull null]]) {
+      value = @"";
+    }
+    [encoder encodeObject:value forKey:key];
+  }
 }
 
 #pragma mark - Getter methods
@@ -260,13 +327,12 @@
 
 - (NSArray *)receiptKeys
 {
-  return @[
-    @"hashedKey", // hash
-    @"placeDate", @"operator", @"patient", @"medications",
-
+  NSArray *additionalKeys = @[
     @"amkfile",
     @"datetime"
   ];
+  return [additionalKeys arrayByAddingObjectsFromArray:
+    [[[self class] receiptKeyMaps] allKeys]];
 }
 
 @end
