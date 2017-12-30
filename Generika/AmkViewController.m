@@ -32,6 +32,7 @@
 - (void)dealloc
 {
   _parent = nil;
+  _receipt = nil;
   [self didReceiveMemoryWarning];
 }
 
@@ -54,7 +55,7 @@
 
   // patient
   UIView *patientView = [[UIView alloc] initWithFrame:CGRectMake(
-      0,  0, (int)screenBounds.size.width / 2, 80)];
+      183,  0, (int)screenBounds.size.width / 2, 80)];
 
   UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
       70.0, 2.0, 230.0, 25.0)];
@@ -67,7 +68,7 @@
   UIView *doctorView = [[UIView alloc] initWithFrame:CGRectMake(
       0, 0, (int)screenBounds.size.width / 2, 80)];
 
-  // products
+  // medications
   // TODO
 
   [self.receiptView addSubview:patientView];
@@ -131,6 +132,7 @@
 
 - (void)loadReceipt:(Receipt *)receipt
 {
+  _receipt = receipt;
   [self refresh];
 }
 
@@ -145,15 +147,17 @@
 - (void)refresh
 {
   // TODO
+  //DLog(@"receipt -> %@", self.receipt);
 }
 
 - (void)showActions
 {
   UIActionSheet *sheet = [[UIActionSheet alloc] init];
   sheet.delegate = self;
-  // TODO
-  // set receipt title
-  sheet.title = @"";
+
+  Operator *operator = self.receipt.operator;
+  sheet.title = operator.title;
+
   [sheet addButtonWithTitle:@"Archive"];
   [sheet addButtonWithTitle:@"Back to List"];
   [sheet addButtonWithTitle:@"Cancel"];

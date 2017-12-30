@@ -30,4 +30,7 @@ extern NSString *const kOddbMobileFlavorUserAgent;
 
 + (UIColor *)activeUIColor;
 
++ (NSString *)detectStringWithRegexp:(NSString *)regexpString
+                                from:(NSString *)fromString;
+
 @end

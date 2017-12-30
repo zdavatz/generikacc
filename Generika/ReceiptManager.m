@@ -147,6 +147,8 @@ static ReceiptManager *_sharedInstance = nil;
   NSString *amkFilePath = [path stringByAppendingPathComponent:amkFile];
   BOOL amkSaved = [amkData writeToFile:amkFilePath atomically:YES];
 
+  // TODO:
+  // move the saving signature
   // create signature `RZ_signature.png`
   BOOL pngSaved = true;
   error = nil;
@@ -159,13 +161,12 @@ static ReceiptManager *_sharedInstance = nil;
   if (error != nil) {
     return nil;
   } else {
-    NSDictionary *operator = [json valueForKey:@"operator"];
-    if (operator != nil) {
-      NSString *signature = [operator valueForKey:@"signature"];
+    NSDictionary *operatorDict = [json valueForKey:@"operator"];
+    if (operatorDict != nil) {
+      NSString *signature = [operatorDict valueForKey:@"signature"];
       NSData *sigData = [NSKeyedArchiver archivedDataWithRootObject:signature];
     }
   }
-
   // if amk data has signature (image as png)
   if (sigData != nil) {
     NSString *pngFile = [NSString stringWithFormat:
@@ -291,8 +292,25 @@ static ReceiptManager *_sharedInstance = nil;
 {
   NSMutableArray *receiptDicts = [[NSMutableArray alloc] init];
   for (Receipt *receipt in self.receipts) {
-    NSDictionary *receiptDict = [receipt
+    NSDictionary *operatorDict;
+    if (receipt.operator) {
+      operatorDict = [receipt.operator
+        dictionaryWithValuesForKeys:[receipt.operator operatorKeys]];
+    }
+    NSDictionary *patientDict;
+    if (receipt.patient) {
+      patientDict = [receipt.patient
+        dictionaryWithValuesForKeys:[receipt.patient patientKeys]];
+    }
+
+    NSDictionary *dict = [receipt
       dictionaryWithValuesForKeys:[receipt receiptKeys]];
+    NSMutableDictionary *receiptDict = [dict mutableCopy];
+
+    [receiptDict setObject:operatorDict forKey:@"operator"];
+    [receiptDict setObject:patientDict forKey:@"patient"];
+    [receiptDict setObject:@[] forKey:@"products"];
+
     [receiptDicts addObject:receiptDict];
   }
   NSString *filePath = [self localFilePath];
