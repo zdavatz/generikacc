@@ -45,14 +45,13 @@
 
 - (void)dealloc
 {
-  _datetime = nil; // scanned at
-
   _ean = nil;
   _reg = nil;
   _pack = nil;
   _name = nil;
 
   // product
+  _datetime = nil; // scanned at
   _barcode = nil; // file path
   _expiresAt = nil; // value from picker
 
@@ -155,8 +154,8 @@
 - (NSArray *)productKeys
 {
   NSArray *additionalKeys = @[
-    @"barcode",
     @"datetime",
+    @"barcode",
     @"expiresAt"
   ];
   return [additionalKeys arrayByAddingObjectsFromArray:

@@ -7,6 +7,7 @@
 
 #import "ReceiptManager.h"
 #import "Receipt.h"
+#import "Product.h"
 
 
 @interface ReceiptManager ()
@@ -122,6 +123,98 @@ static ReceiptManager *_sharedInstance = nil;
   return [self.receipts objectAtIndex:index];
 }
 
+- (id)importReceiptFromURL:(NSURL *)url
+{
+  // import .amk receipt file.
+  NSData *now = [NSDate date];
+  NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+  [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
+  NSString *datetime = [dateFormat stringFromDate:now];
+  NSString *fileName = [[url absoluteString] lastPathComponent];
+
+  NSData *encryptedData = [NSData dataWithContentsOfURL:url];
+  NSData *decryptedData = [encryptedData
+    initWithBase64EncodedData:encryptedData
+                      options:NSDataBase64DecodingIgnoreUnknownCharacters];
+
+  NSError *error;
+  NSDictionary *receiptData = [NSJSONSerialization
+    JSONObjectWithData:decryptedData
+               options:NSJSONReadingAllowFragments
+                 error:&error];
+  if (error) {
+    return nil;
+  }
+
+  // hashedKey (prescription_hash) is required
+  NSString *hash;
+  hash = [receiptData valueForKey:@"prescription_hash"];
+  if (hash == nil ||
+      [hash isEqual:[NSNull null]] ||
+      [hash isEqualToString:@""]) {
+    return nil;
+  }
+  NSPredicate *predicate = [NSPredicate
+    predicateWithFormat:@"hashedKey == %@", hash];
+  NSArray *matched = [self.receipts filteredArrayUsingPredicate:predicate];
+  if ([matched count] > 0) {
+    // already imported
+    return [NSNull null];
+  }
+
+  Operator *operator;
+  Patient *patient;
+  NSMutableArray *medications = [[NSMutableArray alloc] init];
+  if (error == nil) {
+    // operator
+    NSDictionary *operatorDict = [
+      receiptData valueForKey:@"operator"] ?: [NSNull null];
+    if (operatorDict) {
+      operator = [Operator importFromDict:operatorDict];
+    }
+    // patient
+    NSDictionary *patientDict = [
+      receiptData valueForKey:@"patient"] ?: [NSNull null];
+    if (patientDict) {
+      patient = [Patient importFromDict:patientDict];
+    }
+    // medications (products)
+    NSArray *medicationArray = [
+      receiptData valueForKey:@"medications"] ?: [NSNull null];
+    if (medicationArray) {
+      for (NSDictionary *medicationDict in medicationArray) {
+        [medications addObject:[Product importFromDict:medicationDict]];
+      }
+    }
+  }
+  if (operator == nil || patient == nil || medications == nil) {
+    return nil;
+  }
+  Receipt *receipt;
+
+  ReceiptManager *manager = [[self class] sharedManager];
+  NSString *amkfile = [manager storeAmkData:encryptedData
+                                     ofFile:fileName
+                                         to:@"both"];
+  NSDictionary *receiptDict = @{
+    @"prescription_hash" : [
+      receiptData valueForKey:@"prescription_hash"] ?: [NSNull null],
+    @"place_date"        : [
+      receiptData valueForKey:@"place_date"] ?: [NSNull null],
+    @"operator"          : operator,
+    @"patient"           : patient,
+    @"medications"       : medications
+  };
+  receipt = [Receipt importFromDict:receiptDict];
+  // additional values
+  [receipt setValue:amkfile forKey:@"amkfile"];
+  [receipt setValue:datetime forKey:@"datetime"];
+
+  return receipt;
+}
+
+#pragma mark - Saving and Loading methods
+
 - (NSString *)storeAmkData:(NSData *)amkData
                     ofFile:(NSString *)fileName
                         to:(NSString *)destination
@@ -220,9 +313,6 @@ static ReceiptManager *_sharedInstance = nil;
   }
 }
 
-
-#pragma mark - Saving and Loading methods
-
 - (BOOL)iCloudOn
 {
   if (!self.userDefaults) { // at init
@@ -290,58 +380,38 @@ static ReceiptManager *_sharedInstance = nil;
 
 - (BOOL)saveToLocal
 {
-  NSMutableArray *receiptDicts = [[NSMutableArray alloc] init];
-  for (Receipt *receipt in self.receipts) {
-    NSDictionary *operatorDict;
-    if (receipt.operator) {
-      operatorDict = [receipt.operator
-        dictionaryWithValuesForKeys:[receipt.operator operatorKeys]];
-    }
-    NSDictionary *patientDict;
-    if (receipt.patient) {
-      patientDict = [receipt.patient
-        dictionaryWithValuesForKeys:[receipt.patient patientKeys]];
-    }
+  NSMutableData *data = [NSMutableData data];
+  NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc]
+    initForWritingWithMutableData:data];
+  [archiver encodeObject:self.receipts forKey:@"data"];
+  [archiver finishEncoding];
 
-    NSDictionary *dict = [receipt
-      dictionaryWithValuesForKeys:[receipt receiptKeys]];
-    NSMutableDictionary *receiptDict = [dict mutableCopy];
-
-    [receiptDict setObject:operatorDict forKey:@"operator"];
-    [receiptDict setObject:patientDict forKey:@"patient"];
-    [receiptDict setObject:@[] forKey:@"products"];
-
-    [receiptDicts addObject:receiptDict];
-  }
   NSString *filePath = [self localFilePath];
-  [receiptDicts writeToFile:filePath atomically:YES];
-  NSArray *saved = [[NSArray alloc] initWithContentsOfFile:filePath];
-  if ([saved count] > 0) {
-    return YES;
-  } else {
-    return NO;
-  }
+  return [data writeToFile:filePath atomically:YES];
 }
 
 - (void)loadFromLocal
 {
   NSString *filePath = [self localFilePath];
   NSFileManager *fileManager = [NSFileManager defaultManager];
-
-  if ([fileManager fileExistsAtPath:filePath]) {
-    [self.receipts removeAllObjects];
-    NSArray *receiptDicts = [[NSArray alloc] initWithContentsOfFile:filePath];
-    for (NSDictionary *receiptDict in receiptDicts) {
-      Receipt *receipt = [[Receipt alloc] init];
-      [receipt setValuesForKeysWithDictionary:receiptDict];
-      [self.receipts addObject:receipt];
-    }
-  } else {
+  if (![fileManager fileExistsAtPath:filePath]) {
     BOOL created = [fileManager createFileAtPath:filePath
                                         contents:nil
                                       attributes:nil];
     if (created) {
       [self.receipts removeAllObjects];
+    }
+  }
+  NSData *data = [NSData dataWithContentsOfFile:filePath];
+  NSKeyedUnarchiver *archiver = [
+    [NSKeyedUnarchiver alloc] initForReadingWithData:data];
+  NSArray *receipts = [archiver decodeObjectForKey:@"data"];
+  [archiver finishDecoding];
+
+  if (receipts) {
+    [self.receipts removeAllObjects];
+    for (Receipt *receipt in receipts) {
+      [self.receipts addObject:receipt];
     }
   }
 }

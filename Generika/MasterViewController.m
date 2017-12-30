@@ -66,7 +66,7 @@ static const int kSegmentReceipt = 1;
 - (void)openWebViewWithURL:(NSURL *)url;
 - (void)searchInfoForProduct:(Product *)product;
 // item:receipt
-- (void)displayInfoForReceipt:(Receipt *)receipt;
+- (void)displayInfoForReceipt:(Receipt *)receipt animated:(BOOL)animated;
 
 @end
 
@@ -756,14 +756,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 # pragma mark - Receipt
 
-- (void)displayInfoForReceipt:(Receipt *)receipt
+- (void)displayInfoForReceipt:(Receipt *)receipt animated:(BOOL)animated
 {
+  // If animated is NO (at boot), This generates `Unbalanced calls to
+  // begin/end appearance transitions for ...`. But, it's trivial matter,
+  // here :-D
   if (!self.viewer) {
     self.viewer = [[AmkViewController alloc] init];
   }
   [self.viewer loadReceipt:receipt];
-  [self.navigationController pushViewController:self.viewer
-                                       animated:YES];
+  if (!self.viewer.isViewLoaded || !self.viewer.view.window) {
+    [self.navigationController pushViewController:self.viewer
+                                         animated:animated];
+  }
 }
 
 # pragma mark - Table View
@@ -1102,7 +1107,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     } else {
       receipt = [[ReceiptManager sharedManager] receiptAtIndex:indexPath.row];
     }
-    [self displayInfoForReceipt:receipt];
+    [self displayInfoForReceipt:receipt animated:YES];
   } else {  // product (default)
     Product *product;
     if (self.search.active) {
@@ -1293,74 +1298,23 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   [self setSelectedSegmentIndex:(NSInteger)kSegmentReceipt];
 
-  NSData *now = [NSDate date];
-  NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-  [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
-  NSString *datetime = [dateFormat stringFromDate:now];
-  NSString *fileName = [[url absoluteString] lastPathComponent];
-
-  NSData *encryptedData = [NSData dataWithContentsOfURL:url];
-  NSData *decryptedData = [encryptedData
-    initWithBase64EncodedData:encryptedData
-                      options:NSDataBase64DecodingIgnoreUnknownCharacters];
+  ReceiptManager *manager = [ReceiptManager sharedManager];
+  Receipt *receipt;
 
   NSError *error;
-  ReceiptManager *manager = [ReceiptManager sharedManager];
-  NSDictionary *receiptData = [NSJSONSerialization
-    JSONObjectWithData:decryptedData
-               options:NSJSONReadingAllowFragments
-                 error:&error];
-
-  Operator *operator;
-  Patient *patient;
-  NSMutableArray *medications = [[NSMutableArray alloc] init];
-  if (error == nil) {
-    // operator
-    NSDictionary *operatorDict = [
-      receiptData valueForKey:@"operator"] ?: [NSNull null];
-    if (operatorDict) {
-      operator = [Operator importFromDict:operatorDict];
-    }
-    // patient
-    NSDictionary *patientDict = [
-      receiptData valueForKey:@"patient"] ?: [NSNull null];
-    if (patientDict) {
-      patient = [Patient importFromDict:patientDict];
-    }
-    // medications (products)
-    NSArray *medicationArray = [
-      receiptData valueForKey:@"medications"] ?: [NSNull null];
-    if (medicationArray) {
-      for (NSDictionary *medicationDict in medicationArray) {
-        [medications addObject:[Product importFromDict:medicationDict]];
-      }
-    }
-  }
-
-  Receipt *receipt;
   @try {
-    if (error || (operator == nil || patient == nil || medications == nil)) {
-      // DLog(@"%@", error); // original error
-      @throw [NSException exceptionWithName:@"Invalid keys or values"
-                                     reason:@""
+    receipt = [manager importReceiptFromURL:url];
+    if (receipt == nil) {
+      @throw [NSException exceptionWithName:@"Import Error"
+                                     reason:@"Invalid keys or values"
                                    userInfo:nil];
+    } else if ([receipt isEqual:[NSNull null]]) {
+      error = [NSError errorWithDomain:@"receipt"
+                                  code:99
+                              userInfo:@{
+             NSLocalizedDescriptionKey:@"Already imported"
+                              }];
     }
-    NSString *amkfile = [manager storeAmkData:encryptedData
-                                       ofFile:fileName
-                                           to:@"both"];
-    NSDictionary *receiptDict = @{
-      @"prescription_hash" : [
-        receiptData valueForKey:@"prescription_hash"] ?: [NSNull null],
-      @"place_date"        : [
-        receiptData valueForKey:@"place_date"] ?: [NSNull null],
-      @"operator"          : operator,
-      @"patient"           : patient,
-      @"medications"       : medications
-    };
-    receipt = [Receipt importFromDict:receiptDict];
-    // additional values
-    [receipt setValue:amkfile forKey:@"amkfile"];
-    [receipt setValue:datetime forKey:@"datetime"];
   }
   @catch (NSException *exception) {
     error = [NSError errorWithDomain:@"receipt"
@@ -1379,17 +1333,9 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [alert show];
     return;
   }
-
   BOOL saved = [manager insertReceipt:receipt atIndex:0];
   if (saved) {
-    if (!self.viewer) {
-      self.viewer = [[AmkViewController alloc] init];
-    }
-    // If animated is NO (at boot), This generates `Unbalanced calls to
-    // begin/end appearance transitions for ...`. But, it's trivial matter,
-    // here :-D
-    [self.navigationController pushViewController:self.viewer
-                                         animated:animated];
+    [self displayInfoForReceipt:receipt animated:animated];
   }
 }
 
