@@ -273,28 +273,56 @@ static ProductManager *_sharedInstance = nil;
 
 - (BOOL)saveToLocal
 {
-  NSMutableArray *productDicts = [[NSMutableArray alloc] init];
-  for (Product *product in self.products) {
-    NSDictionary *productDict = [product
-      dictionaryWithValuesForKeys:[product productKeys]];
-    [productDicts addObject:productDict];
-  }
   NSString *filePath = [self localFilePath];
-  [productDicts writeToFile:filePath atomically:YES];
-  NSArray *saved = [[NSArray alloc] initWithContentsOfFile:filePath];
-  if ([saved count] > 0) {
-    return YES;
-  } else {
-    return NO;
-  }
+
+  // new
+  NSMutableData *data = [NSMutableData data];
+  NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc]
+    initForWritingWithMutableData:data];
+  [archiver encodeObject:self.products forKey:@"data"];
+  [archiver finishEncoding];
+
+  return [data writeToFile:filePath atomically:YES];
+
+  // old saveToLocal
+  // NSMutableArray *productDicts = [[NSMutableArray alloc] init];
+  // for (Product *product in self.products) {
+  //   NSDictionary *productDict = [product
+  //     dictionaryWithValuesForKeys:[product productKeys]];
+  //   [productDicts addObject:productDict];
+  // }
+  // return [productDicts writeToFile:filePath atomically:YES];
 }
 
 - (void)loadFromLocal
 {
   NSString *filePath = [self localFilePath];
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:filePath]) {
+  if (![fileManager fileExistsAtPath:filePath]) {
+    BOOL created = [fileManager createFileAtPath:filePath
+                                        contents:nil
+                                      attributes:nil];
+    if (created) {
+      [self.products removeAllObjects];
+    }
+  }
+
+  // new
+  NSData *data = [NSData dataWithContentsOfFile:filePath];
+  NSKeyedUnarchiver *archiver = [
+    [NSKeyedUnarchiver alloc] initForReadingWithData:data];
+  NSArray *products = [archiver decodeObjectForKey:@"data"];
+  [archiver finishDecoding];
+
+  if (products) {
     [self.products removeAllObjects];
+    for (Product *product in products) {
+      [self.products addObject:product];
+    }
+  }
+
+  if (products == nil || [products isEqual:[NSNull null]]) {
+    // old loadFromLocal (using dict)
     NSArray *productDicts = [[NSArray alloc] initWithContentsOfFile:filePath];
     for (NSDictionary *productDict in productDicts) {
       Product *product = [[Product alloc] init];

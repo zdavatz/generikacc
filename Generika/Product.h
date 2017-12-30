@@ -7,14 +7,13 @@
 
 @interface Product : NSObject <NSCoding>
 
-@property (nonatomic, strong, readwrite) NSString *datetime;
-
 @property (nonatomic, strong, readwrite) NSString *ean;
 @property (nonatomic, strong, readwrite) NSString *reg;
 @property (nonatomic, strong, readwrite) NSString *pack;
 @property (nonatomic, strong, readwrite) NSString *name;
 
 // only for scanned product
+@property (nonatomic, strong, readwrite) NSString *datetime;
 @property (nonatomic, strong, readwrite) NSString *barcode;
 @property (nonatomic, strong, readwrite) NSString *expiresAt;
 

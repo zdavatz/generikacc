@@ -24,6 +24,8 @@
                         to:(NSString *)destination;
 - (Receipt *)receiptAtIndex:(unsigned int)index;
 
+- (id)importReceiptFromURL:(NSURL *)url;
+
 - (BOOL)save;
 - (void)load;
 
