@@ -998,25 +998,27 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
    forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([self currentSegmentedType] == kSegmentReceipt) {
-      // TODO
-      [self refresh];
+      // TODO remove signature
+      //Receipt *receipt = [[ReceiptManager sharedManager]
+      //  receiptAtIndex:indexPath.row];
+      //NSError *error;
+      //[fileManager removeItemAtPath:barcodePath error:&error];
+      ReceiptManager* manager = [ReceiptManager sharedManager];
+      [manager removeReceiptAtIndex:indexPath.row];
     } else { // product
       Product *product = [[ProductManager sharedManager]
         productAtIndex:indexPath.row];
       NSString *barcodePath = product.barcode;
-      NSFileManager *fileManager = [NSFileManager defaultManager];
       NSError *error;
-      [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
       [fileManager removeItemAtPath:barcodePath error:&error];
       ProductManager* manager = [ProductManager sharedManager];
-      // manager removes product
-      // [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-      //                  withRowAnimation:UITableViewRowAnimationFade];
       [manager removeProductAtIndex:indexPath.row];
-      [self refresh];
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self refresh];
   } else {
     [self setEditing:NO animated:YES];
   }
@@ -1087,7 +1089,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   if (fromIndexPath.section == toIndexPath.section) {
     if ([self currentSegmentedType] == kSegmentReceipt) {
-      // TODO
+      ReceiptManager *manager = [ReceiptManager sharedManager];
+      if (manager.receipts && toIndexPath.row < [manager.receipts count]) {
+        [manager moveReceiptAtIndex:fromIndexPath.row toIndex:toIndexPath.row];
+      }
     } else { // product (default)
       ProductManager *manager = [ProductManager sharedManager];
       if (manager.products && toIndexPath.row < [manager.products count]) {
