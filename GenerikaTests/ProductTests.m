@@ -275,7 +275,6 @@
   [encoder encodeObject:vPack forKey:@"pack"];
   [encoder encodeObject:vName forKey:@"name"];
 
-  [encoder encodeObject:vSeq forKey:@"seq"];
   [encoder encodeObject:vSize forKey:@"size"];
   [encoder encodeObject:vDeduction forKey:@"deduction"];
   [encoder encodeObject:vPrice forKey:@"price"];
