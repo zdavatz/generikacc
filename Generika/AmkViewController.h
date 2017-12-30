@@ -9,6 +9,8 @@
 
 @interface AmkViewController : UIViewController <UIActionSheetDelegate>
 
+@property (nonatomic, strong, readonly) Receipt *receipt;
+
 - (void)loadReceipt:(Receipt *)receipt;
 
 @end

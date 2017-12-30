@@ -135,7 +135,7 @@
   XCTAssertEqualObjects(reg, vReg);
 
   NSString *ean = product.ean;
-  XCTAssertEqualObjects(ean, nil);
+  XCTAssertEqualObjects(ean, @"");
 }
 
 - (void)testReg_extractingFromEan
@@ -178,7 +178,7 @@
   XCTAssertEqualObjects(reg, @"");
 
   NSString *ean = product.ean;
-  XCTAssertEqualObjects(ean, nil);
+  XCTAssertEqualObjects(ean, @"");
 }
 
 - (void)testSeq_seq
@@ -201,7 +201,7 @@
   XCTAssertEqualObjects(seq, vSeq);
 
   NSString *ean = product.ean;
-  XCTAssertEqualObjects(ean, nil);
+  XCTAssertEqualObjects(ean, @"");
 }
 
 - (void)testSeq_extractingFromEan
@@ -244,7 +244,7 @@
   XCTAssertEqualObjects(seq, @"");
 
   NSString *ean = product.ean;
-  XCTAssertEqualObjects(ean, nil);
+  XCTAssertEqualObjects(ean, @"");
 }
 
 - (void)testDetectNumberFromEanWithRegexpString_regexpString
@@ -252,18 +252,19 @@
   // pass
 }
 
-- (void)testDictConversion_usingProductKeys
+- (void)testDictConversion_usingProductKeys_via_scan
 {
-  NSString *vReg = @"31706";
-  NSString *vSeq = @"017";
+  // scanned product
+  NSString *vEan = @"7680317060176";
   NSString *vPack = @"6";
   NSString *vName = @"Inderal";
+
   NSString *vSize = @"1";
   NSString *vDeduction = @"";
   NSString *vPrice = @"12.34";
   NSString *vCategory = @"A";
+
   NSString *vBarcode = @"";
-  NSString *vEan = @"7680317060176";
   NSString *vDatetime = @"02.02.2017";
   NSString *vExpiresAt = @"29.02.2017";
 
@@ -271,15 +272,15 @@
   NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc]
                               initForWritingWithMutableData:data];
   [encoder encodeObject:vEan forKey:@"ean"];
-  [encoder encodeObject:vSeq forKey:@"seq"];
   [encoder encodeObject:vPack forKey:@"pack"];
   [encoder encodeObject:vName forKey:@"name"];
+
   [encoder encodeObject:vSize forKey:@"size"];
   [encoder encodeObject:vDeduction forKey:@"deduction"];
   [encoder encodeObject:vPrice forKey:@"price"];
   [encoder encodeObject:vCategory forKey:@"category"];
+
   [encoder encodeObject:vBarcode forKey:@"barcode"];
-  [encoder encodeObject:vEan forKey:@"ean"];
   [encoder encodeObject:vDatetime forKey:@"datetime"];
   [encoder encodeObject:vExpiresAt forKey:@"expiresAt"];
   [encoder finishEncoding];
@@ -291,18 +292,91 @@
   NSDictionary *productDict = [product
     dictionaryWithValuesForKeys:[product productKeys]];
   NSDictionary *expected = @{
-    @"reg": vReg,
-    @"seq": vSeq,
+    @"atc": @"",
+    @"owner": @"",
+    @"title": @"",
+    @"comment": @"",
+
+    @"reg": @"31706",
+    @"ean": vEan,
     @"pack": vPack,
     @"name": vName,
+
+    // scanned properties
+    @"seq": @"017",
     @"size": vSize,
     @"deduction": vDeduction,
     @"price": vPrice,
     @"category": vCategory,
+
     @"barcode": vBarcode,
-    @"ean": vEan,
-    @"datetime": vDatetime,
     @"expiresAt": vExpiresAt,
+
+    @"datetime": vDatetime
+  };
+  XCTAssertEqualObjects(productDict, expected);
+}
+
+- (void)testDictConversion_usingProductKeys_via_import
+{
+  // imported product
+  NSString *vEan = @"7680317060176";
+  NSString *vReg = @"31706";
+  NSString *vPack = @"ABCD;EFG6";
+  NSString *vName = @"Inderal";
+
+  NSString *vAtc = @"1234567890";
+  NSString *vOwner = @"Firm";
+  NSString *vTitle = @"Prescription Title";
+  NSString *vComment = @"This is prescription";
+
+  NSString *vDatetime = @"02.02.2017";
+
+  NSMutableData *data = [[NSMutableData alloc] init];
+  NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc]
+                              initForWritingWithMutableData:data];
+
+  [encoder encodeObject:vEan forKey:@"ean"];
+  [encoder encodeObject:vReg forKey:@"reg"];
+  [encoder encodeObject:vPack forKey:@"pack"];
+  [encoder encodeObject:vName forKey:@"name"];
+
+  [encoder encodeObject:vAtc forKey:@"atc"];
+  [encoder encodeObject:vOwner forKey:@"owner"];
+  [encoder encodeObject:vTitle forKey:@"title"];
+  [encoder encodeObject:vComment forKey:@"comment"];
+
+  [encoder encodeObject:vDatetime forKey:@"datetime"];
+  [encoder finishEncoding];
+
+  NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc]
+                                initForReadingWithData:data];
+  Product *product = [[Product alloc] initWithCoder:decoder];
+
+  NSDictionary *productDict = [product
+    dictionaryWithValuesForKeys:[product productKeys]];
+  NSDictionary *expected = @{
+    @"atc": vAtc,
+    @"owner": vOwner,
+    @"title": vTitle,
+    @"comment": vComment,
+
+    @"reg": vReg,
+    @"ean": vEan,
+    @"pack": vPack,
+    @"name": vName,
+
+    // scanned properties
+    @"seq": @"017",
+    @"size": @"",
+    @"deduction": @"",
+    @"price": @"",
+    @"category": @"",
+
+    @"barcode": @"",
+    @"expiresAt": @"",
+
+    @"datetime": vDatetime
   };
   XCTAssertEqualObjects(productDict, expected);
 }
