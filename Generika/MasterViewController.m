@@ -1000,11 +1000,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   if (editingStyle == UITableViewCellEditingStyleDelete) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([self currentSegmentedType] == kSegmentReceipt) {
-      // TODO remove signature
-      //Receipt *receipt = [[ReceiptManager sharedManager]
-      //  receiptAtIndex:indexPath.row];
-      //NSError *error;
-      //[fileManager removeItemAtPath:barcodePath error:&error];
+      Receipt *receipt = [[ReceiptManager sharedManager]
+        receiptAtIndex:indexPath.row];
+      NSString *amkfilePath = receipt.amkfile;
+      NSError *error;
+      [fileManager removeItemAtPath:amkfilePath error:&error];
       ReceiptManager* manager = [ReceiptManager sharedManager];
       [manager removeReceiptAtIndex:indexPath.row];
     } else { // product
@@ -1012,7 +1012,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
         productAtIndex:indexPath.row];
       NSString *barcodePath = product.barcode;
       NSError *error;
-
       [fileManager removeItemAtPath:barcodePath error:&error];
       ProductManager* manager = [ProductManager sharedManager];
       [manager removeProductAtIndex:indexPath.row];
