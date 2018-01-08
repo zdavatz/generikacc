@@ -355,6 +355,33 @@
   }
 }
 
+- (NSInteger)entriesCountOfField:(NSString *)field
+{
+  NSInteger count = 0;
+  if ([field isEqualToString:@"operator"]) {
+    Operator *operator = self.operator;
+    if (operator) {
+      for (NSString *key in [operator operatorKeys]) {
+        NSString *value = [operator valueForKey:key];
+        if (value && ![value isEqualToString:@""]) {
+          count += 1;
+        }
+      }
+    }
+  } else if ([field isEqualToString:@"patient"]) {
+    Patient *patient = self.patient;
+    if (patient) {
+      for (NSString *key in [patient patientKeys]) {
+        NSString *value = [patient valueForKey:key];
+        if (value && ![value isEqualToString:@""]) {
+          count += 1;
+        }
+      }
+    }
+  }
+  return count;
+}
+
 #pragma mark - Conversion to Dictionary
 
 - (NSArray *)receiptKeys

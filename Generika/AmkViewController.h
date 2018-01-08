@@ -6,9 +6,11 @@
 //
 
 #import "Receipt.h"
+#import "MasterViewController.h"
 
 @interface AmkViewController : UIViewController <UIActionSheetDelegate>
 
+@property (nonatomic, strong, readwrite) MasterViewController *parent;
 @property (nonatomic, strong, readonly) Receipt *receipt;
 
 - (void)loadReceipt:(Receipt *)receipt;

@@ -35,8 +35,8 @@
 @property (nonatomic, strong, readwrite) NSString *identifier;
 @property (nonatomic, strong, readwrite) NSString *givenName;
 @property (nonatomic, strong, readwrite) NSString *familyName;
-@property (nonatomic, assign) int weight;
-@property (nonatomic, assign) int height;
+@property (nonatomic, strong, readwrite) NSString *weight;
+@property (nonatomic, strong, readwrite) NSString *height;
 @property (nonatomic, strong, readwrite) NSString *birthDate;
 @property (nonatomic, strong, readwrite) NSString *gender;
 
@@ -73,6 +73,7 @@
 + (NSDictionary *)rereiptKeyMaps;
 + (id)importFromDict:(NSDictionary *)dict;
 
+- (NSInteger)entriesCountOfField:(NSString *)field;
 - (NSArray *)receiptKeys;
 
 @end

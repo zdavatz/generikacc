@@ -20,10 +20,12 @@ static const int kSectionPatient  = 2;
 
 @interface AmkViewController ()
 
-@property (nonatomic, strong, readwrite) UITableView *infoView;
-@property (nonatomic, strong, readwrite) UITableView *itemView;
-@property (nonatomic, strong, readwrite) MasterViewController *parent;
+@property (nonatomic, strong) UIScrollView *receiptView;
+@property (nonatomic, strong) UITableView *infoView;
+@property (nonatomic, strong) UITableView *itemView;
 
+- (NSInteger)entriesCountForViewOfField:(NSString *)field;
+- (void)layoutFrames;
 - (void)refresh;
 - (void)showActions;
 
@@ -42,6 +44,10 @@ static const int kSectionPatient  = 2;
 {
   _parent = nil;
   _receipt = nil;
+
+  _receiptView = nil;
+  _infoView = nil;
+  _itemView = nil;
   [self didReceiveMemoryWarning];
 }
 
@@ -50,9 +56,27 @@ static const int kSectionPatient  = 2;
   [super loadView];
 
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  self.view = [[UIView alloc] initWithFrame:screenBounds];
-  [self.view setContentMode:UIViewContentModeScaleAspectFit];
-  [self.view setBackgroundColor:[UIColor whiteColor]];
+  int statusBarHeight = [
+    UIApplication sharedApplication].statusBarFrame.size.height;
+  int navBarHeight = self.navigationController.navigationBar.frame.size.height;
+  int barHeight = statusBarHeight + navBarHeight;
+  CGRect mainFrame = CGRectMake(
+    0,
+    barHeight,
+    screenBounds.size.width,
+    CGRectGetHeight(screenBounds) - barHeight
+  );
+  [self.receiptView setFrame:mainFrame];
+
+  self.receiptView = [[UIScrollView alloc] initWithFrame:mainFrame];
+
+  self.receiptView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+  self.receiptView.scrollEnabled = YES;
+  self.receiptView.pagingEnabled = NO;
+  self.receiptView.contentOffset = CGPointZero;
+  self.receiptView.showsHorizontalScrollIndicator = YES;
+  self.receiptView.contentMode = UIViewContentModeScaleAspectFit;
+  self.receiptView.backgroundColor = [UIColor whiteColor];
 
   // info: meta, operator and patient (sections)
   self.infoView = [[UITableView alloc]
@@ -63,7 +87,7 @@ static const int kSectionPatient  = 2;
   self.infoView.rowHeight = kInfoCellHeight;
   self.infoView.backgroundColor = [UIColor whiteColor];
   self.infoView.separatorStyle = UITableViewCellSeparatorStyleNone;
-  self.infoView.scrollEnabled = YES;
+  self.infoView.scrollEnabled = NO;
 
   // item: medications
   self.itemView = [[UITableView alloc]
@@ -73,12 +97,47 @@ static const int kSectionPatient  = 2;
   self.itemView.dataSource = self;
   self.itemView.rowHeight = kItemCellHeight;
   self.itemView.backgroundColor = [UIColor whiteColor];
+  self.itemView.scrollEnabled = NO;
 
-  [self.view addSubview:self.infoView];
-  [self.view addSubview:self.itemView];
+  [self.receiptView addSubview:self.infoView];
+  [self.receiptView insertSubview:self.itemView belowSubview:self.infoView];
+
+  [self layoutFrames];
 
   [self layoutTableViewSeparator:self.infoView];
   [self layoutTableViewSeparator:self.itemView];
+
+  self.view = self.receiptView;
+}
+
+- (void)layoutFrames
+{
+  CGRect infoFrame = self.infoView.frame;
+  infoFrame.origin.y = 0.0;
+  infoFrame.size.width = self.view.bounds.size.width;
+  infoFrame.size.height = (
+      (kSectionHeaderHeight * 2) +
+      (kInfoCellHeight * [self entriesCountForViewOfField:@"operator"]) +
+      (kInfoCellHeight * [self entriesCountForViewOfField:@"patient"]) +
+      0.6 // margin
+  );
+  [self.infoView setFrame:infoFrame];
+
+  CGRect itemFrame = CGRectMake(
+    0,
+    CGRectGetMaxY(self.infoView.bounds),
+    self.view.bounds.size.width,
+    (kSectionHeaderHeight +
+     (kItemCellHeight * [self.receipt.products count])
+     + 1.6 // margin
+    )
+  );
+  [self.itemView setFrame:itemFrame];
+
+  // content size according size of above frames
+  [self.receiptView setContentSize:CGSizeMake(
+      CGRectGetWidth(self.receiptView.frame),
+      CGRectGetHeight(infoFrame) + CGRectGetHeight(itemFrame))];
 }
 
 - (void)layoutTableViewSeparator:(UITableView *)tableView
@@ -111,6 +170,7 @@ static const int kSectionPatient  = 2;
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+
   // navigationbar
   // < back button
   self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
@@ -137,24 +197,24 @@ static const int kSectionPatient  = 2;
 {
   [super viewDidLayoutSubviews];
 
-  const float kHeight = 65.0;
-  CGRect infoFrame = self.infoView.frame;
-  infoFrame.size.width = self.view.bounds.size.width;
-  infoFrame.size.height = (self.view.bounds.size.height / 2) + kHeight;
-  [self.infoView setFrame:infoFrame];
-
-  CGRect itemFrame = CGRectMake(
-    0,
-    CGRectGetMidY(self.view.bounds) + kHeight,
-    self.view.bounds.size.width,
-    (self.view.bounds.size.height / 2) - kHeight
-  );
-  [self.itemView setFrame:itemFrame];
+  [self.receiptView flashScrollIndicators];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
   [self.navigationController setToolbarHidden:YES animated:YES];
+  // always scroll top :'(
+  float osVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+  if (osVersion >= 11.0) {
+    [self.receiptView setContentOffset:CGPointMake(
+        0, -self.receiptView.adjustedContentInset.top) animated:YES];
+  } else if (osVersion >= 7.0) {
+    [self.receiptView setContentOffset:CGPointMake(
+        0, -self.receiptView.contentInset.top) animated:YES];
+  } else {
+    [self.receiptView setContentOffset:CGPointZero animated:YES];
+  }
+
   [super viewWillAppear:animated];
 }
 
@@ -177,14 +237,45 @@ static const int kSectionPatient  = 2;
 
 - (void)didRotate:(NSNotification *)notification
 {
-  [self viewDidLayoutSubviews];
-  // redraw
+  [self layoutFrames];
+
+  // redraw via reload
   [self.infoView performSelectorOnMainThread:@selector(reloadData)
                                   withObject:nil
                                waitUntilDone:NO];
   [self.itemView performSelectorOnMainThread:@selector(reloadData)
                                   withObject:nil
                                waitUntilDone:NO];
+}
+
+- (NSInteger)entriesCountForViewOfField:(NSString *)field
+{
+  NSInteger count = 0;
+  if ([field isEqualToString:@"operator"]) {
+    count = [self.receipt entriesCountOfField:@"operator"];
+    Operator *operator = self.receipt.operator;
+    // in same line
+    if (operator && (
+        ![operator.familyName isEqualToString:@""] ||
+        ![operator.givenName isEqualToString:@""])) {
+      count -= 1;
+    }
+  } else if ([field isEqualToString:@"patient"]) {
+    count = [self.receipt entriesCountOfField:@"operator"];
+    Patient *patient = self.receipt.patient;
+    // in same line
+    if (patient && (
+        ![patient.familyName isEqualToString:@""] ||
+        ![patient.givenName isEqualToString:@""])) {
+      count -= 1;
+    }
+    if (patient && (
+        ![patient.weight isEqualToString:@""] ||
+        ![patient.height isEqualToString:@""])) {
+      count -= 1;
+    }
+  }
+  return count;
 }
 
 #pragma mark - Table view
