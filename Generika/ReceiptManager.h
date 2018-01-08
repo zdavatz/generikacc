@@ -19,10 +19,12 @@
 - (BOOL)removeReceiptAtIndex:(unsigned int)index;
 - (BOOL)moveReceiptAtIndex:(unsigned int)fromIndex
                    toIndex:(unsigned int)toIndex;
-- (NSString *)storeAMKData:(NSData *)amkData
+- (NSString *)storeAmkData:(NSData *)amkData
                     ofFile:(NSString *)fileName
                         to:(NSString *)destination;
 - (Receipt *)receiptAtIndex:(unsigned int)index;
+
+- (id)importReceiptFromURL:(NSURL *)url;
 
 - (BOOL)save;
 - (void)load;

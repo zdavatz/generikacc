@@ -7,14 +7,23 @@
 
 #import "Product.h"
 
-
-@interface Product ()
-
-- (NSString *)detectNumberFromEanWithRegexpString:(NSString *)regexpString;
-
-@end
-
 @implementation Product
+
++ (id)importFromDict:(NSDictionary *)dict
+{
+  Product *product = [[self alloc] init];
+  NSDictionary *keyMaps = [[self class] productKeyMaps];
+  for (NSString *key in [keyMaps allKeys]) {
+    NSString *value;
+    // get value from dict using importing key
+    value = [dict valueForKey:keyMaps[key]] ?: [NSNull null];
+    if (value == nil || [value isEqual:[NSNull null]]) {
+      value = @"";
+    }
+    [product setValue:value forKey:key];
+  }
+  return product;
+}
 
 - (id)init
 {
@@ -36,20 +45,28 @@
 
 - (void)dealloc
 {
-  _reg       = nil;
-  _seq       = nil;
-  _pack      = nil;
-  _name      = nil;
-  _size      = nil;
-  _deduction = nil;
-  _price     = nil;
-  _category  = nil;
-  _barcode   = nil;
-  _ean       = nil;
-  _datetime  = nil;
-  _expiresAt = nil;
-}
+  _ean = nil;
+  _reg = nil;
+  _pack = nil;
+  _name = nil;
 
+  // product
+  _datetime = nil; // scanned at
+  _barcode = nil; // file path
+  _expiresAt = nil; // value from picker
+
+  _seq = nil;
+  _size = nil;
+  _deduction = nil;
+  _price = nil;
+  _category = nil;
+
+  // receipt
+  _atc = nil;
+  _owner = nil;
+  _title = nil;
+  _comment = nil;
+}
 
 #pragma mark - NSCoding Interface
 
@@ -59,45 +76,27 @@
   if (!self) {
     return nil;
   }
-  _reg       = [decoder decodeObjectForKey:@"reg"];
-  _seq       = [decoder decodeObjectForKey:@"seq"];
-  _pack      = [decoder decodeObjectForKey:@"pack"];
-  _name      = [decoder decodeObjectForKey:@"name"];
-  _size      = [decoder decodeObjectForKey:@"size"];
-  _deduction = [decoder decodeObjectForKey:@"deduction"];
-  _price     = [decoder decodeObjectForKey:@"price"];
-  _category  = [decoder decodeObjectForKey:@"category"];
-  _barcode   = [decoder decodeObjectForKey:@"barcode"];
-  _ean       = [decoder decodeObjectForKey:@"ean"];
-  _datetime  = [decoder decodeObjectForKey:@"datetime"];
-
-  if ([decoder containsValueForKey:@"expiresAt"]) {
-    _expiresAt = [decoder decodeObjectForKey:@"expiresAt"];
-  } else {
-    _expiresAt = @"";
+  for (NSString *key in [self productKeys]) {
+    NSString *value;
+    if ([decoder containsValueForKey:key]) {
+      value = [decoder decodeObjectForKey:key];
+    } else {
+      value = @"";
+    }
+    [self setValue:value forKey:key];
   }
+
   return self;
 }
 
-
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
-  [encoder encodeObject:self.reg forKey:@"reg"];
-  [encoder encodeObject:self.seq forKey:@"seq"];
-  [encoder encodeObject:self.pack forKey:@"pack"];
-  [encoder encodeObject:self.name forKey:@"name"];
-  [encoder encodeObject:self.size forKey:@"size"];
-  [encoder encodeObject:self.deduction forKey:@"deduction"];
-  [encoder encodeObject:self.price forKey:@"price"];
-  [encoder encodeObject:self.category forKey:@"category"];
-  [encoder encodeObject:self.barcode forKey:@"barcode"];
-  [encoder encodeObject:self.ean forKey:@"ean"];
-  [encoder encodeObject:self.datetime forKey:@"datetime"];
-
-  if (self.expiresAt && [self.expiresAt length] != 0) {
-    [encoder encodeObject:self.expiresAt forKey:@"expiresAt"];
-  } else {
-    [encoder encodeObject:@"" forKey:@"expiresAt"];
+  for (NSString *key in [self productKeys]) {
+    NSString *value = [self valueForKey:key] ?: [NSNull null];
+    if (value == nil || [value isEqual:[NSNull null]]) {
+      value = @"";
+    }
+    [encoder encodeObject:value forKey:key];
   }
 }
 
@@ -105,10 +104,11 @@
 
 - (NSString *)reg
 {
-  if (_reg) {
+  if (_reg != nil && _reg != @"") {
     return _reg;
   } else if (self.ean) {
-    return [self detectNumberFromEanWithRegexpString:@"7680(\\d{5}).+"];
+    return [Constant detectStringWithRegexp:@"7680(\\d{5}).+"
+                                       from:self.ean];
   } else {
     return @"";
   }
@@ -116,44 +116,50 @@
 
 - (NSString *)seq
 {
-  if (_seq) {
+  if (_seq != nil && _seq != @"") {
     return _seq;
-  } else if (_ean) {
-    return [self detectNumberFromEanWithRegexpString:@"7680\\d{5}(\\d{3}).+"];
+  } else if (self.ean) {
+    return [Constant detectStringWithRegexp:@"7680\\d{5}(\\d{3}).+"
+                                       from:self.ean];
   } else {
     return @"";
   }
 }
 
-- (NSString *)detectNumberFromEanWithRegexpString:(NSString *)regexpString
-{
-  NSString *num = @"";
-  NSError *error = nil;
-  NSRegularExpression *regexp = 
-    [NSRegularExpression regularExpressionWithPattern:regexpString
-                                              options:0
-                                                error:&error];
-  if (error == nil) {
-    NSTextCheckingResult *match =
-      [regexp firstMatchInString:self.ean options:0 range:NSMakeRange(0, self.ean.length)];
-    if (match.numberOfRanges > 1) {
-      num = [self.ean substringWithRange:[match rangeAtIndex:1]];
-    }
-  }
-  return num;
-}
-
 
 #pragma mark - Conversion to Dictionary
 
++ (NSDictionary *)productKeyMaps
+{
+  return @{ // property : importingKey
+    // (shared)
+    @"ean"  : @"eancode",
+    @"reg"  : @"regnrs",
+    @"pack" : @"package",
+    @"name" : @"product_name",
+    // (package)
+    @"seq"       : @"seq",
+    @"size"      : @"size",
+    @"deduction" : @"deduction",
+    @"price"     : @"price",
+    @"category"  : @"category",
+    // (receipt)
+    @"atc"     : @"atccode",
+    @"owner"   : @"owner",
+    @"title"   : @"title",
+    @"comment" : @"comment"
+  };
+}
+
 - (NSArray *)productKeys
 {
-  return @[
-    @"reg", @"seq", @"pack",
-    @"name", @"size", @"deduction",
-    @"price", @"category", @"barcode", @"ean",
-    @"datetime", @"expiresAt"
+  NSArray *additionalKeys = @[
+    @"datetime",
+    @"barcode",
+    @"expiresAt"
   ];
+  return [additionalKeys arrayByAddingObjectsFromArray:
+    [[[self class] productKeyMaps] allKeys]];
 }
 
 @end

@@ -49,7 +49,6 @@
   NSURL *url = (NSURL *)[launchOptions
                          valueForKey:UIApplicationLaunchOptionsURLKey];
   if (url != nil && [url isFileURL]) {
-    DLogMethod
     [self importURL:url to:masterViewController];
   }
 
@@ -67,7 +66,6 @@
          annotation:(id)annotation
 {
   if (url != nil && [url isFileURL]) {
-    DLogMethod
     MasterViewController *masterViewController = (MasterViewController *)[
       _navigationController.viewControllers objectAtIndex:0];
     [self importURL:url to:masterViewController];
@@ -78,16 +76,14 @@
 - (void)importURL:(NSURL *)url to:(MasterViewController *)masterViewController
 {
   // The handling for `*.amk` receipt file (defined in Generika-info.plist)
-  // This block imports file from amiko, like: `RZ_YYYY-MM-DDTNNNNNN.amk`.
+  // This block imports file from amiko (`RZ_YYYY-MM-DDTNNNNNN.amk`).
   NSString *fileName = [[url absoluteString] lastPathComponent];
   NSString *extName = [url pathExtension];
 
-  // check format RZ_(.*)?.amk
+  // check prefix und extension of file format like: `RZ_(.*)?.amk`
   if ([extName isEqualToString:@"amk"] && [fileName hasPrefix:@"RZ_"]) {
-    DLog(@"fileName -> %@", fileName);
-
     [masterViewController setSelectedSegmentIndex:(NSInteger)1];
-    [masterViewController handleOpenAMKFileURL:url];
+    [masterViewController handleOpenAmkFileURL:url animated:NO];
   }
 }
 

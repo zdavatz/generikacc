@@ -18,10 +18,11 @@
 #import "Receipt.h"
 #import "ReceiptManager.h"
 
-#import "MasterViewController.h"
 #import "WebViewController.h"
+#import "AmkViewController.h"
 #import "SettingsViewController.h"
 #import "ReaderViewController.h"
+#import "MasterViewController.h"
 
 
 static const float kCellHeight = 83.0;
@@ -32,13 +33,14 @@ static const int kSegmentReceipt = 1;
 @interface MasterViewController ()
 
 @property (nonatomic, strong, readwrite) Reachability *reachability;
-@property (nonatomic, strong, readwrite) ReaderViewController *reader;
-@property (nonatomic, strong, readwrite) WebViewController *browser;
-@property (nonatomic, strong, readwrite) SettingsViewController *settings;
-@property (nonatomic, strong, readwrite) UISearchController *search;
+@property (nonatomic, strong, readwrite) NSMutableArray *filtered;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *itemsView;
-@property (nonatomic, strong, readwrite) NSMutableArray *filtered;
+@property (nonatomic, strong, readwrite) UISearchController *search;
+@property (nonatomic, strong, readwrite) ReaderViewController *reader;
+@property (nonatomic, strong, readwrite) WebViewController *browser;
+@property (nonatomic, strong, readwrite) AmkViewController *viewer;
+@property (nonatomic, strong, readwrite) SettingsViewController *settings;
 // datepicker
 @property (nonatomic, strong, readwrite) NSIndexPath *pickerIndexPath;
 @property (nonatomic, strong, readwrite) NTMonthYearPicker *datePicker;
@@ -60,11 +62,11 @@ static const int kSegmentReceipt = 1;
 // plus (import)
 - (void)plusButtonTapped:(UIButton *)button;
 - (void)openImporter;
-// product
+// item:product
 - (void)openWebViewWithURL:(NSURL *)url;
 - (void)searchInfoForProduct:(Product *)product;
-// receipt
-- (void)openAmkFile;
+// item:receipt
+- (void)displayInfoForReceipt:(Receipt *)receipt animated:(BOOL)animated;
 
 @end
 
@@ -106,14 +108,6 @@ static const int kSegmentReceipt = 1;
 {
   [super loadView];
 
-  if ([self currentSegmentedType] == kSegmentReceipt) {
-    NSArray *receipts = [ReceiptManager sharedManager].receipts;
-    self.filtered = [NSMutableArray arrayWithCapacity:[receipts count]];
-  } else { // product (default)
-    NSArray *products = [ProductManager sharedManager].products;
-    self.filtered = [NSMutableArray arrayWithCapacity:[products count]];
-  }
-
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   self.itemsView = [[UITableView alloc] initWithFrame:screenBounds];
   self.itemsView.delegate = self;
@@ -134,6 +128,15 @@ static const int kSegmentReceipt = 1;
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    NSArray *receipts = [ReceiptManager sharedManager].receipts;
+    self.filtered = [NSMutableArray arrayWithCapacity:[receipts count]];
+  } else { // product (default)
+    NSArray *products = [ProductManager sharedManager].products;
+    self.filtered = [NSMutableArray arrayWithCapacity:[products count]];
+  }
+
   if (self.itemsView && [self.itemsView respondsToSelector:@selector(
       setCellLayoutMarginsFollowReadableWidth:)]) {
     self.itemsView.cellLayoutMarginsFollowReadableWidth = NO;
@@ -148,7 +151,7 @@ static const int kSegmentReceipt = 1;
     initWithItems:[NSArray arrayWithObjects:@"Medikamente", @"Rezepte", nil]];
   segmentedControl.frame = CGRectMake(0, 0, 196, 24);
   segmentedControl.selectedSegmentIndex = 0;
-  segmentedControl.tintColor = [self activeColor];
+  segmentedControl.tintColor = [Constant activeUIColor];
   segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
   // set initial selected state
   segmentedControl.selectedSegmentIndex = self.selectedSegmentIndex;
@@ -194,7 +197,13 @@ static const int kSegmentReceipt = 1;
            name:UIDeviceOrientationDidChangeNotification
          object:nil];
   if (self.selectedSegmentIndex == kSegmentReceipt) {
-
+    // notification
+    ReceiptManager *manager = [ReceiptManager sharedManager];
+    [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(refresh)
+             name:@"receiptsDidLoaded"
+           object:manager];
   } else {  // product (default)
     // notification
     ProductManager *manager = [ProductManager sharedManager];
@@ -282,15 +291,6 @@ static const int kSegmentReceipt = 1;
 
 # pragma mark - Components
 
-- (UIColor *)activeColor
-{
-  UIColor *color = [UIColor colorWithRed:6/255.0
-                                   green:121/255.0
-                                    blue:251/255.0
-                                   alpha:1.0];
-  return color;
-}
-
 - (UIBarButtonItem *)buildScanButtonItem
 {
     UIButton *scanButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -299,7 +299,7 @@ static const int kSegmentReceipt = 1;
     [scanButton.titleLabel setFont:scanFont];
     // FIXME: right margin
     [scanButton setTitle:@"  \uF030" forState:UIControlStateNormal];
-    [scanButton setTitleColor:[self activeColor]
+    [scanButton setTitleColor:[Constant activeUIColor]
                      forState:UIControlStateNormal];
     [scanButton addTarget:self
                    action:@selector(scanButtonTapped:)
@@ -403,7 +403,7 @@ static const int kSegmentReceipt = 1;
       [button setTitleColor:[UIColor whiteColor]
                    forState:UIControlStateNormal];
     } else { // iOS 7 or later
-      [button setTitleColor:[self activeColor]
+      [button setTitleColor:[Constant activeUIColor]
                    forState:UIControlStateNormal];
     }
     button.alpha = 1.0;
@@ -450,8 +450,6 @@ static const int kSegmentReceipt = 1;
 
 - (void)segmentChanged:(UISegmentedControl *)control
 {
-  DLogMethod
-
   [self setEditing:NO animated:YES]; // tableview
   if (self.reader) { // dissmiss reader if exists
     [self.reader dismissViewControllerAnimated:NO completion:nil];
@@ -594,18 +592,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [session GET:[productSearch absoluteString]
       parameters:nil
          success:^(NSURLSessionTask *task, id responseObject) {
-        ProductManager *manager = [ProductManager sharedManager];
-        NSUInteger before = [manager.products count];
-        [self didFinishPicking:responseObject withEan:ean barcode:barcode];
-        NSUInteger after = [manager.products count];
-        if ([type isEqualToString:@"PI"] && before < after) {
-          Product *product = [manager productAtIndex:0];
-          [self searchInfoForProduct:product];
-        }
-      }
-      failure:^(NSURLSessionTask *task, NSError *error) {
-        // pass
-      }];
+           ProductManager *manager = [ProductManager sharedManager];
+           NSUInteger before = [manager.products count];
+           [self didFinishPicking:responseObject withEan:ean barcode:barcode];
+           NSUInteger after = [manager.products count];
+           if ([type isEqualToString:@"PI"] && before < after) {
+             Product *product = [manager productAtIndex:0];
+             [self searchInfoForProduct:product];
+           }
+         }
+         failure:^(NSURLSessionTask *task, NSError *error) {
+            // pass
+         }
+    ];
     // open oddb.org
     if (![type isEqualToString:@"PI"]) {
       Product *product = [[Product alloc] initWithEan:ean];
@@ -622,37 +621,33 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   if (json == nil || [(NSArray *)json count] == 0) {
     [self notFoundEan:ean];
   } else {
-    Product *product = [[Product alloc] init];
     NSDate *now = [NSDate date];
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
     NSString *datetime = [dateFormat stringFromDate:now];
     ProductManager *manager = [ProductManager sharedManager];
-    // more values
+
+    NSString *barcodePath = [manager storeBarcode:barcode
+                                            ofEan:ean
+                                               to:@"both"];
     NSDictionary *dict = @{
-      @"reg"       : [json valueForKeyPath:@"reg"],
-      @"seq"       : [json valueForKeyPath:@"seq"],
-      @"pack"      : [json valueForKeyPath:@"pack"],
-      @"name"      : [json valueForKeyPath:@"name"],
-      @"size"      : [json valueForKeyPath:@"size"],
-      @"deduction" : [json valueForKeyPath:@"deduction"],
-      @"price"     : [json valueForKeyPath:@"price"],
-      @"category"  : [[json valueForKeyPath:@"category"]
+      @"regnrs"       : [json valueForKeyPath:@"reg"],
+      @"seq"          : [json valueForKeyPath:@"seq"],
+      @"package"      : [json valueForKeyPath:@"pack"],
+      @"product_name" : [json valueForKeyPath:@"name"],
+      @"size"         : [json valueForKeyPath:@"size"],
+      @"deduction"    : [json valueForKeyPath:@"deduction"],
+      @"price"        : [json valueForKeyPath:@"price"],
+      @"category"     : [[json valueForKeyPath:@"category"]
         stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "],
-      @"barcode"   : [manager storeBarcode:barcode ofEan:ean to:@"both"],
-      @"ean"       : ean,
-      @"datetime"  : datetime,
-      @"expiresAt" : @""
+      @"eancode"      : ean
     };
-    for (NSString *key in [dict allKeys]) {
-      NSString *value = nil;
-      if ([dict[key] isEqual:[NSNull null]]) {
-        value = @"";
-      } else {
-        value = dict[key];
-      }
-      [product setValue:value forKey:key];
-    }
+    Product *product = [Product importFromDict:dict];
+    // additional values
+    [product setValue:barcodePath forKey:@"barcode"];
+    [product setValue:@"" forKey:@"expiresAt"];
+    [product setValue:datetime forKey:@"datetime"];
+
     BOOL saved = [manager insertProduct:product atIndex:0];
     if (saved) {
       // alert
@@ -761,9 +756,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 # pragma mark - Receipt
 
-- (void)openAmkFile
+- (void)displayInfoForReceipt:(Receipt *)receipt animated:(BOOL)animated
 {
-  DLogMethod
+  // If animated is NO (at boot), This generates `Unbalanced calls to
+  // begin/end appearance transitions for ...`. But, it's trivial matter,
+  // here :-D
+  if (!self.viewer) {
+    self.viewer = [[AmkViewController alloc] init];
+  }
+  [self.viewer loadReceipt:receipt];
+  if (!self.viewer.isViewLoaded || !self.viewer.view.window) {
+    [self.navigationController pushViewController:self.viewer
+                                         animated:animated];
+  }
 }
 
 # pragma mark - Table View
@@ -813,8 +818,33 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
   // build cell
   if ([self currentSegmentedType] == kSegmentReceipt) {
-    // TODO
-
+    Receipt *receipt;
+    if (self.search.active) {
+      receipt = [self.filtered objectAtIndex:indexPath.row];
+    } else {
+      receipt = [[ReceiptManager sharedManager] receiptAtIndex:indexPath.row];
+    }
+    // datetime (imported at)
+    if (receipt.datetime) {
+      UILabel *datetimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+          175.0, 27.0, 100.0, 16.0)];
+      datetimeLabel.font = [UIFont systemFontOfSize:12.0];
+      datetimeLabel.textAlignment = kTextAlignmentLeft;
+      datetimeLabel.textColor = [UIColor grayColor];
+      datetimeLabel.text = receipt.datetime;
+      [cell.contentView addSubview:datetimeLabel];
+    }
+    // place date
+    UILabel *placeDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        175.0, 62.0, 100.0, 16.0)];
+    placeDateLabel.textAlignment = kTextAlignmentLeft;
+    placeDateLabel.tag = 7;
+    NSString *placeDate = receipt.placeDate;
+    if (placeDate && [placeDate length] != 0) {
+      placeDateLabel.text = placeDate;
+      placeDateLabel.font = [UIFont boldSystemFontOfSize:12.0];
+    }
+    [cell.contentView addSubview:placeDateLabel];
   } else {  // product
     // gesture
     UILongPressGestureRecognizer *longPressGesture;
@@ -937,7 +967,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       NSDate *expiresAt = [dateFormat
         dateFromString:[NSString stringWithFormat:
                         @"01.%@ 02:00:00", product.expiresAt]];
-      if ([current compare: expiresAt] == NSOrderedDescending) {
+      if ([current compare:expiresAt] == NSOrderedDescending) {
         // current date is already later than expiration date
         expiresAtLabel.textColor = [UIColor redColor];
       } else {
@@ -968,25 +998,27 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
    forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([self currentSegmentedType] == kSegmentReceipt) {
-      // TODO
-      [self refresh];
+      // TODO remove signature
+      //Receipt *receipt = [[ReceiptManager sharedManager]
+      //  receiptAtIndex:indexPath.row];
+      //NSError *error;
+      //[fileManager removeItemAtPath:barcodePath error:&error];
+      ReceiptManager* manager = [ReceiptManager sharedManager];
+      [manager removeReceiptAtIndex:indexPath.row];
     } else { // product
       Product *product = [[ProductManager sharedManager]
         productAtIndex:indexPath.row];
       NSString *barcodePath = product.barcode;
-      NSFileManager *fileManager = [NSFileManager defaultManager];
       NSError *error;
-      [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
       [fileManager removeItemAtPath:barcodePath error:&error];
       ProductManager* manager = [ProductManager sharedManager];
-      // manager removes product
-      // [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-      //                  withRowAnimation:UITableViewRowAnimationFade];
       [manager removeProductAtIndex:indexPath.row];
-      [self refresh];
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self refresh];
   } else {
     [self setEditing:NO animated:YES];
   }
@@ -1023,7 +1055,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     }
   } else {
     control.userInteractionEnabled = YES;
-    control.tintColor = [self activeColor];
+    control.tintColor = [Constant activeUIColor];
     control.alpha = 1.0;
 
     [self setBarButton:settingsButton enabled:YES];
@@ -1033,7 +1065,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     if ([self currentSegmentedType] == kSegmentProduct) {
       UIButton *scanButton = [self.navigationItem.rightBarButtonItem
                               customView];
-      [scanButton setTitleColor:[self activeColor]
+      [scanButton setTitleColor:[Constant activeUIColor]
                        forState:UIControlStateNormal];
       scanButton.alpha = 1.0;
       [self setBarButton:interactionButton enabled:YES];
@@ -1057,7 +1089,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
   if (fromIndexPath.section == toIndexPath.section) {
     if ([self currentSegmentedType] == kSegmentReceipt) {
-      // TODO
+      ReceiptManager *manager = [ReceiptManager sharedManager];
+      if (manager.receipts && toIndexPath.row < [manager.receipts count]) {
+        [manager moveReceiptAtIndex:fromIndexPath.row toIndex:toIndexPath.row];
+      }
     } else { // product (default)
       ProductManager *manager = [ProductManager sharedManager];
       if (manager.products && toIndexPath.row < [manager.products count]) {
@@ -1071,7 +1106,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if ([self currentSegmentedType] == kSegmentReceipt) {
-    // TODO
+    Receipt *receipt;
+    if (self.search.active) {
+      receipt = [self.filtered objectAtIndex:indexPath.row];
+    } else {
+      receipt = [[ReceiptManager sharedManager] receiptAtIndex:indexPath.row];
+    }
+    [self displayInfoForReceipt:receipt animated:YES];
   } else {  // product (default)
     Product *product;
     if (self.search.active) {
@@ -1211,14 +1252,18 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                              scope:(NSString *)scope
 {
   [self.filtered removeAllObjects];
-  NSPredicate *predicate = [NSPredicate predicateWithFormat:
-    @"%K contains[cd] %@", @"name", searchText];
 
   if ([self currentSegmentedType] == kSegmentReceipt) {
+    // receipt - placeDate
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:
+      @"%K contains[cd] %@", @"placeDate", searchText];
     self.filtered = [NSMutableArray arrayWithArray:[
       [ReceiptManager sharedManager].receipts
         filteredArrayUsingPredicate:predicate]];
   } else {
+    // product - name
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:
+      @"%K contains[cd] %@", @"name", searchText];
     self.filtered = [NSMutableArray arrayWithArray:[
       [ProductManager sharedManager].products
         filteredArrayUsingPredicate:predicate]];
@@ -1254,46 +1299,49 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-- (void)handleOpenAMKFileURL:(NSURL *)url
+- (void)handleOpenAmkFileURL:(NSURL *)url animated:(BOOL)animated
 {
-  [self setSelectedSegmentIndex: (NSInteger)kSegmentReceipt];
+  [self setSelectedSegmentIndex:(NSInteger)kSegmentReceipt];
 
-  NSData *now = [NSDate date];
-  NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-  [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
-  NSString *datetime = [dateFormat stringFromDate:now];
-  NSString *fileName = [[url absoluteString] lastPathComponent];
-
-  NSData *encryptedData = [NSData dataWithContentsOfURL:url];
-  NSData *decryptedData = [encryptedData
-    initWithBase64EncodedData:encryptedData
-                      options:NSDataBase64DecodingIgnoreUnknownCharacters];
-
-  //DLog(@"\n\ddecrypted ndata -> %@\n\n", decryptedData);
   ReceiptManager *manager = [ReceiptManager sharedManager];
-  NSDictionary *dict = @{
-    @"amkfile"   : [manager storeAMKData:encryptedData
-                                  ofFile:fileName
-                                      to:@"both"],
-    @"datetime"  : datetime,
-    @"expiresAt" : @""
-  };
+  Receipt *receipt;
 
-  DLog(@"%@", dict);
-
-  Receipt *receipt = [[Receipt alloc] init];
-  //for (NSString *key in [dict allKeys]) {
-  //  NSString *value = nil;
-  //  if ([dict[key] isEqual:[NSNull null]]) {
-  //    value = @"";
-  //  } else {
-  //    value = dict[key];
-  //  }
-  //  [receipt setValue:value forKey:key];
-  //}
-
-  // TODO
-  //DLog(@"%@", receipt);
+  NSError *error;
+  @try {
+    receipt = [manager importReceiptFromURL:url];
+    if (receipt == nil) {
+      @throw [NSException exceptionWithName:@"Import Error"
+                                     reason:@"Invalid keys or values"
+                                   userInfo:nil];
+    } else if ([receipt isEqual:[NSNull null]]) {
+      error = [NSError errorWithDomain:@"receipt"
+                                  code:99
+                              userInfo:@{
+             NSLocalizedDescriptionKey:@"Already imported"
+                              }];
+    }
+  }
+  @catch (NSException *exception) {
+    error = [NSError errorWithDomain:@"receipt"
+                                code:100
+                            userInfo:@{
+           NSLocalizedDescriptionKey:@"Invalid .amk file"
+                            }];
+  }
+  if (error) {
+    UIAlertView *alert = [[UIAlertView alloc]
+        initWithTitle:[error localizedDescription]
+              message:nil
+             delegate:self
+    cancelButtonTitle:@"OK"
+    otherButtonTitles:nil];
+    [alert show];
+    return;
+  }
+  BOOL saved = [manager insertReceipt:receipt atIndex:0];
+  if (saved) {
+    [self displayInfoForReceipt:receipt animated:animated];
+  }
 }
 
 @end
