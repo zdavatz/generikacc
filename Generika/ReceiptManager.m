@@ -196,6 +196,9 @@ static ReceiptManager *_sharedInstance = nil;
   NSString *amkfile = [manager storeAmkData:encryptedData
                                      ofFile:fileName
                                          to:@"both"];
+  if (amkfile == nil) {
+    return nil;
+  }
   NSDictionary *receiptDict = @{
     @"prescription_hash" : [
       receiptData valueForKey:@"prescription_hash"] ?: [NSNull null],
@@ -231,44 +234,14 @@ static ReceiptManager *_sharedInstance = nil;
          withIntermediateDirectories:YES
                           attributes:nil
                                error:&error];
-  if (error) { return false; }
-  time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
-
+  if (error) { return nil; }
   // create file `RZ_timestamp.amk`
+  time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
   NSString *amkFile = [NSString stringWithFormat:
     @"%@_%d.amk", @"RZ", (int)timestamp];
   NSString *amkFilePath = [path stringByAppendingPathComponent:amkFile];
   BOOL amkSaved = [amkData writeToFile:amkFilePath atomically:YES];
-
-  // TODO:
-  // move the saving signature
-  // create signature `RZ_signature.png`
-  BOOL pngSaved = true;
-  error = nil;
-  NSDictionary *json = [NSJSONSerialization
-    JSONObjectWithData:amkData
-               options:NSJSONReadingMutableContainers
-                 error:&error];
-  // signature key is required
-  NSData *sigData;
-  if (error != nil) {
-    return nil;
-  } else {
-    NSDictionary *operatorDict = [json valueForKey:@"operator"];
-    if (operatorDict != nil) {
-      NSString *signature = [operatorDict valueForKey:@"signature"];
-      NSData *sigData = [NSKeyedArchiver archivedDataWithRootObject:signature];
-    }
-  }
-  // if amk data has signature (image as png)
-  if (sigData != nil) {
-    NSString *pngFile = [NSString stringWithFormat:
-      @"%@_%d.png", @"RZ", (int)timestamp];
-    NSString *pngFilePath = [path stringByAppendingPathComponent:pngFile];
-    pngSaved = [sigData writeToFile:pngFilePath atomically:YES];
-  }
-
-  if (amkSaved && pngSaved) {
+  if (amkSaved) {
     if ([destination isEqualToString:@"both"] && [self iCloudOn]) {
       dispatch_async(
           dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),

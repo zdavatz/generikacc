@@ -24,6 +24,7 @@
 + (NSDictionary *)operatorKeyMaps;
 + (id)importFromDict:(NSDictionary *)dict;
 
+- (UIImage *)signatureThumbnail;
 - (NSArray *)operatorKeys;
 
 @end
