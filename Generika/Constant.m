@@ -68,6 +68,18 @@ NSString *const kSearchLangs[] = { // short name
   return color;
 }
 
++ (CGSize)getSizeOfLabel:(UILabel *)label
+{
+  CGSize constraint = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
+  NSStringDrawingContext *context = [[NSStringDrawingContext alloc] init];
+  CGRect bounds = [label.text
+    boundingRectWithSize:constraint
+                 options:NSStringDrawingUsesLineFragmentOrigin
+              attributes:@{NSFontAttributeName:label.font}
+                 context:context];
+  return CGSizeMake(ceil(bounds.size.width), ceil(bounds.size.height));
+}
+
 
 #pragma Utily Methods
 

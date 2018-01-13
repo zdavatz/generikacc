@@ -8,13 +8,21 @@
 #import "AmkViewController.h"
 #import "Product.h"
 
-static const float kInfoCellHeight = 20.0; // default = 44.0
-static const float kItemCellHeight = 44.0;
+// default uitableview's cell height: 44.0
+static const float kInfoCellHeight = 20.0;  // fixed
+static const float kItemCellHeight = 44.0;  // minimum height
 
 static const float kSectionHeaderHeight = 27.0;
+static const float kLabelMargin = 2.4;
+
+// info
 static const int kSectionMeta     = 0;
 static const int kSectionOperator = 1;
 static const int kSectionPatient  = 2;
+
+// item
+static const int kSectionProduct  = 0;
+
 
 @class MasterViewController;
 
@@ -123,14 +131,25 @@ static const int kSectionPatient  = 2;
   );
   [self.infoView setFrame:infoFrame];
 
+  CGFloat height = 0.0;
+  for (int i = 0; i < [self.receipt.products count]; i++) {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i
+      inSection:kSectionProduct];
+    CGFloat rowHeight = [self tableView:self.itemView
+      heightForRowAtIndexPath:indexPath];
+    height += rowHeight;
+  }
+  CGFloat defaultHeight = kItemCellHeight * [self.receipt.products count];
+  if (defaultHeight > height) {
+    height = defaultHeight;
+  }
+
   CGRect itemFrame = CGRectMake(
     0,
     CGRectGetMaxY(self.infoView.bounds),
     self.view.bounds.size.width,
-    (kSectionHeaderHeight +
-     (kItemCellHeight * [self.receipt.products count])
-     + 1.6 // margin
-    )
+    (kSectionHeaderHeight + height)
+    + 0.2 // margin
   );
   [self.itemView setFrame:itemFrame];
 
@@ -203,6 +222,10 @@ static const int kSectionPatient  = 2;
 - (void)viewWillAppear:(BOOL)animated
 {
   [self.navigationController setToolbarHidden:YES animated:YES];
+
+  // force layout (previous views will be cleared, if exist)
+  [self layoutFrames];
+
   // always scroll top :'(
   float osVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
   if (osVersion >= 11.0) {
@@ -215,12 +238,14 @@ static const int kSectionPatient  = 2;
     [self.receiptView setContentOffset:CGPointZero animated:YES];
   }
 
+  [self refresh];
   [super viewWillAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
   [self.navigationController setToolbarHidden:NO animated:YES];
+
   [super viewWillDisappear:animated];
 }
 
@@ -242,10 +267,10 @@ static const int kSectionPatient  = 2;
   // redraw via reload
   [self.infoView performSelectorOnMainThread:@selector(reloadData)
                                   withObject:nil
-                               waitUntilDone:NO];
+                               waitUntilDone:YES];
   [self.itemView performSelectorOnMainThread:@selector(reloadData)
                                   withObject:nil
-                               waitUntilDone:NO];
+                               waitUntilDone:YES];
 }
 
 - (NSInteger)entriesCountForViewOfField:(NSString *)field
@@ -365,6 +390,50 @@ viewForHeaderInSection:(NSInteger)section
   if (tableView == self.infoView) {
     return kInfoCellHeight;
   } else if (tableView == self.itemView) {
+    Product *product = [self.receipt.products objectAtIndex:indexPath.row];
+    if (product) {
+      CGFloat height;
+      CGSize size;
+      // package name label
+      UILabel *packLabel = [self makeLabel:product.pack
+                                 textColor:[UIColor clearColor]];
+      size = [Constant getSizeOfLabel:packLabel];
+      height += size.height;
+
+      // ean label
+      UILabel *eanLabel = [self makeLabel:product.ean
+                              textColor:[UIColor clearColor]];
+      CGRect eanFrame = CGRectMake(
+          12.0,
+          packLabel.frame.origin.y + packLabel.frame.size.height +
+            kLabelMargin,
+          eanLabel.frame.size.width,
+          eanLabel.frame.size.height
+      );
+      [eanLabel setFrame:eanFrame];
+      size = [Constant getSizeOfLabel:eanLabel];
+      height += size.height;
+      height += 8.0;
+
+      // comment label
+      UILabel *commentLabel = [self makeLabel:product.comment
+                                    textColor:[UIColor clearColor]];
+      CGRect commentFrame = CGRectMake(
+          12.0,
+          eanLabel.frame.origin.y + eanLabel.frame.size.height +
+            kLabelMargin,
+          commentLabel.frame.size.width,
+          commentLabel.frame.size.height
+      );
+      [commentLabel setFrame:commentFrame];
+      size = [Constant getSizeOfLabel:commentLabel];
+      height += size.height;
+      height += 13.0;
+
+      if (height > kItemCellHeight) {
+        return height;
+      }
+    }
     return kItemCellHeight;
   } else { // unexpected
     return 0;
@@ -384,6 +453,7 @@ viewForHeaderInSection:(NSInteger)section
   UITableViewCell *cell = [[UITableViewCell alloc]
     initWithStyle:UITableViewCellStyleDefault
   reuseIdentifier:cellIdentifier];
+
   if (tableView == self.infoView) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     CGRect frame = CGRectMake(
@@ -457,19 +527,35 @@ viewForHeaderInSection:(NSInteger)section
     Product *product;
     product = [self.receipt.products objectAtIndex:indexPath.row];
     if (product) {
-      CGRect pFrame = CGRectMake(
-        12.0,
-        (kItemCellHeight / 2) - 20.5,
-        (self.view.bounds.size.width - 26.0),
-        kItemCellHeight);
-      UILabel *pLabel = [[UILabel alloc] initWithFrame:pFrame];
-      pLabel.font = [UIFont systemFontOfSize:11.8];
-      pLabel.textAlignment = kTextAlignmentLeft;
-      pLabel.textColor = [UIColor blackColor];
-      pLabel.backgroundColor = [UIColor clearColor];
-      pLabel.text = product.pack;
+      UILabel *packLabel = [self makeLabel:product.pack
+                                 textColor:[UIColor blackColor]];
+      UILabel *eanLabel = [self makeLabel:product.ean
+                                textColor:[UIColor darkGrayColor]];
+      UILabel *commentLabel = [self makeLabel:product.comment
+                                    textColor:[UIColor darkGrayColor]];
+      // layout
+      CGRect eanFrame = CGRectMake(
+          12.0,
+          packLabel.frame.origin.y + packLabel.frame.size.height +
+            kLabelMargin,
+          eanLabel.frame.size.width,
+          eanLabel.frame.size.height
+      );
+      [eanLabel setFrame:eanFrame];
+
+      CGRect commentFrame = CGRectMake(
+          12.0,
+          eanLabel.frame.origin.y + eanLabel.frame.size.height +
+            kLabelMargin,
+          commentLabel.frame.size.width,
+          commentLabel.frame.size.height
+      );
+      [commentLabel setFrame:commentFrame];
+
       // TODO (other entries)
-      [cell.contentView addSubview:pLabel];
+      [cell.contentView addSubview:packLabel];
+      [cell.contentView insertSubview:eanLabel belowSubview:packLabel];
+      [cell.contentView insertSubview:commentLabel belowSubview:eanLabel];
     }
   }
   return cell;
@@ -481,11 +567,44 @@ viewForHeaderInSection:(NSInteger)section
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
+- (BOOL)tableView:(UITableView *)tableView
+  shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  // on all table views
+  return NO;
+}
+
 - (void)tableView:(UITableView *)tableView
   didHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
   // pass
 }
+
+
+# pragma mark - UI
+
+- (UILabel *)makeLabel:(NSString *)text textColor:(UIColor *)color
+{
+  CGRect frame = CGRectMake(
+    12.0,
+     8.0,
+    (self.view.bounds.size.width - 24.0),
+    kItemCellHeight);
+  UILabel *label = [[UILabel alloc] initWithFrame:frame];
+  label.font = [UIFont systemFontOfSize:12.2];
+  label.textAlignment = kTextAlignmentLeft;
+  label.textColor = color;
+  label.text = text;
+  label.backgroundColor = [UIColor clearColor];
+  label.highlighted = NO;
+  // use multiple lines for wrapped text as required
+  label.numberOfLines = 0;
+  label.preferredMaxLayoutWidth = frame.size.width;
+  // this line must be after `numberOfLines`
+  [label sizeToFit];
+  return label;
+}
+
 
 # pragma mark - Action
 
