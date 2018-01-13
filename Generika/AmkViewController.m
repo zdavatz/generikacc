@@ -69,7 +69,7 @@ static const int kSectionPatient  = 2;
   [self.receiptView setFrame:mainFrame];
 
   self.receiptView = [[UIScrollView alloc] initWithFrame:mainFrame];
-
+  self.receiptView.delegate = self;
   self.receiptView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
   self.receiptView.scrollEnabled = YES;
   self.receiptView.pagingEnabled = NO;
@@ -276,6 +276,14 @@ static const int kSectionPatient  = 2;
     }
   }
   return count;
+}
+
+#pragma mark - Scroll view
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+  // a hack to disable horizontal on some versions
+  scrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y);
 }
 
 #pragma mark - Table view
