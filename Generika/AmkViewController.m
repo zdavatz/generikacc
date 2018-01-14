@@ -224,6 +224,8 @@ static const int kSectionProduct  = 0;
   [self.navigationController setToolbarHidden:YES animated:YES];
 
   // force layout (previous views will be cleared, if exist)
+  // because sometimes table view cells have corrupted width :'(
+  [self refresh];
   [self layoutFrames];
 
   // always scroll top :'(
