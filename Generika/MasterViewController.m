@@ -824,27 +824,72 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     } else {
       receipt = [[ReceiptManager sharedManager] receiptAtIndex:indexPath.row];
     }
+    // place date
+    if (![receipt.placeDate isEqualToString:@""]) {
+      UILabel *placeDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+          12.0, 8.0, itemView.frame.size.width - 24.0, 14.0)];
+      placeDateLabel.font = [UIFont boldSystemFontOfSize:13.0];
+      placeDateLabel.textAlignment = kTextAlignmentLeft;
+      placeDateLabel.textColor = [UIColor blackColor];
+      placeDateLabel.backgroundColor = [UIColor clearColor];
+      placeDateLabel.text = receipt.placeDate;
+      [cell.contentView addSubview:placeDateLabel];
+    }
+
+    Operator *operator = receipt.operator;
+    CGFloat width = CGRectGetMaxX(tableView.frame) -
+      CGRectGetMinX(tableView.frame);
+    if (operator) {
+      // given_name + family_name
+      UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+          12.0, 26.5, 178.0, 14.0)];
+      nameLabel.font = [UIFont systemFontOfSize:12.0];
+      nameLabel.textAlignment = kTextAlignmentLeft;
+      nameLabel.textColor = [UIColor blackColor];
+      nameLabel.backgroundColor = [UIColor clearColor];
+      nameLabel.text = [NSString stringWithFormat:@"%@ %@",
+        operator.givenName, operator.familyName, nil];
+      [cell.contentView addSubview:nameLabel];
+      // phone
+      UILabel *phoneLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+          12.0, 44.5, 178.0, 14.0)];
+      phoneLabel.font = [UIFont systemFontOfSize:12.0];
+      phoneLabel.textAlignment = kTextAlignmentLeft;
+      phoneLabel.textColor = [UIColor blackColor];
+      phoneLabel.backgroundColor = [UIColor clearColor];
+      phoneLabel.text = operator.phone;
+      [cell.contentView addSubview:phoneLabel];
+      // email
+      UILabel *emailLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+          12.0, 61.0, itemView.frame.size.width - 24.0, 14.0)];
+      emailLabel.font = [UIFont systemFontOfSize:12.0];
+      emailLabel.textAlignment = kTextAlignmentLeft;
+      emailLabel.textColor = [UIColor blackColor];
+      emailLabel.backgroundColor = [UIColor clearColor];
+      emailLabel.text = operator.email;
+      [cell.contentView addSubview:emailLabel];
+    }
     // datetime (imported at)
-    if (receipt.datetime) {
+    if (![receipt.datetime isEqualToString:@""]) {
       UILabel *datetimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-          175.0, 27.0, 100.0, 16.0)];
+          198.0, 27, 123.0, 14.0)];
       datetimeLabel.font = [UIFont systemFontOfSize:12.0];
       datetimeLabel.textAlignment = kTextAlignmentLeft;
       datetimeLabel.textColor = [UIColor grayColor];
       datetimeLabel.text = receipt.datetime;
       [cell.contentView addSubview:datetimeLabel];
     }
-    // place date
-    UILabel *placeDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        175.0, 62.0, 100.0, 16.0)];
-    placeDateLabel.textAlignment = kTextAlignmentLeft;
-    placeDateLabel.tag = 7;
-    NSString *placeDate = receipt.placeDate;
-    if (placeDate && [placeDate length] != 0) {
-      placeDateLabel.text = placeDate;
-      placeDateLabel.font = [UIFont boldSystemFontOfSize:12.0];
+    // medications
+    if ([receipt.products count] > 0) {
+      UILabel *productsLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+          198.5, 45, 123.0, 14.0)];
+      productsLabel.font = [UIFont systemFontOfSize:11.0];
+      productsLabel.textAlignment = kTextAlignmentLeft;
+      productsLabel.textColor = [UIColor grayColor];
+      productsLabel.text = [NSString stringWithFormat:@"%d Medikamente",
+        [receipt.products count], nil];
+      [cell.contentView addSubview:productsLabel];
     }
-    [cell.contentView addSubview:placeDateLabel];
   } else {  // product
     // gesture
     UILongPressGestureRecognizer *longPressGesture;
