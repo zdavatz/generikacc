@@ -29,6 +29,7 @@ extern NSString *const kOddbMobileFlavorUserAgent;
 + (NSArray *)searchLangs;
 
 + (UIColor *)activeUIColor;
++ (CGSize)getSizeOfLabel:(UILabel *)label;
 
 + (NSString *)detectStringWithRegexp:(NSString *)regexpString
                                 from:(NSString *)fromString;
