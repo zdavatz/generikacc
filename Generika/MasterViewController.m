@@ -289,7 +289,8 @@ static const int kSegmentReceipt = 1;
   }
 }
 
-# pragma mark - Components
+
+#pragma mark - Components
 
 - (UIBarButtonItem *)buildScanButtonItem
 {
@@ -319,7 +320,8 @@ static const int kSegmentReceipt = 1;
   return plusButtonItem;
 }
 
-# pragma mark - Layout
+
+#pragma mark - Layout
 
 - (void)layoutTableViewSeparator:(UITableView *)tableView
 {
@@ -415,7 +417,8 @@ static const int kSegmentReceipt = 1;
   [button setEnabled:enabled];
 }
 
-# pragma mark - Util
+
+#pragma mark - Util
 
 - (BOOL)isReachable
 {
@@ -446,7 +449,8 @@ static const int kSegmentReceipt = 1;
   }
 }
 
-# pragma mark - Segmented Control
+
+#pragma mark - Segmented Control
 
 - (void)segmentChanged:(UISegmentedControl *)control
 {
@@ -455,6 +459,7 @@ static const int kSegmentReceipt = 1;
     [self.reader dismissViewControllerAnimated:NO completion:nil];
   }
   if (self.search) { // cancel search
+    self.navigationItem.leftBarButtonItem.enabled = YES;
     [self.search setActive:NO];
   }
 
@@ -483,7 +488,8 @@ static const int kSegmentReceipt = 1;
   [self refresh];
 }
 
-# pragma mark - Interaction Link
+
+#pragma mark - Interaction Link
 
 - (void)interactionButtonTapped:(UIButton *)button
 {
@@ -510,7 +516,8 @@ static const int kSegmentReceipt = 1;
   }
 }
 
-# pragma mark - Settings View
+
+#pragma mark - Settings View
 
 - (void)settingsButtonTapped:(UIButton *)button
 {
@@ -526,11 +533,12 @@ static const int kSegmentReceipt = 1;
   }
   self.settings.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
   UINavigationController *settingsNavigation = [[UINavigationController alloc]
-    initWithRootViewController: self.settings];
+    initWithRootViewController:self.settings];
   [self presentViewController:settingsNavigation animated:YES completion:nil];
 }
 
-# pragma mark - Plus View
+
+#pragma mark - Plus View
 
 - (void)plusButtonTapped:(UIButton *)button
 {
@@ -544,7 +552,8 @@ static const int kSegmentReceipt = 1;
   // TODO
 }
 
-# pragma mark - Scan View
+
+#pragma mark - Scan View
 
 - (void)scanButtonTapped:(UIButton *)button
 {
@@ -708,10 +717,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                  config:ZBAR_CFG_ENABLE
                      to:0];
 
-  [self presentViewController:self.reader animated:YES completion: nil];
+  [self presentViewController:self.reader animated:YES completion:nil];
 }
 
-# pragma mark - Product
+
+#pragma mark - Product
 
 - (void)searchInfoForProduct:(Product *)product
 {
@@ -754,7 +764,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
                                        animated:YES];
 }
 
-# pragma mark - Receipt
+
+#pragma mark - Receipt
 
 - (void)displayInfoForReceipt:(Receipt *)receipt animated:(BOOL)animated
 {
@@ -771,7 +782,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-# pragma mark - Table View
+
+#pragma mark - Table View
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -894,7 +906,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     // gesture
     UILongPressGestureRecognizer *longPressGesture;
     if (self.search.active) {
-      // TODO (currently does nothing)
+      // It does nothing (action: nil)
       longPressGesture = [[UILongPressGestureRecognizer alloc]
         initWithTarget:self action:nil];
       longPressGesture.minimumPressDuration = 0.9; // seconds
@@ -1182,7 +1194,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self.itemsView reloadData];
 }
 
-# pragma mark - Gesture
+
+#pragma mark - Gesture
 
 - (void)longPress:(UILongPressGestureRecognizer *)gesture
 {
@@ -1285,11 +1298,18 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-# pragma mark - Searchbar
+
+#pragma mark - Searchbar
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+  self.navigationItem.leftBarButtonItem.enabled = NO;
   [self setEditing:NO animated:YES];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+  self.navigationItem.leftBarButtonItem.enabled = YES;
 }
 
 - (void)filterContentForSearchText:(NSString *)searchText
@@ -1314,7 +1334,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   }
 }
 
-# pragma mark - Search Results
+
+#pragma mark - Search Results
 
 - (void)updateSearchResultsForSearchController:
     (UISearchController *)searchController
