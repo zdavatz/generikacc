@@ -121,13 +121,13 @@ static const int kSectionProduct  = 0;
 - (void)layoutFrames
 {
   CGRect infoFrame = self.infoView.frame;
-  infoFrame.origin.y = 0.0;
+  infoFrame.origin.y = 0.6;
   infoFrame.size.width = self.view.bounds.size.width;
   infoFrame.size.height = (
       (kSectionHeaderHeight * 2) +
       (kInfoCellHeight * [self entriesCountForViewOfField:@"operator"]) +
       (kInfoCellHeight * [self entriesCountForViewOfField:@"patient"]) +
-      0.6 // margin
+      1.8 // margin
   );
   [self.infoView setFrame:infoFrame];
 
@@ -143,13 +143,11 @@ static const int kSectionProduct  = 0;
   if (defaultHeight > height) {
     height = defaultHeight;
   }
-
   CGRect itemFrame = CGRectMake(
     0,
     CGRectGetMaxY(self.infoView.bounds),
     self.view.bounds.size.width,
     (kSectionHeaderHeight + height)
-    + 0.2 // margin
   );
   [self.itemView setFrame:itemFrame];
 
@@ -378,7 +376,7 @@ viewForHeaderInSection:(NSInteger)section
     } else if (section == kSectionOperator) {
       return 5;
     } else if (section == kSectionPatient) {
-      return 4;
+      return 6;
     }
   } else if (tableView == self.itemView) {
     return [self.receipt.products count];
@@ -508,13 +506,38 @@ viewForHeaderInSection:(NSInteger)section
         if (indexPath.row == 0) { // given_name + family_name
           label.text = [NSString stringWithFormat:@"%@ %@",
             patient.givenName, patient.familyName, nil];
-        } else if (indexPath.row == 1) { // birth_date
-          label.text = patient.birthDate;
+        } else if (indexPath.row == 1) {
+          // weight_kg/height_cm gender birth_date
+          label.text = @"";
+          if (![patient.weight isEqualToString:@""]) {
+            label.text = [label.text stringByAppendingString:[
+              NSString stringWithFormat:@"%@kg",
+              patient.weight, nil]];
+          }
+          if (![patient.height isEqualToString:@""]) {
+            label.text = [label.text stringByAppendingString:[
+              NSString stringWithFormat:@"/%@cm",
+              patient.height, nil]];
+          }
+          if (![patient.gender isEqualToString:@""]) {
+            label.text = [label.text stringByAppendingString:[
+              NSString stringWithFormat:@" %@",
+              [patient.gender capitalizedString], nil]];
+          }
+          if (![patient.birthDate isEqualToString:@""]) {
+            label.text = [label.text stringByAppendingString:[
+              NSString stringWithFormat:@" %@",
+              patient.birthDate, nil]];
+          }
         } else if (indexPath.row == 2) { // postal_address
           label.text = patient.address;
         } else if (indexPath.row == 3) { // city country
           label.text = [NSString stringWithFormat:@"%@ %@",
             patient.city, patient.country, nil];
+        } else if (indexPath.row == 4) { // phone
+          label.text = patient.phone;
+        } else if (indexPath.row == 5) { // email
+          label.text = patient.email;
         }
       }
     } else {
@@ -523,6 +546,8 @@ viewForHeaderInSection:(NSInteger)section
     if (label.text) { // 1 cell per row
       label.lineBreakMode = NSLineBreakByWordWrapping;
       label.numberOfLines = 0;
+      label.preferredMaxLayoutWidth = frame.size.width;
+      [label sizeToFit];
       [cell.contentView addSubview:label];
     }
   } else if (tableView == self.itemView) { // medications
@@ -553,8 +578,6 @@ viewForHeaderInSection:(NSInteger)section
           commentLabel.frame.size.height
       );
       [commentLabel setFrame:commentFrame];
-
-      // TODO (other entries)
       [cell.contentView addSubview:packLabel];
       [cell.contentView insertSubview:eanLabel belowSubview:packLabel];
       [cell.contentView insertSubview:commentLabel belowSubview:eanLabel];
