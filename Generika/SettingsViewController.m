@@ -111,7 +111,7 @@ static const float kCellHeight = 44.0; // default = 44.0
 {
   [super viewDidLoad];
   UIBarButtonItem *closeButton = [[UIBarButtonItem alloc]
-    initWithTitle:@"close"
+    initWithTitle:@"Close"
             style:UIBarButtonItemStylePlain
            target:self
            action:@selector(closeSettings)];
