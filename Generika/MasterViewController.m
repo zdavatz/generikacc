@@ -37,17 +37,21 @@ static const int kSegmentReceipt = 1;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *itemsView;
 @property (nonatomic, strong, readwrite) UISearchController *search;
-@property (nonatomic, strong, readwrite) ReaderViewController *reader;
 @property (nonatomic, strong, readwrite) WebViewController *browser;
 @property (nonatomic, strong, readwrite) AmkViewController *viewer;
 @property (nonatomic, strong, readwrite) SettingsViewController *settings;
+@property (nonatomic, assign, readwrite) NSInteger selectedSegmentIndex;
+// reader
+@property (nonatomic, strong, readwrite) ReaderViewController *reader;
+// file import
+@property (nonatomic, strong, readwrite)
+  //UIDocumentMenuViewController *documentPicker;
+  UIDocumentPickerViewController *documentPicker;
 // datepicker
 @property (nonatomic, strong, readwrite) NSIndexPath *pickerIndexPath;
 @property (nonatomic, strong, readwrite) NTMonthYearPicker *datePicker;
 @property (nonatomic, strong, readwrite)
   UIPopoverController *popOverForDatePicker;
-// import file
-@property (nonatomic, assign, readwrite) NSInteger selectedSegmentIndex;
 
 - (void)segmentChanged:(UISegmentedControl *)control;
 - (void)layoutToolbar;
@@ -96,6 +100,7 @@ static const int kSegmentReceipt = 1;
     _itemsView = nil;
     _browser = nil;
     _settings = nil;
+    _documentPicker = nil;
     _search = nil;
     _pickerIndexPath = nil;
     _datePicker = nil;
@@ -254,7 +259,10 @@ static const int kSegmentReceipt = 1;
 
 - (void)didRotate:(NSNotification *)notification
 {
-  // pass
+  // redraw via reload
+  [self.itemsView performSelectorOnMainThread:@selector(reloadData)
+                                   withObject:nil
+                                waitUntilDone:YES];
 }
 
 // iOS <= 5
@@ -549,7 +557,12 @@ static const int kSegmentReceipt = 1;
 
 - (void)openImporter
 {
-  // TODO
+  self.documentPicker = [[UIDocumentPickerViewController alloc]
+    initWithDocumentTypes:@[@"org.oddb.generika.amk"]
+                   inMode:UIDocumentPickerModeImport];
+  self.documentPicker.delegate = self;
+  self.documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
+  [self presentViewController:self.documentPicker animated:YES completion:nil];
 }
 
 
@@ -632,7 +645,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   } else {
     NSDate *now = [NSDate date];
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-    [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
+    [dateFormat setDateFormat:@"HH:mm dd.MM.YYYY"];
     NSString *datetime = [dateFormat stringFromDate:now];
     ProductManager *manager = [ProductManager sharedManager];
 
@@ -825,7 +838,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
   UIView *itemView = [[UIView alloc] initWithFrame:CGRectMake(
-      0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
+    0.0, 0.0, cellFrame.size.width, cellFrame.size.height)];
   [cell.contentView addSubview:itemView];
 
   // build cell
@@ -839,7 +852,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     // place date
     if (![receipt.placeDate isEqualToString:@""]) {
       UILabel *placeDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-          12.0, 8.0, itemView.frame.size.width - 24.0, 14.0)];
+        7.2, 8.0, itemView.frame.size.width - 23.0, 14.0)];
       placeDateLabel.font = [UIFont boldSystemFontOfSize:13.0];
       placeDateLabel.textAlignment = kTextAlignmentLeft;
       placeDateLabel.textColor = [UIColor blackColor];
@@ -852,20 +865,34 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     CGFloat width = CGRectGetMaxX(tableView.frame) -
       CGRectGetMinX(tableView.frame);
     if (operator) {
-      // given_name + family_name
+      // title + given_name + family_name
       UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-          12.0, 26.5, 178.0, 14.0)];
-      nameLabel.font = [UIFont systemFontOfSize:12.0];
+        7.2, 26.5, 168.0, 14.0)];
+      if (isLandscape) {
+        CGRect nameFrame = nameLabel.frame;
+        nameFrame.size.width = 222.0;
+        [nameLabel setFrame:nameFrame];
+      }
+      nameLabel.font = [UIFont systemFontOfSize:11.5];
       nameLabel.textAlignment = kTextAlignmentLeft;
       nameLabel.textColor = [UIColor blackColor];
       nameLabel.backgroundColor = [UIColor clearColor];
       nameLabel.text = [NSString stringWithFormat:@"%@ %@",
         operator.givenName, operator.familyName, nil];
+      if (![operator.title isEqualToString:@""]) {
+        nameLabel.text = [operator.title stringByAppendingString:[
+          NSString stringWithFormat:@" %@", nameLabel.text]];
+      }
       [cell.contentView addSubview:nameLabel];
       // phone
       UILabel *phoneLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-          12.0, 44.5, 178.0, 14.0)];
-      phoneLabel.font = [UIFont systemFontOfSize:12.0];
+        7.2, 44.5, 168.0, 14.0)];
+      if (isLandscape) {
+        CGRect phoneFrame = phoneLabel.frame;
+        phoneFrame.size.width = 222.0;
+        [phoneLabel setFrame:phoneFrame];
+      }
+      phoneLabel.font = [UIFont systemFontOfSize:11.5];
       phoneLabel.textAlignment = kTextAlignmentLeft;
       phoneLabel.textColor = [UIColor blackColor];
       phoneLabel.backgroundColor = [UIColor clearColor];
@@ -873,35 +900,71 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       [cell.contentView addSubview:phoneLabel];
       // email
       UILabel *emailLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-          12.0, 61.0, itemView.frame.size.width - 24.0, 14.0)];
-      emailLabel.font = [UIFont systemFontOfSize:12.0];
+        7.2, 61.0, 168.0, 14.0)];
+      if (isLandscape) {
+        CGRect emailFrame = emailLabel.frame;
+        emailFrame.size.width = 222.0;
+        [emailLabel setFrame:emailFrame];
+      }
+      emailLabel.font = [UIFont systemFontOfSize:11.5];
       emailLabel.textAlignment = kTextAlignmentLeft;
       emailLabel.textColor = [UIColor blackColor];
       emailLabel.backgroundColor = [UIColor clearColor];
       emailLabel.text = operator.email;
       [cell.contentView addSubview:emailLabel];
     }
+    // original filename
+    if (![receipt.filename isEqualToString:@""]) {
+      UILabel *filenameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+        174.5, 27.0, 118.0, 14.0)];
+      if (isLandscape) {
+        CGRect filenameFrame = filenameLabel.frame;
+        filenameFrame.origin.x = 237.0;
+        filenameFrame.size.width = 258.0;
+        [filenameLabel setFrame:filenameFrame];
+      }
+      filenameLabel.font = [UIFont systemFontOfSize:10.5];
+      filenameLabel.textAlignment = kTextAlignmentLeft;
+      filenameLabel.textColor = [UIColor grayColor];
+      filenameLabel.backgroundColor = [UIColor clearColor];
+      filenameLabel.text = [receipt.filename lastPathComponent];
+      [cell.contentView addSubview:filenameLabel];
+    }
     // datetime (imported at)
-    if (![receipt.datetime isEqualToString:@""]) {
-      UILabel *datetimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-          198.0, 27, 123.0, 14.0)];
-      datetimeLabel.font = [UIFont systemFontOfSize:12.0];
-      datetimeLabel.textAlignment = kTextAlignmentLeft;
-      datetimeLabel.textColor = [UIColor grayColor];
-      datetimeLabel.text = receipt.datetime;
-      [cell.contentView addSubview:datetimeLabel];
+    UILabel *datetimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+      174.5, 45.0, 118.0, 14.0)];
+    if (isLandscape) {
+      CGRect datetimeFrame = datetimeLabel.frame;
+      datetimeFrame.origin.x = 237.0;
+      datetimeFrame.size.width = 258.0;
+      [datetimeLabel setFrame:datetimeFrame];
     }
+    datetimeLabel.font = [UIFont systemFontOfSize:10.5];
+    datetimeLabel.textAlignment = kTextAlignmentLeft;
+    datetimeLabel.textColor = [UIColor grayColor];
+    datetimeLabel.backgroundColor = [UIColor clearColor];
+    datetimeLabel.text = receipt.importedAt;
+    [cell.contentView addSubview:datetimeLabel];
     // medications
-    if ([receipt.products count] > 0) {
-      UILabel *productsLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-          198.5, 45, 123.0, 14.0)];
-      productsLabel.font = [UIFont systemFontOfSize:11.0];
-      productsLabel.textAlignment = kTextAlignmentLeft;
-      productsLabel.textColor = [UIColor grayColor];
-      productsLabel.text = [NSString stringWithFormat:@"%d Medikamente",
-        [receipt.products count], nil];
-      [cell.contentView addSubview:productsLabel];
+    UILabel *productsLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+      175.0, 61.0, 118.0, 14.0)];
+    if (isLandscape) {
+      CGRect productsFrame = productsLabel.frame;
+      productsFrame.origin.x = 237.0;
+      productsFrame.size.width = 258.0;
+      [productsLabel setFrame:productsFrame];
     }
+    productsLabel.font = [UIFont systemFontOfSize:10.5];
+    productsLabel.textAlignment = kTextAlignmentLeft;
+    productsLabel.textColor = [UIColor grayColor];
+    productsLabel.backgroundColor = [UIColor clearColor];
+    NSInteger count = [receipt.products count];
+    NSString *format = @"%d Medikamente";
+    if (count < 2) {
+      format = @"%d Medikament";
+    }
+    productsLabel.text = [NSString stringWithFormat:format, count, nil];
+    [cell.contentView addSubview:productsLabel];
   } else {  // product
     // gesture
     UILongPressGestureRecognizer *longPressGesture;
@@ -946,7 +1009,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     }
     // name
     UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        70.0, 2.0, 230.0, 25.0)];
+      70.0, 2.0, 230.0, 25.0)];
     nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
     nameLabel.textAlignment = kTextAlignmentLeft;
     nameLabel.textColor = [UIColor blackColor];
@@ -954,7 +1017,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [cell.contentView addSubview:nameLabel];
     // size
     UILabel *sizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        70.0, 26.0, 110.0, 16.0)];
+      70.0, 26.0, 110.0, 16.0)];
     sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
     sizeLabel.textAlignment = kTextAlignmentLeft;
     sizeLabel.textColor = [UIColor blackColor];
@@ -963,7 +1026,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     // datetime
     if (product.datetime) {
       UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-          175.0, 27.0, 100.0, 16.0)];
+        175.0, 27.0, 100.0, 16.0)];
       dateLabel.font = [UIFont systemFontOfSize:12.0];
       dateLabel.textAlignment = kTextAlignmentLeft;
       dateLabel.textColor = [UIColor grayColor];
@@ -972,7 +1035,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     }
     // price
     UILabel *priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        70.0, 45.0, 60.0, 16.0)];
+      70.0, 45.0, 60.0, 16.0)];
     priceLabel.font = [UIFont systemFontOfSize:12.0];
     priceLabel.textAlignment = kTextAlignmentLeft;
     priceLabel.textColor = [UIColor grayColor];
@@ -983,7 +1046,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [cell.contentView addSubview:priceLabel];
     // deduction
     UILabel *deductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        125.0, 45.0, 60.0, 16.0)];
+      125.0, 45.0, 60.0, 16.0)];
     deductionLabel.font = [UIFont systemFontOfSize:12.0];
     deductionLabel.textAlignment = kTextAlignmentLeft;
     deductionLabel.textColor = [UIColor grayColor];
@@ -994,7 +1057,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [cell.contentView addSubview:deductionLabel];
     // category
     UILabel *categoryLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        176.0, 45.0, 190.0, 16.0)];
+      176.0, 45.0, 190.0, 16.0)];
     categoryLabel.font = [UIFont systemFontOfSize:12.0];
     categoryLabel.textAlignment = kTextAlignmentLeft;
     categoryLabel.textColor = [UIColor grayColor];
@@ -1002,7 +1065,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [cell.contentView addSubview:categoryLabel];
     // ean
     UILabel *eanLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        70.0, 62.0, 110.0, 16.0)];
+      70.0, 62.0, 110.0, 16.0)];
     eanLabel.font = [UIFont systemFontOfSize:12.0];
     eanLabel.textAlignment = kTextAlignmentLeft;
     eanLabel.textColor = [UIColor grayColor];
@@ -1010,7 +1073,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [cell.contentView addSubview:eanLabel];
     // expires_at
     UILabel *expiresAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        175.0, 62.0, 100.0, 16.0)];
+      175.0, 62.0, 100.0, 16.0)];
     expiresAtLabel.textAlignment = kTextAlignmentLeft;
     expiresAtLabel.tag = 7;
     if (product.expiresAt && [product.expiresAt length] != 0) {
@@ -1348,7 +1411,18 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self refresh];
 }
 
-# pragma mark - File Importing
+
+#pragma mark - File Importing
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller
+didPickDocumentAtURL:(NSURL *)url
+{
+  [[self presentingViewController] dismissViewControllerAnimated:NO
+                                                      completion:nil];
+  if (controller.documentPickerMode == UIDocumentPickerModeImport) {
+    [self handleOpenAmkFileURL:url animated:YES];
+  }
+}
 
 - (void)setSelectedSegmentIndex:(NSInteger)index
 {
@@ -1371,6 +1445,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   ReceiptManager *manager = [ReceiptManager sharedManager];
   Receipt *receipt;
 
+  NSString *filename = [url lastPathComponent];
+
   NSError *error;
   @try {
     receipt = [manager importReceiptFromURL:url];
@@ -1382,21 +1458,23 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       error = [NSError errorWithDomain:@"receipt"
                                   code:99
                               userInfo:@{
-             NSLocalizedDescriptionKey:@"Already imported"
-                              }];
+             NSLocalizedDescriptionKey:[NSString
+               stringWithFormat:@"You have been already imported %@", filename]
+      }];
     }
   }
   @catch (NSException *exception) {
     error = [NSError errorWithDomain:@"receipt"
                                 code:100
                             userInfo:@{
-           NSLocalizedDescriptionKey:@"Invalid .amk file"
-                            }];
+           NSLocalizedDescriptionKey:[NSString
+               stringWithFormat:@"Invalid file %@", filename]
+    }];
   }
   if (error) {
     UIAlertView *alert = [[UIAlertView alloc]
-        initWithTitle:[error localizedDescription]
-              message:nil
+        initWithTitle:@"Import Error"
+              message:[error localizedDescription]
              delegate:self
     cancelButtonTitle:@"OK"
     otherButtonTitles:nil];
@@ -1406,6 +1484,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   BOOL saved = [manager insertReceipt:receipt atIndex:0];
   if (saved) {
     [self displayInfoForReceipt:receipt animated:animated];
+    // success alert
+    NSString *alertMessage = [NSString
+      stringWithFormat:@"Successfully imported %@", filename];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UIAlertController *alertController = [UIAlertController
+      alertControllerWithTitle:@"Import"
+                       message:alertMessage
+                preferredStyle:UIAlertControllerStyleAlert];
+      [alertController addAction:[UIAlertAction actionWithTitle:@"OK"
+                           style:UIAlertActionStyleDefault
+                         handler:nil]];
+      [self presentViewController:alertController animated:YES completion:nil];
+    });
   }
 }
 

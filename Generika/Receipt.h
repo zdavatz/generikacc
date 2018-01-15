@@ -59,6 +59,7 @@
 @interface Receipt : NSObject <NSCoding>
 
 @property (nonatomic, strong, readwrite) NSString *amkfile;
+@property (nonatomic, strong, readwrite) NSString *filename;
 @property (nonatomic, strong, readwrite) NSString *datetime;
 
 @property (nonatomic, strong, readwrite) NSString *hashedKey;
@@ -67,8 +68,9 @@
 @property (nonatomic, strong, readwrite) Patient *patient;
 @property (nonatomic, strong, readwrite) NSArray *products;
 
-@property (nonatomic, strong, readwrite) NSString *issuedPlace;
-@property (nonatomic, strong, readwrite) NSString *issuedDate;
+@property (nonatomic, strong, readonly) NSString *issuedDate;
+@property (nonatomic, strong, readonly) NSString *issuedPlace;
+@property (nonatomic, strong, readonly) NSString *importedAt;
 
 + (NSDictionary *)rereiptKeyMaps;
 + (id)importFromDict:(NSDictionary *)dict;

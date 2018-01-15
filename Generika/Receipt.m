@@ -279,6 +279,7 @@
 - (void)dealloc
 {
   _amkfile = nil; // file path
+  _filename = nil; // original file name
   _datetime = nil; // imported at
 
   _hashedKey = nil;
@@ -286,10 +287,6 @@
   _operator = nil;
   _patient = nil;
   _products = nil;
-
-  // values from placeDate
-  _issuedPlace = nil;
-  _issuedDate = nil;
 }
 
 #pragma mark - NSCoding Interface
@@ -309,10 +306,6 @@
     }
     [self setValue:value forKey:key];
   }
-
-  // "issuedPlace, issuedDate" are extracted from "place_date"
-  _issuedPlace = nil;
-  _issuedDate = nil;
   return self;
 }
 
@@ -331,25 +324,31 @@
 
 - (NSString *)issuedPlace
 {
-  if (_issuedPlace) {
-    return _issuedPlace;
-  } else if (self.placeDate) {
-    _issuedPlace = [Constant detectStringWithRegexp:@".*,\\s?(\\w+)$"
-                                               from:self.placeDate];
-    return _issuedPlace;
-  } else {
-    return @"";
+  if (![self.placeDate isEqualToString:@""]) {
+    return [Constant detectStringWithRegexp:@".*,\\s?(\\w+)$"
+                                       from:self.placeDate];
   }
+  return @"";
 }
 
 - (NSString *)issuedDate
 {
-  if (_issuedDate) {
-    return _issuedDate;
-  } else if (self.placeDate) {
-    _issuedDate = [Constant detectStringWithRegexp:@"(\\w*),\\s?.+$"
-                                              from:self.placeDate];
-    return _issuedDate;
+  if (![self.placeDate isEqualToString:@""]) {
+    return [Constant detectStringWithRegexp:@"(\\w*),\\s?.+$"
+                                       from:self.placeDate];
+  }
+  return @"";
+}
+
+- (NSString *)importedAt
+{
+  if (![self.datetime isEqualToString:@""]) {
+    // re:format to same style with receipt's `place_date`
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"HH:mm:ss dd.MM.yyyy"];
+    NSDate *dateTime = [formatter dateFromString:self.datetime];
+    [formatter setDateFormat:@"dd.MM.yyyy (HH:mm:ss)"];
+    return [formatter stringFromDate:dateTime];
   } else {
     return @"";
   }
@@ -387,7 +386,8 @@
 - (NSArray *)receiptKeys
 {
   NSArray *additionalKeys = @[
-    @"amkfile",
+    @"amkfile",  // RZ_`timestamp`.amk
+    @"filename",  // RZ_YYYY-mm-ddTHHMMss.amk (expected)
     @"datetime"
   ];
   return [additionalKeys arrayByAddingObjectsFromArray:

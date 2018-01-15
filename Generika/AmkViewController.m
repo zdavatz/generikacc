@@ -127,7 +127,7 @@ static const int kSectionProduct  = 0;
       (kSectionHeaderHeight * 2) +
       (kInfoCellHeight * [self entriesCountForViewOfField:@"operator"]) +
       (kInfoCellHeight * [self entriesCountForViewOfField:@"patient"]) +
-      1.8 // margin
+      20.8 // margin
   );
   [self.infoView setFrame:infoFrame];
 
@@ -285,6 +285,10 @@ static const int kSectionProduct  = 0;
         ![operator.givenName isEqualToString:@""])) {
       count -= 1;
     }
+    if (operator &&
+        ![operator.title isEqualToString:@""]) {
+      count -= 1;
+    }
   } else if ([field isEqualToString:@"patient"]) {
     count = [self.receipt entriesCountOfField:@"operator"];
     Patient *patient = self.receipt.patient;
@@ -360,7 +364,12 @@ viewForHeaderInSection:(NSInteger)section
       label.text = @"";
     }
   } else {
-    label.text = @"Medikamente";
+    NSInteger count = [self.receipt.products count];
+    NSString *format = @"Medikamente (%d)";
+    if (count < 2) {
+      format = @"Medikament (%d)";
+    }
+    label.text = [NSString stringWithFormat:format, count];
     [view setBackgroundColor:[UIColor groupTableViewBackgroundColor]];
   }
   [view addSubview:label];
@@ -477,8 +486,12 @@ viewForHeaderInSection:(NSInteger)section
           // given_name + family_name
           label.text = [NSString stringWithFormat:@"%@ %@",
             operator.givenName, operator.familyName, nil];
+          if (![operator.title isEqualToString:@""]) {
+            label.text = [operator.title stringByAppendingString:[
+              NSString stringWithFormat:@" %@", label.text, nil]];
+          }
           // signature image
-          if (operator.signature) {
+          if (![operator.signature isEqualToString:@""]) {
             UIImageView *signatureView = [[UIImageView alloc]
               initWithImage:operator.signatureThumbnail];
             signatureView.frame = CGRectMake(
@@ -658,14 +671,17 @@ viewForHeaderInSection:(NSInteger)section
   UIActionSheet *sheet = [[UIActionSheet alloc] init];
   sheet.delegate = self;
 
-  Operator *operator = self.receipt.operator;
-  sheet.title = operator.title;
+  NSString *description = [NSString stringWithFormat:@"%@\r%@",
+    self.receipt.filename,
+    self.receipt.importedAt];
+  sheet.title = description;
 
-  [sheet addButtonWithTitle:@""];
+  // TODO
+  // more actions
   [sheet addButtonWithTitle:@"Back to List"];
   [sheet addButtonWithTitle:@"Cancel"];
   sheet.destructiveButtonIndex = 0;
-  sheet.cancelButtonIndex = 2;
+  sheet.cancelButtonIndex = 1;
   [sheet showInView:self.view];
 }
 
@@ -676,7 +692,7 @@ viewForHeaderInSection:(NSInteger)section
 {
   if (index == sheet.destructiveButtonIndex) {
     // TODO
-  } else if (index == 1) { // back to list
+  } else if (index == 0) { // back to list
     MasterViewController *parent = [self.navigationController.viewControllers
                                     objectAtIndex:0];
     [self.navigationController popToViewController:(
