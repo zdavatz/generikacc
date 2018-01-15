@@ -128,7 +128,7 @@ static ReceiptManager *_sharedInstance = nil;
   // import .amk receipt file.
   NSData *now = [NSDate date];
   NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-  [dateFormat setDateFormat:@"HH:mm dd.MM.YY"];
+  [dateFormat setDateFormat:@"HH:mm:ss dd.MM.YYYY"];
   NSString *datetime = [dateFormat stringFromDate:now];
   NSString *fileName = [[url absoluteString] lastPathComponent];
 
@@ -211,6 +211,7 @@ static ReceiptManager *_sharedInstance = nil;
   receipt = [Receipt importFromDict:receiptDict];
   // additional values
   [receipt setValue:amkfile forKey:@"amkfile"];
+  [receipt setValue:fileName forKey:@"filename"];
   [receipt setValue:datetime forKey:@"datetime"];
 
   return receipt;
@@ -235,7 +236,7 @@ static ReceiptManager *_sharedInstance = nil;
                           attributes:nil
                                error:&error];
   if (error) { return nil; }
-  // create file `RZ_timestamp.amk`
+  // create file as new name `RZ_timestamp.amk`
   time_t timestamp = (time_t)[[NSDate date] timeIntervalSince1970];
   NSString *amkFile = [NSString stringWithFormat:
     @"%@_%d.amk", @"RZ", (int)timestamp];

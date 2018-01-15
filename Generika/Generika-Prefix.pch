@@ -10,6 +10,10 @@
   #import "Constant.h"
 #endif
 
+#define deviceOrientation [[UIDevice currentDevice] orientation]
+#define isPortrait  UIDeviceOrientationIsPortrait(deviceOrientation)
+#define isLandscape UIDeviceOrientationIsLandscape(deviceOrientation)
+
 #ifdef DEBUG
   // usage: DLog(@"%@", object);
   #define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
