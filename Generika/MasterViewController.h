@@ -15,6 +15,7 @@
 
 @interface MasterViewController : UITableViewController <
   ZBarReaderDelegate,
+  UIDocumentPickerDelegate,
   UISearchDisplayDelegate,
   UISearchBarDelegate,
   UIPopoverControllerDelegate>

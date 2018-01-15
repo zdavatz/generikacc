@@ -37,17 +37,21 @@ static const int kSegmentReceipt = 1;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
 @property (nonatomic, strong, readwrite) UITableView *itemsView;
 @property (nonatomic, strong, readwrite) UISearchController *search;
-@property (nonatomic, strong, readwrite) ReaderViewController *reader;
 @property (nonatomic, strong, readwrite) WebViewController *browser;
 @property (nonatomic, strong, readwrite) AmkViewController *viewer;
 @property (nonatomic, strong, readwrite) SettingsViewController *settings;
+@property (nonatomic, assign, readwrite) NSInteger selectedSegmentIndex;
+// reader
+@property (nonatomic, strong, readwrite) ReaderViewController *reader;
+// file import
+@property (nonatomic, strong, readwrite)
+  //UIDocumentMenuViewController *documentPicker;
+  UIDocumentPickerViewController *documentPicker;
 // datepicker
 @property (nonatomic, strong, readwrite) NSIndexPath *pickerIndexPath;
 @property (nonatomic, strong, readwrite) NTMonthYearPicker *datePicker;
 @property (nonatomic, strong, readwrite)
   UIPopoverController *popOverForDatePicker;
-// import file
-@property (nonatomic, assign, readwrite) NSInteger selectedSegmentIndex;
 
 - (void)segmentChanged:(UISegmentedControl *)control;
 - (void)layoutToolbar;
@@ -96,6 +100,7 @@ static const int kSegmentReceipt = 1;
     _itemsView = nil;
     _browser = nil;
     _settings = nil;
+    _documentPicker = nil;
     _search = nil;
     _pickerIndexPath = nil;
     _datePicker = nil;
@@ -549,7 +554,12 @@ static const int kSegmentReceipt = 1;
 
 - (void)openImporter
 {
-  // TODO
+  self.documentPicker = [[UIDocumentPickerViewController alloc]
+    initWithDocumentTypes:@[@"org.oddb.generika.amk"]
+                   inMode:UIDocumentPickerModeImport];
+  self.documentPicker.delegate = self;
+  self.documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
+  [self presentViewController:self.documentPicker animated:YES completion:nil];
 }
 
 
@@ -1348,7 +1358,18 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [self refresh];
 }
 
-# pragma mark - File Importing
+
+#pragma mark - File Importing
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller
+didPickDocumentAtURL:(NSURL *)url
+{
+  [[self presentingViewController] dismissViewControllerAnimated:NO
+                                                      completion:nil];
+  if (controller.documentPickerMode == UIDocumentPickerModeImport) {
+    [self handleOpenAmkFileURL:url animated:YES];
+  }
+}
 
 - (void)setSelectedSegmentIndex:(NSInteger)index
 {
@@ -1371,6 +1392,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   ReceiptManager *manager = [ReceiptManager sharedManager];
   Receipt *receipt;
 
+  NSString *filename = [url lastPathComponent];
+
   NSError *error;
   @try {
     receipt = [manager importReceiptFromURL:url];
@@ -1382,21 +1405,23 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       error = [NSError errorWithDomain:@"receipt"
                                   code:99
                               userInfo:@{
-             NSLocalizedDescriptionKey:@"Already imported"
-                              }];
+             NSLocalizedDescriptionKey:[NSString
+               stringWithFormat:@"You have been already imported %@", filename]
+      }];
     }
   }
   @catch (NSException *exception) {
     error = [NSError errorWithDomain:@"receipt"
                                 code:100
                             userInfo:@{
-           NSLocalizedDescriptionKey:@"Invalid .amk file"
-                            }];
+           NSLocalizedDescriptionKey:[NSString
+               stringWithFormat:@"Invalid file %@", filename]
+    }];
   }
   if (error) {
     UIAlertView *alert = [[UIAlertView alloc]
-        initWithTitle:[error localizedDescription]
-              message:nil
+        initWithTitle:@"Import Error"
+              message:[error localizedDescription]
              delegate:self
     cancelButtonTitle:@"OK"
     otherButtonTitles:nil];
@@ -1406,6 +1431,19 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   BOOL saved = [manager insertReceipt:receipt atIndex:0];
   if (saved) {
     [self displayInfoForReceipt:receipt animated:animated];
+    // success alert
+    NSString *alertMessage = [NSString
+      stringWithFormat:@"Successfully imported %@", filename];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UIAlertController *alertController = [UIAlertController
+      alertControllerWithTitle:@"Import"
+                       message:alertMessage
+                preferredStyle:UIAlertControllerStyleAlert];
+      [alertController addAction:[UIAlertAction actionWithTitle:@"OK"
+                           style:UIAlertActionStyleDefault
+                         handler:nil]];
+      [self presentViewController:alertController animated:YES completion:nil];
+    });
   }
 }
 
