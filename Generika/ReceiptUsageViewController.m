@@ -34,6 +34,7 @@
 - (void)didReceiveMemoryWarning
 {
   if ([self isViewLoaded] && [self.view window] == nil) {
+    _canvasView = nil;
     _usageView  = nil;
   }
   [super didReceiveMemoryWarning];
