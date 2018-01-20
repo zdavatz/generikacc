@@ -475,6 +475,9 @@ static const int kSegmentReceipt = 1;
   UIBarButtonItem *interactionItem = [self.toolbarItems objectAtIndex:1];
   UIButton *interactionButton = (UIButton *)interactionItem.customView;
 
+  UIBarButtonItem *settingsItem = [self.toolbarItems objectAtIndex:3];
+  UIButton *settingsButton = (UIButton *)settingsItem.customView;
+
   if (control.selectedSegmentIndex == kSegmentReceipt) {
     // navigationbar
     // change button camera -> plus
@@ -483,6 +486,7 @@ static const int kSegmentReceipt = 1;
     // toolbar
     [self setBarButton:interactionButton enabled:NO];
     interactionButton.hidden = YES;
+    settingsButton.hidden = YES;
   } else { // product (default)
     // navigationbar
     // change button plus -> camera
@@ -491,6 +495,7 @@ static const int kSegmentReceipt = 1;
     // toolbar
     [self setBarButton:interactionButton enabled:YES];
     interactionButton.hidden = NO;
+    settingsButton.hidden = NO;
   }
   _filtered = nil;
   [self refresh];
@@ -502,6 +507,12 @@ static const int kSegmentReceipt = 1;
 - (void)interactionButtonTapped:(UIButton *)button
 {
   if (!self.editing) {
+    UIBarButtonItem *interactionItem = [self.toolbarItems objectAtIndex:1];
+    UIButton *interactionButton = (UIButton *)interactionItem.customView;
+    if (interactionButton.hidden) {
+      return;
+    }
+
     // open in safari
     NSInteger selectedLangIndex = [self.userDefaults
                                    integerForKey:@"search.result.lang"];
@@ -530,6 +541,11 @@ static const int kSegmentReceipt = 1;
 - (void)settingsButtonTapped:(UIButton *)button
 {
   if (!self.editing) {
+    UIBarButtonItem *settingsItem = [self.toolbarItems objectAtIndex:3];
+    UIButton *settingsButton = (UIButton *)settingsItem.customView;
+    if (settingsButton.hidden) {
+      return;
+    }
     [self openSettings];
   }
 }
