@@ -74,7 +74,6 @@ static const int kSectionProduct  = 0;
     screenBounds.size.width,
     CGRectGetHeight(screenBounds) - barHeight
   );
-  [self.receiptView setFrame:mainFrame];
 
   self.receiptView = [[UIScrollView alloc] initWithFrame:mainFrame];
   self.receiptView.delegate = self;
@@ -238,7 +237,6 @@ static const int kSectionProduct  = 0;
     [self.receiptView setContentOffset:CGPointZero animated:YES];
   }
 
-  [self refresh];
   [super viewWillAppear:animated];
 }
 
