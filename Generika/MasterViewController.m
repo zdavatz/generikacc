@@ -21,6 +21,7 @@
 #import "WebViewController.h"
 #import "AmkViewController.h"
 #import "SettingsViewController.h"
+#import "ReceiptUsageViewController.h"
 #import "ReaderViewController.h"
 #import "MasterViewController.h"
 
@@ -39,6 +40,7 @@ static const int kSegmentReceipt = 1;
 @property (nonatomic, strong, readwrite) UISearchController *search;
 @property (nonatomic, strong, readwrite) WebViewController *browser;
 @property (nonatomic, strong, readwrite) AmkViewController *viewer;
+@property (nonatomic, strong, readwrite) ReceiptUsageViewController *usage;
 @property (nonatomic, strong, readwrite) SettingsViewController *settings;
 @property (nonatomic, assign, readwrite) NSInteger selectedSegmentIndex;
 // reader
@@ -99,6 +101,8 @@ static const int kSegmentReceipt = 1;
   if ([self isViewLoaded] && [self.view window] == nil) {
     _itemsView = nil;
     _browser = nil;
+    _viewer = nil;
+    _usage = nil;
     _settings = nil;
     _documentPicker = nil;
     _search = nil;
@@ -373,20 +377,26 @@ static const int kSegmentReceipt = 1;
            forControlEvents:UIControlEventTouchUpInside];
   UIBarButtonItem *settingsBarButton = [[UIBarButtonItem alloc]
     initWithCustomView:settingsButton];
-  // interaction link
-  UIButton *interactionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  interactionButton.frame = CGRectMake(0, 0, 120, 40);
-  // balance-scale icon
-  UIFont *interactionFont = [UIFont fontWithName:@"FontAwesome" size:18.0];
-  [interactionButton.titleLabel setFont:interactionFont];
-  [interactionButton setTitle:@"\uF24e" forState:UIControlStateNormal];
+  // (balance|help) link button
+  UIButton *utilButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  utilButton.frame = CGRectMake(0, 0, 120, 40);
 
-  [self setBarButton:interactionButton enabled:YES];
-  [interactionButton addTarget:self
-                        action:@selector(interactionButtonTapped:)
+  UIFont *utilFont = [UIFont fontWithName:@"FontAwesome" size:18.0];
+  [utilButton.titleLabel setFont:utilFont];
+  if ([self currentSegmentedType] == kSegmentReceipt) { // receipt
+    // info icon (default)
+    [utilButton setTitle:@"\uF129" forState:UIControlStateNormal];
+  } else { // product
+    // balance-scale icon (default)
+    [utilButton setTitle:@"\uF24e" forState:UIControlStateNormal];
+  }
+
+  [self setBarButton:utilButton enabled:YES];
+  [utilButton addTarget:self
+                        action:@selector(utilButtonTapped:)
               forControlEvents:UIControlEventTouchUpInside];
-  UIBarButtonItem *interactionBarButton = [[UIBarButtonItem alloc]
-    initWithCustomView:interactionButton];
+  UIBarButtonItem *utilBarButton = [[UIBarButtonItem alloc]
+    initWithCustomView:utilButton];
 
   UIBarButtonItem *space = [[UIBarButtonItem alloc]
     initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
@@ -403,7 +413,7 @@ static const int kSegmentReceipt = 1;
                          action:nil];
   rMargin.width = -9;
   self.toolbarItems = [NSArray arrayWithObjects:
-    lMargin, interactionBarButton, space, settingsBarButton, rMargin, nil];
+    lMargin, utilBarButton, space, settingsBarButton, rMargin, nil];
 }
 
 - (void)setBarButton:(UIButton *)button enabled:(BOOL)enabled
@@ -471,9 +481,9 @@ static const int kSegmentReceipt = 1;
     [self.search setActive:NO];
   }
 
-  // toolbar: space, interaction, space, settings, space
-  UIBarButtonItem *interactionItem = [self.toolbarItems objectAtIndex:1];
-  UIButton *interactionButton = (UIButton *)interactionItem.customView;
+  // toolbar: space, util(interaction|help), space, settings, space
+  UIBarButtonItem *utilItem = [self.toolbarItems objectAtIndex:1];
+  UIButton *utilButton = (UIButton *)utilItem.customView;
 
   UIBarButtonItem *settingsItem = [self.toolbarItems objectAtIndex:3];
   UIButton *settingsButton = (UIButton *)settingsItem.customView;
@@ -484,8 +494,8 @@ static const int kSegmentReceipt = 1;
     UIBarButtonItem *plusButtonItem = [self buildPlusButtonItem];
     self.navigationItem.rightBarButtonItem = plusButtonItem;
     // toolbar
-    [self setBarButton:interactionButton enabled:NO];
-    interactionButton.hidden = YES;
+    // info icon
+    [utilButton setTitle:@"\uF129" forState:UIControlStateNormal];
     settingsButton.hidden = YES;
   } else { // product (default)
     // navigationbar
@@ -493,8 +503,8 @@ static const int kSegmentReceipt = 1;
     UIBarButtonItem *scanButtonItem = [self buildScanButtonItem];
     self.navigationItem.rightBarButtonItem = scanButtonItem;
     // toolbar
-    [self setBarButton:interactionButton enabled:YES];
-    interactionButton.hidden = NO;
+    // balance-scale icon (default)
+    [utilButton setTitle:@"\uF24e" forState:UIControlStateNormal];
     settingsButton.hidden = NO;
   }
   _filtered = nil;
@@ -502,35 +512,45 @@ static const int kSegmentReceipt = 1;
 }
 
 
-#pragma mark - Interaction Link
+#pragma mark - Util Link
 
-- (void)interactionButtonTapped:(UIButton *)button
+- (void)utilButtonTapped:(UIButton *)button
 {
   if (!self.editing) {
-    UIBarButtonItem *interactionItem = [self.toolbarItems objectAtIndex:1];
-    UIButton *interactionButton = (UIButton *)interactionItem.customView;
-    if (interactionButton.hidden) {
-      return;
-    }
-
-    // open in safari
-    NSInteger selectedLangIndex = [self.userDefaults
-                                   integerForKey:@"search.result.lang"];
-    NSString *lang = [[Constant searchLangs] objectAtIndex:selectedLangIndex];
-    NSArray *uniqueEANs;
-    uniqueEANs = [[ProductManager sharedManager].products
-                  valueForKeyPath:@"@distinctUnionOfObjects.ean"];
-    NSMutableString *productEANs = [NSMutableString string];
-    for (NSString *ean in uniqueEANs) {
-      [productEANs appendString:[NSString stringWithFormat:@",%@", ean]];
-    }
-    if ([productEANs length] != 0) {
-      productEANs = [productEANs substringWithRange:NSMakeRange(
-        1, ([productEANs length] - 1))];
-      NSString *url;
-      url = [NSString stringWithFormat:
-        @"%@/%@/gcc/home_interactions/%@", kOddbBaseURL, lang, productEANs];
-      [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+    if ([self currentSegmentedType] == kSegmentReceipt) { // receipt
+      if (!self.usage) {
+        self.usage = [[ReceiptUsageViewController alloc] init];
+      }
+      if (!self.usage.isViewLoaded || !self.usage.view.window) {
+        self.usage.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        UINavigationController *usageNavigation = [
+          [UINavigationController alloc]
+            initWithRootViewController:self.usage];
+        [self presentViewController:usageNavigation
+                           animated:YES
+                         completion:nil];
+      }
+    } else { // product
+      // open in safari
+      NSInteger selectedLangIndex = [self.userDefaults
+                                     integerForKey:@"search.result.lang"];
+      NSString *lang = [[Constant searchLangs]
+                        objectAtIndex:selectedLangIndex];
+      NSArray *uniqueEANs;
+      uniqueEANs = [[ProductManager sharedManager].products
+                    valueForKeyPath:@"@distinctUnionOfObjects.ean"];
+      NSMutableString *productEANs = [NSMutableString string];
+      for (NSString *ean in uniqueEANs) {
+        [productEANs appendString:[NSString stringWithFormat:@",%@", ean]];
+      }
+      if ([productEANs length] != 0) {
+        productEANs = [productEANs substringWithRange:NSMakeRange(
+          1, ([productEANs length] - 1))];
+        NSString *url;
+        url = [NSString stringWithFormat:
+          @"%@/%@/gcc/home_interactions/%@", kOddbBaseURL, lang, productEANs];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+      }
     }
   }
 }
@@ -1166,10 +1186,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   UIView *titleView = self.navigationItem.titleView;
   UISegmentedControl *control = (UISegmentedControl *)[
     titleView viewWithTag:kSegmentedControlTag];
-  // toolbar: space, interaction, space, settings, space
-  UIBarButtonItem *interactionItem = [self.toolbarItems objectAtIndex:1];
+  // toolbar: space, (interaction|help), space, settings, space
+  UIBarButtonItem *utilItem = [self.toolbarItems objectAtIndex:1];
   UIBarButtonItem *settingsItem = [self.toolbarItems objectAtIndex:3];
-  UIButton *interactionButton = (UIButton *)interactionItem.customView;
+  UIButton *utilButton = (UIButton *)utilItem.customView;
   UIButton *settingsButton = (UIButton *)settingsItem.customView;
   if (editing) {
     control.userInteractionEnabled = NO;
@@ -1186,7 +1206,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       [scanButton setTitleColor:[UIColor grayColor]
                        forState:UIControlStateDisabled];
       scanButton.alpha = 0.5;
-      [self setBarButton:interactionButton enabled:NO];
+      [self setBarButton:utilButton enabled:NO];
     }
   } else {
     control.userInteractionEnabled = YES;
@@ -1203,7 +1223,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       [scanButton setTitleColor:[Constant activeUIColor]
                        forState:UIControlStateNormal];
       scanButton.alpha = 1.0;
-      [self setBarButton:interactionButton enabled:YES];
+      [self setBarButton:utilButton enabled:YES];
     }
   }
 }
