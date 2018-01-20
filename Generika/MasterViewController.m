@@ -263,6 +263,9 @@ static const int kSegmentReceipt = 1;
 
 - (void)didRotate:(NSNotification *)notification
 {
+  // fix for iPhone X landscape
+  [self layoutToolbar];
+
   // redraw via reload
   [self.itemsView performSelectorOnMainThread:@selector(reloadData)
                                    withObject:nil
@@ -407,6 +410,9 @@ static const int kSegmentReceipt = 1;
                          target:nil
                          action:nil];
   lMargin.width = -48;
+  if (isLandscape && @available(iOS 11, *)) {  // fix iPhone X landscape mode
+    lMargin.width -= 48;
+  }
   UIBarButtonItem *rMargin = [[UIBarButtonItem alloc]
     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                          target:nil
