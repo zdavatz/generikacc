@@ -16,6 +16,7 @@ static const float kCellHeight = 44.0; // default = 44.0
 @property (nonatomic, strong, readwrite) SettingsDetailViewController
   *settingsDetail;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
+@property (nonatomic, strong) UIView *canvasView;
 @property (nonatomic, strong, readwrite) UITableView *settingsView;
 @property (nonatomic, strong, readwrite) NSArray *entries;
 
@@ -39,14 +40,15 @@ static const float kCellHeight = 44.0; // default = 44.0
 - (void)dealloc
 {
   _userDefaults = nil;
-  _entries      = nil;
+  _entries = nil;
   [self didReceiveMemoryWarning];
 }
 
 - (void)didReceiveMemoryWarning
 {
   if ([self isViewLoaded] && [self.view window] == nil) {
-    _settingsView   = nil;
+    _canvasView = nil;
+    _settingsView  = nil;
     _settingsDetail = nil;
   }
   [super didReceiveMemoryWarning];
@@ -88,15 +90,33 @@ static const float kCellHeight = 44.0; // default = 44.0
 {
   [super loadView];
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  int statusBarHeight = [
+    UIApplication sharedApplication].statusBarFrame.size.height;
+  int navBarHeight = self.navigationController.navigationBar.frame.size.height;
+  int barHeight = statusBarHeight + navBarHeight;
+  CGRect mainFrame = CGRectMake(
+    0,
+    barHeight,
+    screenBounds.size.width,
+    CGRectGetHeight(screenBounds) - barHeight
+  );
+
   self.settingsView = [[UITableView alloc]
-    initWithFrame:screenBounds
+    initWithFrame:mainFrame
             style:UITableViewStyleGrouped];
   self.settingsView.delegate = self;
   self.settingsView.dataSource = self;
   self.settingsView.rowHeight = kCellHeight;
 
   // attach settingsView as view
-  self.view = self.settingsView;
+  self.canvasView = [[UIView alloc] initWithFrame:mainFrame];
+  self.canvasView.backgroundColor = [UIColor colorWithRed:239/255.0
+                                                    green:239/255.0
+                                                     blue:244/255.0
+                                                    alpha:1.0];
+  [self.canvasView addSubview:self.settingsView];
+  self.view = self.canvasView;
+
   [self layoutTableViewSeparator:self.settingsView];
 }
 
@@ -110,6 +130,23 @@ static const float kCellHeight = 44.0; // default = 44.0
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+
+  if (@available(iOS 11, *)) {
+    // for iPhone X issue
+    UILayoutGuide *guide = self.view.safeAreaLayoutGuide;
+    self.settingsView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.settingsView.leadingAnchor
+     constraintEqualToAnchor:guide.leadingAnchor].active = YES;
+    [self.settingsView.topAnchor
+     constraintEqualToAnchor:guide.topAnchor].active = YES;
+    [self.settingsView.trailingAnchor
+     constraintEqualToAnchor:guide.trailingAnchor].active = YES;
+    [self.settingsView.bottomAnchor
+     constraintEqualToAnchor:guide.bottomAnchor].active = YES;
+
+    [self.view layoutIfNeeded];
+  }
+
   UIBarButtonItem *closeButton = [[UIBarButtonItem alloc]
     initWithTitle:@"Close"
             style:UIBarButtonItemStylePlain

@@ -28,6 +28,7 @@ static const int kSectionProduct  = 0;
 
 @interface AmkViewController ()
 
+@property (nonatomic, strong) UIView *canvasView;
 @property (nonatomic, strong) UIScrollView *receiptView;
 @property (nonatomic, strong) UITableView *infoView;
 @property (nonatomic, strong) UITableView *itemView;
@@ -53,6 +54,7 @@ static const int kSectionProduct  = 0;
   _parent = nil;
   _receipt = nil;
 
+  _canvasView = nil;
   _receiptView = nil;
   _infoView = nil;
   _itemView = nil;
@@ -81,7 +83,8 @@ static const int kSectionProduct  = 0;
   self.receiptView.scrollEnabled = YES;
   self.receiptView.pagingEnabled = NO;
   self.receiptView.contentOffset = CGPointZero;
-  self.receiptView.showsHorizontalScrollIndicator = YES;
+  self.receiptView.showsHorizontalScrollIndicator = NO;
+  self.receiptView.showsVerticalScrollIndicator = YES;
   self.receiptView.contentMode = UIViewContentModeScaleAspectFit;
   self.receiptView.backgroundColor = [UIColor whiteColor];
 
@@ -109,16 +112,37 @@ static const int kSectionProduct  = 0;
   [self.receiptView addSubview:self.infoView];
   [self.receiptView insertSubview:self.itemView belowSubview:self.infoView];
 
-  [self layoutFrames];
-
   [self layoutTableViewSeparator:self.infoView];
   [self layoutTableViewSeparator:self.itemView];
 
-  self.view = self.receiptView;
+  self.canvasView = [[UIView alloc] initWithFrame:mainFrame];
+  self.canvasView.backgroundColor = [UIColor whiteColor];
+  [self.canvasView addSubview:self.receiptView];
+  self.view = self.canvasView;
+
+  [self layoutFrames];
 }
 
 - (void)layoutFrames
 {
+  // fix toolbar on iPhone 8 (11.2)
+  self.navigationController.toolbarHidden = YES; 
+  if (@available(iOS 11, *)) {
+    // for iPhone X issue
+    UILayoutGuide *guide = self.view.safeAreaLayoutGuide;
+    self.receiptView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.receiptView.leadingAnchor
+     constraintEqualToAnchor:guide.leadingAnchor].active = YES;
+    [self.receiptView.topAnchor
+     constraintEqualToAnchor:guide.topAnchor].active = YES;
+    [self.receiptView.trailingAnchor
+     constraintEqualToAnchor:guide.trailingAnchor].active = YES;
+    [self.receiptView.bottomAnchor
+     constraintEqualToAnchor:guide.bottomAnchor].active = YES;
+
+    [self.view layoutIfNeeded];
+  }
+
   CGRect infoFrame = self.infoView.frame;
   infoFrame.origin.y = 0.6;
   infoFrame.size.width = self.view.bounds.size.width;
@@ -186,6 +210,8 @@ static const int kSectionProduct  = 0;
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+
+  [self layoutFrames];
 
   // navigationbar
   // < back button
@@ -348,10 +374,13 @@ viewForHeaderInSection:(NSInteger)section
   CGRect frame = CGRectMake(
     0, 0, CGRectGetWidth(tableView.frame), 0);
   UIView *view = [[UIView alloc] initWithFrame:frame];
-  UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12, 2, 200, 25)];
+
+  CGRect labelFrame = CGRectMake(12, 2, 200, 25);
+  UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
   label.font = [UIFont systemFontOfSize:13 weight:UIFontWeightLight];
   label.textColor = [UIColor darkGrayColor];
   frame.size.height = 25;
+
   if (tableView == self.infoView) {
     if (section == kSectionOperator) {
       label.text = @"Arzt";
@@ -464,7 +493,14 @@ viewForHeaderInSection:(NSInteger)section
   if (tableView == self.infoView) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     CGRect frame = CGRectMake(
-      12.0, 0, self.view.bounds.size.width, 25.0);
+      12.0, 0, self.infoView.frame.size.width, 25.0);
+
+    if (@available(iOS 11, *)) {
+      // for iPhone X issue
+      frame.size.width = self.infoView.frame.size.width - (
+          self.view.safeAreaInsets.left * 2);
+    }
+
     UILabel *label = [[UILabel alloc] initWithFrame:frame];
     if (indexPath.section == kSectionMeta) {
       // place_date
@@ -492,8 +528,9 @@ viewForHeaderInSection:(NSInteger)section
           if (![operator.signature isEqualToString:@""]) {
             UIImageView *signatureView = [[UIImageView alloc]
               initWithImage:operator.signatureThumbnail];
-            signatureView.frame = CGRectMake(
-                self.view.bounds.size.width - 90.0, 0, 90.0, 45.0);
+            [signatureView setFrame:CGRectMake(
+                frame.size.width - 100.0, 0, 90.0, 45.0)];
+            signatureView.contentMode = UIViewContentModeTopRight;
             [cell.contentView addSubview:signatureView];
           }
         } else if (indexPath.row == 1) { // postal_address
