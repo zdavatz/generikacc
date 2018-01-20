@@ -241,6 +241,15 @@ static const int kSegmentReceipt = 1;
   if (selection) {
     [self.itemsView deselectRowAtIndexPath:selection animated:YES];
   }
+
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    // disable
+    UIBarButtonItem *settingsItem = [self.toolbarItems objectAtIndex:3];
+    UIButton *settingsButton = (UIButton *)settingsItem.customView;
+    settingsButton.enabled = NO;
+    settingsButton.hidden = YES;
+  }
+
   [self refresh];
   [super viewWillAppear:animated];
 }
