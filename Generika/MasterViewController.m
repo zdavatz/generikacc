@@ -888,7 +888,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     // place date
     if (![receipt.placeDate isEqualToString:@""]) {
       UILabel *placeDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        7.2, 8.0, itemView.frame.size.width - 23.0, 14.0)];
+        7.2, 8.0, itemView.frame.size.width - 22.0, 14.0)];
       placeDateLabel.font = [UIFont boldSystemFontOfSize:13.0];
       placeDateLabel.textAlignment = kTextAlignmentLeft;
       placeDateLabel.textColor = [UIColor blackColor];
@@ -900,10 +900,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     Operator *operator = receipt.operator;
     CGFloat width = CGRectGetMaxX(tableView.frame) -
       CGRectGetMinX(tableView.frame);
+    CGFloat labelWidth = (width / 2) - 30.2;
     if (operator) {
       // title + given_name + family_name
       UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        7.2, 26.5, 168.0, 14.0)];
+        7.2, 26.5, labelWidth, 14.0)];
       if (isLandscape) {
         CGRect nameFrame = nameLabel.frame;
         nameFrame.size.width = 222.0;
@@ -922,7 +923,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       [cell.contentView addSubview:nameLabel];
       // phone
       UILabel *phoneLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        7.2, 44.5, 168.0, 14.0)];
+        7.2, 44.5, labelWidth, 14.0)];
       if (isLandscape) {
         CGRect phoneFrame = phoneLabel.frame;
         phoneFrame.size.width = 222.0;
@@ -936,7 +937,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       [cell.contentView addSubview:phoneLabel];
       // email
       UILabel *emailLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        7.2, 61.0, 168.0, 14.0)];
+        7.2, 61.0, labelWidth, 14.0)];
       if (isLandscape) {
         CGRect emailFrame = emailLabel.frame;
         emailFrame.size.width = 222.0;
@@ -949,10 +950,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       emailLabel.text = operator.email;
       [cell.contentView addSubview:emailLabel];
     }
+    // right side section
     // original filename
     if (![receipt.filename isEqualToString:@""]) {
       UILabel *filenameLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-        174.5, 27.0, 118.0, 14.0)];
+        labelWidth + 13.5, 27.0, labelWidth, 14.0)];
       if (isLandscape) {
         CGRect filenameFrame = filenameLabel.frame;
         filenameFrame.origin.x = 237.0;
@@ -968,7 +970,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     }
     // datetime (imported at)
     UILabel *datetimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-      174.5, 45.0, 118.0, 14.0)];
+      labelWidth + 13.5, 45.0, labelWidth, 14.0)];
     if (isLandscape) {
       CGRect datetimeFrame = datetimeLabel.frame;
       datetimeFrame.origin.x = 237.0;
@@ -983,7 +985,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [cell.contentView addSubview:datetimeLabel];
     // medications
     UILabel *productsLabel = [[UILabel alloc] initWithFrame:CGRectMake(
-      175.0, 61.0, 118.0, 14.0)];
+      labelWidth + 14.0, 61.0, labelWidth, 14.0)];
     if (isLandscape) {
       CGRect productsFrame = productsLabel.frame;
       productsFrame.origin.x = 237.0;
