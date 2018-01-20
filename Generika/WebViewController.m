@@ -71,7 +71,7 @@
   [super viewDidLoad];
   // navigationbar
   UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
-    initWithTitle:@"back"
+    initWithTitle:@"Back"
             style:UIBarButtonItemStylePlain
            target:self
            action:@selector(goBack)];
