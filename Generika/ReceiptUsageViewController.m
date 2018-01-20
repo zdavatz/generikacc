@@ -10,6 +10,7 @@
 
 @interface ReceiptUsageViewController ()
 
+@property (nonatomic, strong) UIView *canvasView;
 @property (nonatomic, strong, readwrite) UITextView *usageView;
 
 - (void)closeUsageView;
@@ -57,13 +58,17 @@
   self.usageView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
   // attach usageView as view
-  self.view = self.usageView;
-  [self layoutFrameAndViews];
+  self.canvasView = [[UIView alloc] initWithFrame:mainFrame];
+  self.canvasView.backgroundColor = [UIColor whiteColor];
+  [self.canvasView addSubview:self.usageView];
+  self.view = self.canvasView;
 }
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+
+  [self layoutFrameAndViews];
 
   UIBarButtonItem *closeButton = [[UIBarButtonItem alloc]
     initWithTitle:@"Close"
@@ -90,11 +95,26 @@
 
 - (void)layoutFrameAndViews
 {
-  CGRect textFrame = self.view.frame;
+  if (@available(iOS 11, *)) {
+    // for iPhone X issue
+    UILayoutGuide *guide = self.view.safeAreaLayoutGuide;
+    self.usageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.usageView.leadingAnchor
+     constraintEqualToAnchor:guide.leadingAnchor].active = YES;
+    [self.usageView.topAnchor
+     constraintEqualToAnchor:guide.topAnchor].active = YES;
+    [self.usageView.trailingAnchor
+     constraintEqualToAnchor:guide.trailingAnchor].active = YES;
+    [self.usageView.bottomAnchor
+     constraintEqualToAnchor:guide.bottomAnchor].active = YES;
+
+    [self.view layoutIfNeeded];
+  }
+
+  CGRect textFrame = self.usageView.frame;
   textFrame.origin.x = 18.0;
   textFrame.origin.y = 16.0;
-  textFrame.size.width = self.view.bounds.size.width - 29.5;
-  textFrame.size.height = self.view.bounds.size.height;
+  textFrame.size.width = textFrame.size.width - 29.5;
   UIView *textView = [[UIView alloc] initWithFrame:CGRectMake(
     0.0, 0.0, textFrame.size.width, textFrame.size.height)];
   textView.backgroundColor = [UIColor whiteColor];
