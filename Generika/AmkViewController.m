@@ -112,8 +112,6 @@ static const int kSectionProduct  = 0;
   [self.receiptView addSubview:self.infoView];
   [self.receiptView insertSubview:self.itemView belowSubview:self.infoView];
 
-  [self layoutFrames];
-
   [self layoutTableViewSeparator:self.infoView];
   [self layoutTableViewSeparator:self.itemView];
 
@@ -121,10 +119,30 @@ static const int kSectionProduct  = 0;
   self.canvasView.backgroundColor = [UIColor whiteColor];
   [self.canvasView addSubview:self.receiptView];
   self.view = self.canvasView;
+
+  [self layoutFrames];
 }
 
 - (void)layoutFrames
 {
+  // fix toolbar on iPhone 8 (11.2)
+  self.navigationController.toolbarHidden = YES; 
+  if (@available(iOS 11, *)) {
+    // for iPhone X issue
+    UILayoutGuide *guide = self.view.safeAreaLayoutGuide;
+    self.receiptView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.receiptView.leadingAnchor
+     constraintEqualToAnchor:guide.leadingAnchor].active = YES;
+    [self.receiptView.topAnchor
+     constraintEqualToAnchor:guide.topAnchor].active = YES;
+    [self.receiptView.trailingAnchor
+     constraintEqualToAnchor:guide.trailingAnchor].active = YES;
+    [self.receiptView.bottomAnchor
+     constraintEqualToAnchor:guide.bottomAnchor].active = YES;
+
+    [self.view layoutIfNeeded];
+  }
+
   CGRect infoFrame = self.infoView.frame;
   infoFrame.origin.y = 0.6;
   infoFrame.size.width = self.view.bounds.size.width;
@@ -193,21 +211,7 @@ static const int kSectionProduct  = 0;
 {
   [super viewDidLoad];
 
-  if (@available(iOS 11, *)) {
-    // for iPhone X issue
-    UILayoutGuide *guide = self.view.safeAreaLayoutGuide;
-    self.receiptView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.receiptView.leadingAnchor
-     constraintEqualToAnchor:guide.leadingAnchor].active = YES;
-    [self.receiptView.topAnchor
-     constraintEqualToAnchor:guide.topAnchor].active = YES;
-    [self.receiptView.trailingAnchor
-     constraintEqualToAnchor:guide.trailingAnchor].active = YES;
-    [self.receiptView.bottomAnchor
-     constraintEqualToAnchor:guide.bottomAnchor].active = YES;
-
-    [self.view layoutIfNeeded];
-  }
+  [self layoutFrames];
 
   // navigationbar
   // < back button
