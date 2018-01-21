@@ -242,14 +242,7 @@ static const int kSegmentReceipt = 1;
     [self.itemsView deselectRowAtIndexPath:selection animated:YES];
   }
 
-  if ([self currentSegmentedType] == kSegmentReceipt) {
-    // disable
-    UIBarButtonItem *settingsItem = [self.toolbarItems objectAtIndex:3];
-    UIButton *settingsButton = (UIButton *)settingsItem.customView;
-    settingsButton.enabled = NO;
-    settingsButton.hidden = YES;
-  }
-
+  [self layoutToolbar];
   [self refresh];
   [super viewWillAppear:animated];
 }
@@ -301,6 +294,7 @@ static const int kSegmentReceipt = 1;
     [self.reader.readerView willRotateToInterfaceOrientation:orient
                                                     duration:0];
   }
+  [self layoutToolbar];
   [super willRotateToInterfaceOrientation:orient
                                  duration:duration];
 }
@@ -377,18 +371,26 @@ static const int kSegmentReceipt = 1;
 - (void)layoutToolbar
 {
   [self.navigationController setToolbarHidden:NO animated:NO];
-  // wheel icon button
-  UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  settingsButton.frame = CGRectMake(0, 0, 40, 40);
-  UIFont *settingsFont = [UIFont fontWithName:@"FontAwesome" size:22.0];
-  [settingsButton.titleLabel setFont:settingsFont];
-  [settingsButton setTitle:@"\uF013" forState:UIControlStateNormal];
-  [self setBarButton:settingsButton enabled:YES];
-  [settingsButton addTarget:self
-                     action:@selector(settingsButtonTapped:)
-           forControlEvents:UIControlEventTouchUpInside];
-  UIBarButtonItem *settingsBarButton = [[UIBarButtonItem alloc]
-    initWithCustomView:settingsButton];
+
+  UIButton *settingsButton;
+  if ([self currentSegmentedType] == kSegmentReceipt) {
+    // disable
+    UIBarButtonItem *settingsItem = [self.toolbarItems objectAtIndex:3];
+    settingsButton = (UIButton *)settingsItem.customView;
+    settingsButton.enabled = NO;
+    settingsButton.hidden = YES;
+  } else {
+    settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    // wheel icon button
+    settingsButton.frame = CGRectMake(0, 0, 40, 40);
+    UIFont *settingsFont = [UIFont fontWithName:@"FontAwesome" size:22.0];
+    [settingsButton.titleLabel setFont:settingsFont];
+    [settingsButton setTitle:@"\uF013" forState:UIControlStateNormal];
+    [self setBarButton:settingsButton enabled:YES];
+    [settingsButton addTarget:self
+                       action:@selector(settingsButtonTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+  }
   // (balance|help) link button
   UIButton *utilButton = [UIButton buttonWithType:UIButtonTypeCustom];
   utilButton.frame = CGRectMake(0, 0, 120, 40);
@@ -420,13 +422,19 @@ static const int kSegmentReceipt = 1;
                          action:nil];
   lMargin.width = -48;
   if (isLandscape && @available(iOS 11, *)) {  // fix iPhone X landscape mode
-    lMargin.width -= 48;
+    if ([UIDevice currentDevice].userInterfaceIdiom == \
+          UIUserInterfaceIdiomPhone &&
+        UIScreen.mainScreen.nativeBounds.size.height == 2436) {
+      lMargin.width -= 48;
+    }
   }
   UIBarButtonItem *rMargin = [[UIBarButtonItem alloc]
     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                          target:nil
                          action:nil];
   rMargin.width = -9;
+  UIBarButtonItem *settingsBarButton = [[UIBarButtonItem alloc]
+    initWithCustomView:settingsButton];
   self.toolbarItems = [NSArray arrayWithObjects:
     lMargin, utilBarButton, space, settingsBarButton, rMargin, nil];
 }
@@ -1214,16 +1222,15 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     control.alpha = 0.5;
 
     [self setBarButton:settingsButton enabled:NO];
+    [self setBarButton:utilButton enabled:NO];
 
     self.navigationItem.rightBarButtonItem.enabled = NO;
-
     if ([self currentSegmentedType] == kSegmentProduct) {
       UIButton *scanButton = [self.navigationItem.rightBarButtonItem
                               customView];
       [scanButton setTitleColor:[UIColor grayColor]
                        forState:UIControlStateDisabled];
       scanButton.alpha = 0.5;
-      [self setBarButton:utilButton enabled:NO];
     }
   } else {
     control.userInteractionEnabled = YES;
