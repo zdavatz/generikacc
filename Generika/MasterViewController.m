@@ -1438,12 +1438,31 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)filterContentForSearchText:(NSString *)searchText
                              scope:(NSString *)scope
 {
+  if ([searchText length] < 2) {
+    return;
+  }
   [self.filtered removeAllObjects];
 
   if ([self currentSegmentedType] == kSegmentReceipt) {
     // receipt - placeDate
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:
+    NSPredicate *source0 = [NSPredicate predicateWithFormat:
       @"%K contains[cd] %@", @"placeDate", searchText];
+    // receipt.operator - familyName
+    NSPredicate *source1 = [NSPredicate predicateWithFormat:
+      @"%K contains[cd] %@", @"operator.familyName", searchText];
+    // receipt.operator - givenName
+    NSPredicate *source2 = [NSPredicate predicateWithFormat:
+      @"%K contains[cd] %@", @"operator.givenName", searchText];
+    // receipt.operator - phone
+    NSPredicate *source3 = [NSPredicate predicateWithFormat:
+      @"%K contains[cd] %@", @"operator.phone", searchText];
+    // receipt.operator - email
+    NSPredicate *source4 = [NSPredicate predicateWithFormat:
+      @"%K contains[cd] %@", @"operator.email", searchText];
+    // OR
+    NSPredicate *predicate = [NSCompoundPredicate
+      orPredicateWithSubpredicates:@[
+        source0, source1, source2, source3, source4]];
     self.filtered = [NSMutableArray arrayWithArray:[
       [ReceiptManager sharedManager].receipts
         filteredArrayUsingPredicate:predicate]];
