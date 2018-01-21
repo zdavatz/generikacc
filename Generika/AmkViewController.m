@@ -126,7 +126,7 @@ static const int kSectionProduct  = 0;
 - (void)layoutFrames
 {
   // fix toolbar on iPhone 8 (11.2)
-  self.navigationController.toolbarHidden = YES; 
+  self.navigationController.toolbarHidden = YES;
   if (@available(iOS 11, *)) {
     // for iPhone X issue
     UILayoutGuide *guide = self.view.safeAreaLayoutGuide;
@@ -725,9 +725,9 @@ viewForHeaderInSection:(NSInteger)section
 - (void)actionSheet:(UIActionSheet *)sheet
   clickedButtonAtIndex:(NSInteger)index
 {
-  if (index == sheet.destructiveButtonIndex) {
+  if (index == sheet.destructiveButtonIndex) { // back to list
     // TODO
-  } else if (index == 0) { // back to list
+    // Add archive action
     MasterViewController *parent = [self.navigationController.viewControllers
                                     objectAtIndex:0];
     [self.navigationController popToViewController:(
