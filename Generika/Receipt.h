@@ -48,6 +48,8 @@
 @property (nonatomic, strong, readwrite) NSString *zipcode;
 @property (nonatomic, strong, readwrite) NSString *country;
 
+@property (nonatomic, strong, readonly) NSString *genderSign;
+
 + (NSDictionary *)patientKeyMaps;
 + (id)importFromDict:(NSDictionary *)dict;
 

@@ -229,6 +229,25 @@
   }
 }
 
+#pragma mark - Getter methods
+
+- (NSString *)genderSign
+{
+  if (!self.gender || [self.gender isEqual:[NSNull null]] ||
+      [self.gender isEqualToString:@""]) {
+    return @"";
+  }
+  NSString *firstLetter = [[self.gender capitalizedString]
+     substringToIndex:1];
+  if ([firstLetter isEqualToString:@"F"] || [firstLetter isEqualToString:@"W"]) {
+    return @"F";
+  } else if ([firstLetter isEqualToString:@"M"]) {
+    return @"M";
+  } else {
+    return firstLetter;
+  }
+}
+
 #pragma mark - Conversion to Dictionary
 
 - (NSArray *)patientKeys

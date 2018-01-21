@@ -568,9 +568,9 @@ viewForHeaderInSection:(NSInteger)section
               patient.height, nil]];
           }
           if (![patient.gender isEqualToString:@""]) {
+            // use sign F/M or any capitalized char
             label.text = [label.text stringByAppendingString:[
-              NSString stringWithFormat:@" %@",
-              [patient.gender capitalizedString], nil]];
+              NSString stringWithFormat:@" %@", patient.genderSign, nil]];
           }
           if (![patient.birthDate isEqualToString:@""]) {
             label.text = [label.text stringByAppendingString:[
