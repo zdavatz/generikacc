@@ -432,44 +432,25 @@ viewForHeaderInSection:(NSInteger)section
   } else if (tableView == self.itemView) {
     Product *product = [self.receipt.products objectAtIndex:indexPath.row];
     if (product) {
-      CGFloat height;
-      CGSize size;
+      CGFloat height = 0.0;
+      CGFloat width =  self.itemView.frame.size.width - 24.0;
       // package name label
       UILabel *packLabel = [self makeLabel:product.pack
                                  textColor:[UIColor clearColor]];
-      size = [Constant getSizeOfLabel:packLabel];
-      height += size.height;
-
+      height += [Constant getSizeOfLabel:packLabel inWidth:width].height;
+      height += kLabelMargin;
       // ean label
       UILabel *eanLabel = [self makeLabel:product.ean
                               textColor:[UIColor clearColor]];
-      CGRect eanFrame = CGRectMake(
-          12.0,
-          packLabel.frame.origin.y + packLabel.frame.size.height +
-            kLabelMargin,
-          eanLabel.frame.size.width,
-          eanLabel.frame.size.height
-      );
-      [eanLabel setFrame:eanFrame];
-      size = [Constant getSizeOfLabel:eanLabel];
-      height += size.height;
+      height += [Constant getSizeOfLabel:eanLabel inWidth:width].height;
+      height += kLabelMargin;
       height += 8.0;
-
       // comment label
       UILabel *commentLabel = [self makeLabel:product.comment
                                     textColor:[UIColor clearColor]];
-      CGRect commentFrame = CGRectMake(
-          12.0,
-          eanLabel.frame.origin.y + eanLabel.frame.size.height +
-            kLabelMargin,
-          commentLabel.frame.size.width,
-          commentLabel.frame.size.height
-      );
-      [commentLabel setFrame:commentFrame];
-      size = [Constant getSizeOfLabel:commentLabel];
-      height += size.height;
-      height += 13.0;
-
+      height += [Constant getSizeOfLabel:commentLabel inWidth:width].height;
+      height += kLabelMargin;
+      height += 8.0;
       if (height > kItemCellHeight) {
         return height;
       }
@@ -666,7 +647,7 @@ viewForHeaderInSection:(NSInteger)section
   CGRect frame = CGRectMake(
     12.0,
      8.0,
-    (self.view.bounds.size.width - 24.0),
+    (self.canvasView.bounds.size.width - 24.0),
     kItemCellHeight);
   UILabel *label = [[UILabel alloc] initWithFrame:frame];
   label.font = [UIFont systemFontOfSize:12.2];

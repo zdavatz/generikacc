@@ -68,16 +68,16 @@ NSString *const kSearchLangs[] = { // short name
   return color;
 }
 
-+ (CGSize)getSizeOfLabel:(UILabel *)label
++ (CGSize)getSizeOfLabel:(UILabel *)label inWidth:(CGFloat)width
 {
-  CGSize constraint = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
+  CGSize constraint = CGSizeMake(width, CGFLOAT_MAX);
   NSStringDrawingContext *context = [[NSStringDrawingContext alloc] init];
-  CGRect bounds = [label.text
+  CGSize boundSize = [label.text
     boundingRectWithSize:constraint
                  options:NSStringDrawingUsesLineFragmentOrigin
               attributes:@{NSFontAttributeName:label.font}
-                 context:context];
-  return CGSizeMake(ceil(bounds.size.width), ceil(bounds.size.height));
+                 context:context].size;
+  return CGSizeMake(ceil(boundSize.width), ceil(boundSize.height));
 }
 
 
@@ -88,7 +88,7 @@ NSString *const kSearchLangs[] = { // short name
 {
   NSString *str;
   NSError *error = nil;
-  NSRegularExpression *regexp = 
+  NSRegularExpression *regexp =
     [NSRegularExpression regularExpressionWithPattern:regexpString
                                               options:0
                                                 error:&error];
