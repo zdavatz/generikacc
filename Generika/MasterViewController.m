@@ -1238,16 +1238,15 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     control.alpha = 1.0;
 
     [self setBarButton:settingsButton enabled:YES];
+    [self setBarButton:utilButton enabled:YES];
 
     self.navigationItem.rightBarButtonItem.enabled = YES;
-
     if ([self currentSegmentedType] == kSegmentProduct) {
       UIButton *scanButton = [self.navigationItem.rightBarButtonItem
                               customView];
       [scanButton setTitleColor:[Constant activeUIColor]
                        forState:UIControlStateNormal];
       scanButton.alpha = 1.0;
-      [self setBarButton:utilButton enabled:YES];
     }
   }
 }
