@@ -94,10 +94,11 @@ static const int kSectionProduct  = 0;
             style:UITableViewStyleGrouped];
   self.infoView.delegate = self;
   self.infoView.dataSource = self;
-  self.infoView.rowHeight = kInfoCellHeight;
   self.infoView.backgroundColor = [UIColor whiteColor];
   self.infoView.separatorStyle = UITableViewCellSeparatorStyleNone;
   self.infoView.scrollEnabled = NO;
+  self.infoView.rowHeight = UITableViewAutomaticDimension;
+  self.infoView.estimatedRowHeight = kInfoCellHeight;
 
   // item: medications
   self.itemView = [[UITableView alloc]
@@ -105,9 +106,10 @@ static const int kSectionProduct  = 0;
             style:UITableViewStylePlain];
   self.itemView.delegate = self;
   self.itemView.dataSource = self;
-  self.itemView.rowHeight = kItemCellHeight;
   self.itemView.backgroundColor = [UIColor whiteColor];
   self.itemView.scrollEnabled = NO;
+  self.itemView.rowHeight = UITableViewAutomaticDimension;
+  self.itemView.estimatedRowHeight = kItemCellHeight;
 
   [self.receiptView addSubview:self.infoView];
   [self.receiptView insertSubview:self.itemView belowSubview:self.infoView];
