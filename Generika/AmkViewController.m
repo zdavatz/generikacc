@@ -99,6 +99,7 @@ static const int kSectionProduct  = 0;
   self.infoView.scrollEnabled = NO;
   self.infoView.rowHeight = UITableViewAutomaticDimension;
   self.infoView.estimatedRowHeight = kInfoCellHeight;
+  self.infoView.translatesAutoresizingMaskIntoConstraints = YES;
 
   // item: medications
   self.itemView = [[UITableView alloc]
@@ -110,6 +111,7 @@ static const int kSectionProduct  = 0;
   self.itemView.scrollEnabled = NO;
   self.itemView.rowHeight = UITableViewAutomaticDimension;
   self.itemView.estimatedRowHeight = kItemCellHeight;
+  self.itemView.translatesAutoresizingMaskIntoConstraints = YES;
 
   [self.receiptView addSubview:self.infoView];
   [self.receiptView insertSubview:self.itemView belowSubview:self.infoView];
@@ -491,6 +493,7 @@ viewForHeaderInSection:(NSInteger)section
   UITableViewCell *cell = [[UITableViewCell alloc]
     initWithStyle:UITableViewCellStyleDefault
   reuseIdentifier:cellIdentifier];
+  cell.contentView.translatesAutoresizingMaskIntoConstraints = YES;
 
   if (tableView == self.infoView) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
