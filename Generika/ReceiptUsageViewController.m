@@ -56,7 +56,6 @@
     CGRectGetHeight(screenBounds) - barHeight
   );
   self.usageView = [[UITextView alloc] initWithFrame:mainFrame];
-  self.usageView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
   // attach usageView as view
   self.canvasView = [[UIView alloc] initWithFrame:mainFrame];
@@ -112,10 +111,15 @@
     [self.view layoutIfNeeded];
   }
 
+  NSArray *subviews = [self.usageView subviews];
+  for (UIView *view in subviews) {
+    [view removeFromSuperview];
+  }
+
   CGRect textFrame = self.usageView.frame;
   textFrame.origin.x = 18.0;
   textFrame.origin.y = 16.0;
-  textFrame.size.width = textFrame.size.width - 29.5;
+  textFrame.size.width = textFrame.size.width;
   UIView *textView = [[UIView alloc] initWithFrame:CGRectMake(
     0.0, 0.0, textFrame.size.width, textFrame.size.height)];
   textView.backgroundColor = [UIColor whiteColor];
