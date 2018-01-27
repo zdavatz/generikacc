@@ -9,10 +9,10 @@
 #import "Product.h"
 
 // default uitableview's cell height: 44.0
-static const float kInfoCellHeight = 20.0;  // fixed
+static const float kInfoCellHeight = 22.0;  // fixed
 static const float kItemCellHeight = 44.0;  // minimum height
 
-static const float kSectionHeaderHeight = 27.0;
+static const float kSectionHeaderHeight = 27.0;  // as standard height
 static const float kLabelMargin = 2.4;
 
 // info
@@ -90,7 +90,7 @@ static const int kSectionProduct = 0;
 
   // info: meta, operator and patient (sections)
   self.infoView = [[UITableView alloc]
-    initWithFrame:screenBounds
+    initWithFrame:mainFrame
             style:UITableViewStyleGrouped];
   self.infoView.delegate = self;
   self.infoView.dataSource = self;
@@ -103,7 +103,7 @@ static const int kSectionProduct = 0;
 
   // item: medications
   self.itemView = [[UITableView alloc]
-    initWithFrame:screenBounds
+    initWithFrame:mainFrame
             style:UITableViewStylePlain];
   self.itemView.delegate = self;
   self.itemView.dataSource = self;
@@ -123,17 +123,16 @@ static const int kSectionProduct = 0;
   self.canvasView.backgroundColor = [UIColor whiteColor];
   [self.canvasView addSubview:self.receiptView];
   self.view = self.canvasView;
-
-  [self layoutFrames];
 }
 
 - (void)layoutFrames
 {
-  // fix toolbar on iPhone 8 (11.2)
+  // fix toolbar on iPhone 8 (11.2) (after rotate)
   self.navigationController.toolbarHidden = YES;
+
+  // for iPhone X issue
   if (@available(iOS 11, *)) {
-    // for iPhone X issue
-    UILayoutGuide *guide = self.view.safeAreaLayoutGuide;
+    UILayoutGuide *guide = self.canvasView.safeAreaLayoutGuide;
     self.receiptView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.receiptView.leadingAnchor
      constraintEqualToAnchor:guide.leadingAnchor].active = YES;
@@ -143,21 +142,20 @@ static const int kSectionProduct = 0;
      constraintEqualToAnchor:guide.trailingAnchor].active = YES;
     [self.receiptView.bottomAnchor
      constraintEqualToAnchor:guide.bottomAnchor].active = YES;
-
-    [self.view layoutIfNeeded];
   }
 
+  // infoView
   CGRect infoFrame = self.infoView.frame;
   infoFrame.origin.y = 0.6;
   infoFrame.size.width = self.view.bounds.size.width;
   infoFrame.size.height = (
       (kSectionHeaderHeight * 2) +
       (kInfoCellHeight * [self entriesCountForViewOfField:@"operator"]) +
-      (kInfoCellHeight * [self entriesCountForViewOfField:@"patient"]) +
-      20.8 // margin
+      (kInfoCellHeight * [self entriesCountForViewOfField:@"patient"])
   );
   [self.infoView setFrame:infoFrame];
 
+  // itemView
   CGFloat height = 0.0;
   for (int i = 0; i < [self.receipt.products count]; i++) {
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i
@@ -172,7 +170,7 @@ static const int kSectionProduct = 0;
   }
   CGRect itemFrame = CGRectMake(
     0,
-    CGRectGetMaxY(self.infoView.bounds),
+    CGRectGetMaxY(infoFrame) + 8.0,
     self.view.bounds.size.width,
     (kSectionHeaderHeight + height)
   );
@@ -182,6 +180,8 @@ static const int kSectionProduct = 0;
   [self.receiptView setContentSize:CGSizeMake(
       CGRectGetWidth(self.receiptView.frame),
       CGRectGetHeight(infoFrame) + CGRectGetHeight(itemFrame))];
+
+  [self.view layoutIfNeeded];
 }
 
 - (void)layoutTableViewSeparator:(UITableView *)tableView
@@ -228,13 +228,6 @@ static const int kSectionProduct = 0;
                          target:self
                          action:@selector(showActions)];
   self.navigationItem.rightBarButtonItem = actionButton;
-
-  // orientation
-  [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(didRotate:)
-           name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)viewDidLayoutSubviews
@@ -246,10 +239,10 @@ static const int kSectionProduct = 0;
 - (void)viewWillAppear:(BOOL)animated
 {
   [self.navigationController setToolbarHidden:YES animated:YES];
+
   // force layout (previous views will be cleared, if exist)
   // because sometimes table view cells have corrupted width :'(
   [self refresh];
-  [self layoutFrames];
 
   // always scroll top :'(
   float osVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
@@ -294,6 +287,30 @@ static const int kSectionProduct = 0;
   [self.itemView performSelectorOnMainThread:@selector(reloadData)
                                   withObject:nil
                                waitUntilDone:YES];
+}
+
+-(void)viewWillTransitionToSize:(CGSize)size
+      withTransitionCoordinator:(
+          id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+  // via orientation notification settings in viewdidload like below, sometimes
+  // it'll be late to re:layout, so use this method instead.
+  //
+  //[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+  //[[NSNotificationCenter defaultCenter]
+  //  addObserver:self
+  //     selector:@selector(didRotate:)
+  //         name:UIDeviceOrientationDidChangeNotification object:nil];
+
+  [coordinator animateAlongsideTransition:^(
+    id<UIViewControllerTransitionCoordinatorContext> context) {
+    // willRotateToInterfaceOrientation
+  } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+    // didRotateFromInterfaceOrientation would go here.
+    [self didRotate:nil];
+  }];
 }
 
 - (NSInteger)entriesCountForViewOfField:(NSString *)field
@@ -356,7 +373,7 @@ static const int kSectionProduct = 0;
 {
   // default value: UITableViewAutomaticDimension;
   if (tableView == self.infoView) {
-    if (section == kSectionMeta) {
+    if (section == kSectionMeta) {  // meta (place_date)
       return kSectionHeaderHeight / 2.5;
     } else { // operator|patient
       return kSectionHeaderHeight;
@@ -427,8 +444,18 @@ viewForHeaderInSection:(NSInteger)section
   } else if (tableView == self.itemView) {
     Product *product = [self.receipt.products objectAtIndex:indexPath.row];
     if (product) {
+      // NOTE
+      // Don't use `tableView.frame.size.width` here, because it returns
+      // "previous" with value (at before rotation), so, use
+      // `canvasView.frame.size.width`
+
+      if (@available(iOS 11, *)) {
+          tableView.contentInset = UIEdgeInsetsMake(0, 0,
+              self.canvasView.frame.size.width - 24.0, 0);
+      }
+
       CGFloat height = 0.0;
-      CGFloat width =  self.itemView.frame.size.width - 24.0;
+      CGFloat width = self.canvasView.frame.size.width - 24.0;
       // package name label
       UILabel *packLabel = [self makeItemLabel:product.pack
                                      textColor:[UIColor clearColor]
@@ -473,6 +500,11 @@ viewForHeaderInSection:(NSInteger)section
     initWithStyle:UITableViewCellStyleDefault
   reuseIdentifier:cellIdentifier];
   cell.contentView.translatesAutoresizingMaskIntoConstraints = YES;
+
+  if (@available(iOS 11, *)) {
+    tableView.contentInset = UIEdgeInsetsMake(0, 0,
+        self.canvasView.frame.size.width, 0);
+  }
 
   UILabel *label;
   if (tableView == self.infoView) {
@@ -577,7 +609,7 @@ viewForHeaderInSection:(NSInteger)section
       UILabel *commentLabel = [self makeItemLabel:product.comment
                                         textColor:[UIColor darkGrayColor]
                                        fontOfSize:12.2];
-      // layout
+      // layout (fix origin.y)
       CGRect eanFrame = CGRectMake(
           12.0,
           packLabel.frame.origin.y + packLabel.frame.size.height +
@@ -630,7 +662,7 @@ viewForHeaderInSection:(NSInteger)section
                   fontOfSize:(CGFloat)size
 {
   CGRect frame = CGRectMake(
-    12.0, 0, self.infoView.frame.size.width, 25.0);
+    12.0, 0, self.infoView.frame.size.width, kInfoCellHeight);
 
   if (@available(iOS 11, *)) {
     // for iPhone X issue
@@ -649,7 +681,6 @@ viewForHeaderInSection:(NSInteger)section
   // use multiple lines for wrapped text as required
   label.numberOfLines = 0;
   label.preferredMaxLayoutWidth = frame.size.width;
-
   label.lineBreakMode = NSLineBreakByWordWrapping;
 
   [label sizeToFit];  // this line must be after `numberOfLines`
@@ -664,7 +695,13 @@ viewForHeaderInSection:(NSInteger)section
     12.0,
      8.0,
     (self.canvasView.bounds.size.width - 24.0),
-    kItemCellHeight);
+    0.0);
+
+  if (@available(iOS 11, *)) {
+      // for iPhone X issue
+      frame.size.width = frame.size.width -
+          self.view.safeAreaInsets.left * 2;
+  }
 
   UILabel *label = [[UILabel alloc] initWithFrame:frame];
   label.font = [UIFont systemFontOfSize:size];
@@ -677,7 +714,8 @@ viewForHeaderInSection:(NSInteger)section
   // use multiple lines for wrapped text as required
   label.numberOfLines = 0;
   label.preferredMaxLayoutWidth = frame.size.width;
-  
+  label.lineBreakMode = NSLineBreakByWordWrapping;
+
   [label sizeToFit];  // this line must be after `numberOfLines`
   return label;
 }
