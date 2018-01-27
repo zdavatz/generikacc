@@ -242,7 +242,6 @@ static const int kSegmentReceipt = 1;
            id<UIViewControllerTransitionCoordinator>)coordinator {
   // fix wrong serchbar position at back from landscape mode
   [self.search dismissViewControllerAnimated:YES completion:nil];
-  self.search.active = YES;
   for (int i = 0; i < [[self.search.searchBar subviews] count]; i++) {
     UIView *subView = [[self.search.searchBar subviews] objectAtIndex:i];
     if ([[NSString stringWithFormat:@"%@", [subView class]]
