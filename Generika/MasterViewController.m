@@ -188,13 +188,13 @@ static const int kSegmentReceipt = 1;
   searchField.layer.borderColor = [[UIColor whiteColor] CGColor];
   searchField.layer.borderWidth = 3;
   searchField.layer.cornerRadius = 4.0;
+  // fix wrong position (fixed position)
   [self.search.searchBar sizeToFit];
   self.itemsView.tableHeaderView = self.search.searchBar;
 
   self.search.searchResultsUpdater = self;
   self.search.delegate = self;
   self.search.dimsBackgroundDuringPresentation = NO;
-  // fix wrong position (fixed position)
   self.search.hidesNavigationBarDuringPresentation = NO;
 
   self.definesPresentationContext = YES;
@@ -241,6 +241,9 @@ static const int kSegmentReceipt = 1;
   if (selection) {
     [self.itemsView deselectRowAtIndexPath:selection animated:YES];
   }
+  // fix wrong position (fixed position)
+  [self.search.searchBar sizeToFit];
+  self.itemsView.tableHeaderView = self.search.searchBar;
 
   [self layoutToolbar];
   [self refresh];
