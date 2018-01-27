@@ -1,5 +1,5 @@
 //
-//  AmkViewController.h
+//  ReceiptViewController.h
 //  Generika
 //
 //  Copyright (c) 2012-2017 ywesee GmbH. All rights reserved.
@@ -8,7 +8,7 @@
 #import "Receipt.h"
 #import "MasterViewController.h"
 
-@interface AmkViewController : UIViewController <UIActionSheetDelegate>
+@interface ReceiptViewController : UIViewController <UIActionSheetDelegate>
 
 @property (nonatomic, strong, readwrite) MasterViewController *parent;
 @property (nonatomic, strong, readonly) Receipt *receipt;

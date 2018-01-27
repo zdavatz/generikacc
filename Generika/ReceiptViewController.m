@@ -1,11 +1,11 @@
 //
-//  AmkViewController.m
+//  ReceiptViewController.m
 //  Generika
 //
 //  Copyright (c) 2012-2017 ywesee GmbH. All rights reserved.
 //
 
-#import "AmkViewController.h"
+#import "ReceiptViewController.h"
 #import "Product.h"
 
 // default uitableview's cell height: 44.0
@@ -26,7 +26,7 @@ static const int kSectionProduct  = 0;
 
 @class MasterViewController;
 
-@interface AmkViewController ()
+@interface ReceiptViewController ()
 
 @property (nonatomic, strong) UIView *canvasView;
 @property (nonatomic, strong) UIScrollView *receiptView;
@@ -40,7 +40,7 @@ static const int kSectionProduct  = 0;
 
 @end
 
-@implementation AmkViewController
+@implementation ReceiptViewController
 
 - (id)init
 {

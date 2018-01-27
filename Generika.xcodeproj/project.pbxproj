@@ -10,6 +10,7 @@
 		655D0B626DC9948729287B91 /* libPods-GenerikaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */; };
 		810A928D179CD50A00DAA963 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 810A928C179CD50A00DAA963 /* Security.framework */; };
 		8127F27D201C4BA30029F080 /* Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8127F27B201C4BA20029F080 /* Helper.m */; };
+		8127F280201CBEEA0029F080 /* ReceiptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8127F27E201CBEE90029F080 /* ReceiptViewController.m */; };
 		8129BA56153D46F100CB5896 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8129BA55153D46F100CB5896 /* Reachability.m */; };
 		8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8129BA58153D480100CB5896 /* SystemConfiguration.framework */; };
 		812B9A4D17AF7DF50001A5A8 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */; };
@@ -22,7 +23,6 @@
 		8145D9EC1FD3D959002779FD /* ProductTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8145D9EB1FD3D958002779FD /* ProductTests.m */; };
 		8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
 		8148C65C17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
-		815754231FECE54300B369BD /* AmkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 815754221FECE54300B369BD /* AmkViewController.m */; };
 		8173D3E21FDE73C300C7CFF4 /* ProductManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8173D3E11FDE73C300C7CFF4 /* ProductManagerTests.m */; };
 		81888E1C20133F2B00515D3D /* ReceiptUsageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81888E1A20133F2B00515D3D /* ReceiptUsageViewController.m */; };
 		818CED2B1A3AF1B800A68885 /* ReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 818CED2A1A3AF1B800A68885 /* ReaderViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -73,6 +73,8 @@
 		81245DC617D70E1500995F5C /* Generika.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Generika.entitlements; sourceTree = "<group>"; };
 		8127F27B201C4BA20029F080 /* Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Helper.m; sourceTree = "<group>"; };
 		8127F27C201C4BA30029F080 /* Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Helper.h; sourceTree = "<group>"; };
+		8127F27E201CBEE90029F080 /* ReceiptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiptViewController.m; sourceTree = "<group>"; };
+		8127F27F201CBEE90029F080 /* ReceiptViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiptViewController.h; sourceTree = "<group>"; };
 		8129BA54153D46F100CB5896 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8129BA55153D46F100CB5896 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8129BA58153D480100CB5896 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -88,8 +90,6 @@
 		8145D9EB1FD3D958002779FD /* ProductTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductTests.m; sourceTree = "<group>"; };
 		8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsDetailViewController.h; sourceTree = "<group>"; };
 		8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsDetailViewController.m; sourceTree = "<group>"; };
-		815754211FECE54300B369BD /* AmkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AmkViewController.h; sourceTree = "<group>"; };
-		815754221FECE54300B369BD /* AmkViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AmkViewController.m; sourceTree = "<group>"; };
 		8173D3E11FDE73C300C7CFF4 /* ProductManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductManagerTests.m; sourceTree = "<group>"; };
 		8181AD8A1A31BB9D004454C8 /* generika.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = generika.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8181AD8B1A31BC9F004454C8 /* generikaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = generikaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -289,12 +289,12 @@
 				812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */,
 				8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */,
 				8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */,
+				8127F27F201CBEE90029F080 /* ReceiptViewController.h */,
+				8127F27E201CBEE90029F080 /* ReceiptViewController.m */,
 				81888E1B20133F2B00515D3D /* ReceiptUsageViewController.h */,
 				81888E1A20133F2B00515D3D /* ReceiptUsageViewController.m */,
 				81B8621E153704330054EA0A /* WebViewController.h */,
 				81B8621F153704330054EA0A /* WebViewController.m */,
-				815754211FECE54300B369BD /* AmkViewController.h */,
-				815754221FECE54300B369BD /* AmkViewController.m */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -543,6 +543,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8133166A1FE66E70002B07D8 /* ReceiptManager.m in Sources */,
+				8127F280201CBEEA0029F080 /* ReceiptViewController.m in Sources */,
 				819273741535D56E0060859C /* main.m in Sources */,
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
 				8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */,
@@ -558,7 +559,6 @@
 				81B8CEC017D4767500DF463B /* ProductManager.m in Sources */,
 				812B9A4D17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
 				819E165917B20E8B00B315B3 /* Constant.m in Sources */,
-				815754231FECE54300B369BD /* AmkViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

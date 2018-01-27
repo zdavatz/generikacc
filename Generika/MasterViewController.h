@@ -10,7 +10,7 @@
 @class Product;
 @class Receipt;
 @class Reachability,
-  WebViewController, AmkViewController,
+  WebViewController, ReceiptViewController,
   SettingsViewController, ReaderViewController;
 
 @interface MasterViewController : UITableViewController <

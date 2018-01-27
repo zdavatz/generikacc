@@ -19,8 +19,8 @@
 #import "ReceiptManager.h"
 
 #import "WebViewController.h"
-#import "AmkViewController.h"
 #import "SettingsViewController.h"
+#import "ReceiptViewController.h"
 #import "ReceiptUsageViewController.h"
 #import "ReaderViewController.h"
 #import "MasterViewController.h"
@@ -39,9 +39,9 @@ static const int kSegmentReceipt = 1;
 @property (nonatomic, strong, readwrite) UITableView *itemsView;
 @property (nonatomic, strong, readwrite) UISearchController *search;
 @property (nonatomic, strong, readwrite) WebViewController *browser;
-@property (nonatomic, strong, readwrite) AmkViewController *viewer;
-@property (nonatomic, strong, readwrite) ReceiptUsageViewController *usage;
 @property (nonatomic, strong, readwrite) SettingsViewController *settings;
+@property (nonatomic, strong, readwrite) ReceiptViewController *viewer;
+@property (nonatomic, strong, readwrite) ReceiptUsageViewController *usage;
 @property (nonatomic, assign, readwrite) NSInteger selectedSegmentIndex;
 // reader
 @property (nonatomic, strong, readwrite) ReaderViewController *reader;
@@ -870,7 +870,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   // begin/end appearance transitions for ...`. But, it's trivial matter,
   // here :-D
   if (!self.viewer) {
-    self.viewer = [[AmkViewController alloc] init];
+    self.viewer = [[ReceiptViewController alloc] init];
   }
   [self.viewer loadReceipt:receipt];
   if (!self.viewer.isViewLoaded || !self.viewer.view.window) {
