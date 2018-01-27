@@ -241,6 +241,7 @@ static const int kSegmentReceipt = 1;
        withTransitionCoordinator:(
            id<UIViewControllerTransitionCoordinator>)coordinator {
   // fix wrong serchbar position at back from landscape mode
+  // see also positionForBar of <UIBarPositioningDelegate>
   [self.search dismissViewControllerAnimated:YES completion:nil];
   for (int i = 0; i < [[self.search.searchBar subviews] count]; i++) {
     UIView *subView = [[self.search.searchBar subviews] objectAtIndex:i];
@@ -1497,6 +1498,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       [ProductManager sharedManager].products
         filteredArrayUsingPredicate:predicate]];
   }
+}
+
+- (UIBarPosition)positionForBar:(id<UIBarPositioning>)searchBar
+{
+  // UIBarPositioningDelegate
+  // for fixing wrong searchbar position issue after back from landscape
+  return UIBarPositionAny;
 }
 
 
