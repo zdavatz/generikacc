@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		655D0B626DC9948729287B91 /* libPods-GenerikaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */; };
 		810A928D179CD50A00DAA963 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 810A928C179CD50A00DAA963 /* Security.framework */; };
+		8127F27D201C4BA30029F080 /* Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8127F27B201C4BA20029F080 /* Helper.m */; };
 		8129BA56153D46F100CB5896 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8129BA55153D46F100CB5896 /* Reachability.m */; };
 		8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8129BA58153D480100CB5896 /* SystemConfiguration.framework */; };
 		812B9A4D17AF7DF50001A5A8 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */; };
@@ -70,6 +71,8 @@
 		6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Generika.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		810A928C179CD50A00DAA963 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		81245DC617D70E1500995F5C /* Generika.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Generika.entitlements; sourceTree = "<group>"; };
+		8127F27B201C4BA20029F080 /* Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Helper.m; sourceTree = "<group>"; };
+		8127F27C201C4BA30029F080 /* Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Helper.h; sourceTree = "<group>"; };
 		8129BA54153D46F100CB5896 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8129BA55153D46F100CB5896 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8129BA58153D480100CB5896 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -301,6 +304,8 @@
 			children = (
 				819E165717B20E8B00B315B3 /* Constant.h */,
 				819E165817B20E8B00B315B3 /* Constant.m */,
+				8127F27C201C4BA30029F080 /* Helper.h */,
+				8127F27B201C4BA20029F080 /* Helper.m */,
 				8129BA54153D46F100CB5896 /* Reachability.h */,
 				8129BA55153D46F100CB5896 /* Reachability.m */,
 			);
@@ -542,6 +547,7 @@
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
 				8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */,
 				818CED2B1A3AF1B800A68885 /* ReaderViewController.m in Sources */,
+				8127F27D201C4BA30029F080 /* Helper.m in Sources */,
 				81B8CEB917D46EDE00DF463B /* Product.m in Sources */,
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
 				81888E1C20133F2B00515D3D /* ReceiptUsageViewController.m in Sources */,

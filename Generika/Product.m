@@ -107,8 +107,8 @@
   if (_reg != nil && _reg != @"") {
     return _reg;
   } else if (self.ean) {
-    return [Constant detectStringWithRegexp:@"7680(\\d{5}).+"
-                                       from:self.ean];
+    return [Helper detectStringWithRegexp:@"7680(\\d{5}).+"
+                                     from:self.ean];
   } else {
     return @"";
   }
@@ -119,8 +119,8 @@
   if (_seq != nil && _seq != @"") {
     return _seq;
   } else if (self.ean) {
-    return [Constant detectStringWithRegexp:@"7680\\d{5}(\\d{3}).+"
-                                       from:self.ean];
+    return [Helper detectStringWithRegexp:@"7680\\d{5}(\\d{3}).+"
+                                     from:self.ean];
   } else {
     return @"";
   }

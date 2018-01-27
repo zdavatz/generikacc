@@ -8,6 +8,7 @@
   #import <UIKit/UIKit.h>
   #import <Foundation/Foundation.h>
   #import "Constant.h"
+  #import "Helper.h"
 #endif
 
 #define deviceOrientation [[UIDevice currentDevice] orientation]

@@ -344,8 +344,8 @@
 - (NSString *)issuedPlace
 {
   if (![self.placeDate isEqualToString:@""]) {
-    return [Constant detectStringWithRegexp:@".*,\\s?(\\w+)$"
-                                       from:self.placeDate];
+    return [Helper detectStringWithRegexp:@".*,\\s?(\\w+)$"
+                                     from:self.placeDate];
   }
   return @"";
 }
@@ -353,8 +353,8 @@
 - (NSString *)issuedDate
 {
   if (![self.placeDate isEqualToString:@""]) {
-    return [Constant detectStringWithRegexp:@"(\\w*),\\s?.+$"
-                                       from:self.placeDate];
+    return [Helper detectStringWithRegexp:@"(\\w*),\\s?.+$"
+                                     from:self.placeDate];
   }
   return @"";
 }

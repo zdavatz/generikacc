@@ -437,18 +437,18 @@ viewForHeaderInSection:(NSInteger)section
       // package name label
       UILabel *packLabel = [self makeLabel:product.pack
                                  textColor:[UIColor clearColor]];
-      height += [Constant getSizeOfLabel:packLabel inWidth:width].height;
+      height += [Helper getSizeOfLabel:packLabel inWidth:width].height;
       height += kLabelMargin;
       // ean label
       UILabel *eanLabel = [self makeLabel:product.ean
                               textColor:[UIColor clearColor]];
-      height += [Constant getSizeOfLabel:eanLabel inWidth:width].height;
+      height += [Helper getSizeOfLabel:eanLabel inWidth:width].height;
       height += kLabelMargin;
       height += 8.0;
       // comment label
       UILabel *commentLabel = [self makeLabel:product.comment
                                     textColor:[UIColor clearColor]];
-      height += [Constant getSizeOfLabel:commentLabel inWidth:width].height;
+      height += [Helper getSizeOfLabel:commentLabel inWidth:width].height;
       height += kLabelMargin;
       height += 8.0;
       if (height > kItemCellHeight) {

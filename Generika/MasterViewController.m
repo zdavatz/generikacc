@@ -160,7 +160,7 @@ static const int kSegmentReceipt = 1;
     initWithItems:[NSArray arrayWithObjects:@"Medikamente", @"Rezepte", nil]];
   segmentedControl.frame = CGRectMake(0, 0, 196, 24);
   segmentedControl.selectedSegmentIndex = 0;
-  segmentedControl.tintColor = [Constant activeUIColor];
+  segmentedControl.tintColor = [Helper activeUIColor];
   segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
   // set initial selected state
   segmentedControl.selectedSegmentIndex = self.selectedSegmentIndex;
@@ -321,7 +321,7 @@ static const int kSegmentReceipt = 1;
     [scanButton.titleLabel setFont:scanFont];
     // FIXME: right margin
     [scanButton setTitle:@"  \uF030" forState:UIControlStateNormal];
-    [scanButton setTitleColor:[Constant activeUIColor]
+    [scanButton setTitleColor:[Helper activeUIColor]
                      forState:UIControlStateNormal];
     [scanButton addTarget:self
                    action:@selector(scanButtonTapped:)
@@ -449,7 +449,7 @@ static const int kSegmentReceipt = 1;
       [button setTitleColor:[UIColor whiteColor]
                    forState:UIControlStateNormal];
     } else { // iOS 7 or later
-      [button setTitleColor:[Constant activeUIColor]
+      [button setTitleColor:[Helper activeUIColor]
                    forState:UIControlStateNormal];
     }
     button.alpha = 1.0;
@@ -1237,7 +1237,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     }
   } else {
     control.userInteractionEnabled = YES;
-    control.tintColor = [Constant activeUIColor];
+    control.tintColor = [Helper activeUIColor];
     control.alpha = 1.0;
 
     [self setBarButton:settingsButton enabled:YES];
@@ -1247,7 +1247,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     if ([self currentSegmentedType] == kSegmentProduct) {
       UIButton *scanButton = [self.navigationItem.rightBarButtonItem
                               customView];
-      [scanButton setTitleColor:[Constant activeUIColor]
+      [scanButton setTitleColor:[Helper activeUIColor]
                        forState:UIControlStateNormal];
       scanButton.alpha = 1.0;
     }
