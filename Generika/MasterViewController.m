@@ -56,6 +56,7 @@ static const int kSegmentReceipt = 1;
   UIPopoverController *popOverForDatePicker;
 
 - (void)segmentChanged:(UISegmentedControl *)control;
+- (void)layoutSearchbar;
 - (void)layoutToolbar;
 - (void)setBarButton:(UIButton *)button enabled:(BOOL)enabled;
 - (BOOL)isReachable;
@@ -176,28 +177,11 @@ static const int kSegmentReceipt = 1;
   // toolbar
   [self layoutToolbar];
 
-  self.search = [[UISearchController alloc]
-                 initWithSearchResultsController:nil];
-  // searchbar
-  self.search.searchBar.tintColor = [UIColor lightGrayColor];
-  self.search.searchBar.delegate = self;
-  self.search.searchBar.placeholder = @"Suchen";
-  // fix ugly rounded field
-  UITextField *searchField = [
-    self.search.searchBar valueForKey:@"_searchField"];
-  searchField.layer.borderColor = [[UIColor whiteColor] CGColor];
-  searchField.layer.borderWidth = 3;
-  searchField.layer.cornerRadius = 4.0;
-  // fix wrong position (fixed position)
-  [self.search.searchBar sizeToFit];
-  self.itemsView.tableHeaderView = self.search.searchBar;
-
-  self.search.searchResultsUpdater = self;
-  self.search.delegate = self;
-  self.search.dimsBackgroundDuringPresentation = NO;
-  self.search.hidesNavigationBarDuringPresentation = NO;
+  // search
+  [self layoutSearchbar];
 
   self.definesPresentationContext = YES;
+  self.extendedLayoutIncludesOpaqueBars = NO;
 
   [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
   [[NSNotificationCenter defaultCenter]
@@ -241,11 +225,8 @@ static const int kSegmentReceipt = 1;
   if (selection) {
     [self.itemsView deselectRowAtIndexPath:selection animated:YES];
   }
-  // fix wrong position (fixed position)
-  [self.search.searchBar sizeToFit];
-  self.itemsView.tableHeaderView = self.search.searchBar;
-
   [self layoutToolbar];
+
   [self refresh];
   [super viewWillAppear:animated];
 }
@@ -254,6 +235,22 @@ static const int kSegmentReceipt = 1;
 {
   [self.itemsView flashScrollIndicators];
   [super viewDidAppear:animated];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:(
+           id<UIViewControllerTransitionCoordinator>)coordinator {
+  // fix wrong serchbar position at back from landscape mode
+  [self.search dismissViewControllerAnimated:YES completion:nil];
+  self.search.active = YES;
+  for (int i = 0; i < [[self.search.searchBar subviews] count]; i++) {
+    UIView *subView = [[self.search.searchBar subviews] objectAtIndex:i];
+    if ([[NSString stringWithFormat:@"%@", [subView class]]
+         isEqualToString:@"UINavigationButton"]) {
+        UIButton *cancelButton = (UIButton *)subView;
+        cancelButton.enabled = YES;
+    }
+  }
 }
 
 - (BOOL)shouldAutorotate
@@ -440,6 +437,31 @@ static const int kSegmentReceipt = 1;
     initWithCustomView:settingsButton];
   self.toolbarItems = [NSArray arrayWithObjects:
     lMargin, utilBarButton, space, settingsBarButton, rMargin, nil];
+}
+
+- (void)layoutSearchbar
+{
+  self.search = [[UISearchController alloc]
+                 initWithSearchResultsController:nil];
+  // searchbar
+  self.search.searchBar.tintColor = [UIColor lightGrayColor];
+  self.search.searchBar.delegate = self;
+  self.search.searchBar.placeholder = @"Suchen";
+  self.search.searchBar.translucent = NO;
+  // fix ugly rounded field
+  UITextField *searchField = [
+    self.search.searchBar valueForKey:@"_searchField"];
+  searchField.layer.borderColor = [[UIColor whiteColor] CGColor];
+  searchField.layer.borderWidth = 3;
+  searchField.layer.cornerRadius = 4.0;
+  // fix wrong position (fixed position)
+  [self.search.searchBar sizeToFit];
+  self.itemsView.tableHeaderView = self.search.searchBar;
+
+  self.search.searchResultsUpdater = self;
+  self.search.delegate = self;
+  self.search.dimsBackgroundDuringPresentation = NO;
+  self.search.hidesNavigationBarDuringPresentation = NO;
 }
 
 - (void)setBarButton:(UIButton *)button enabled:(BOOL)enabled
