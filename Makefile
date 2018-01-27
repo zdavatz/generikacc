@@ -3,6 +3,10 @@ ifeq (, $(OS_VERSION))
 	OS_VERSION=latest
 endif
 
+build:
+	xcodebuild -workspace Generika.xcworkspace -scheme Generika
+.PHONY: build
+
 test:
 	OS_VERSION=$(OS_VERSION) ./bin/test-runner All
 .PHONY: test
