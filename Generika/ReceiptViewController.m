@@ -16,12 +16,12 @@ static const float kSectionHeaderHeight = 27.0;
 static const float kLabelMargin = 2.4;
 
 // info
-static const int kSectionMeta     = 0;
+static const int kSectionMeta = 0;
 static const int kSectionOperator = 1;
-static const int kSectionPatient  = 2;
+static const int kSectionPatient = 2;
 
 // item
-static const int kSectionProduct  = 0;
+static const int kSectionProduct = 0;
 
 
 @class MasterViewController;
@@ -214,9 +214,7 @@ static const int kSectionProduct  = 0;
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-
   [self layoutFrames];
-
   // navigationbar
   // < back button
   self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
@@ -242,14 +240,12 @@ static const int kSectionProduct  = 0;
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
-
   [self.receiptView flashScrollIndicators];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
   [self.navigationController setToolbarHidden:YES animated:YES];
-
   // force layout (previous views will be cleared, if exist)
   // because sometimes table view cells have corrupted width :'(
   [self refresh];
@@ -273,7 +269,6 @@ static const int kSectionProduct  = 0;
 - (void)viewWillDisappear:(BOOL)animated
 {
   [self.navigationController setToolbarHidden:NO animated:YES];
-
   [super viewWillDisappear:animated];
 }
 
@@ -435,19 +430,22 @@ viewForHeaderInSection:(NSInteger)section
       CGFloat height = 0.0;
       CGFloat width =  self.itemView.frame.size.width - 24.0;
       // package name label
-      UILabel *packLabel = [self makeLabel:product.pack
-                                 textColor:[UIColor clearColor]];
+      UILabel *packLabel = [self makeItemLabel:product.pack
+                                     textColor:[UIColor clearColor]
+                                    fontOfSize:12.2];
       height += [Helper getSizeOfLabel:packLabel inWidth:width].height;
       height += kLabelMargin;
       // ean label
-      UILabel *eanLabel = [self makeLabel:product.ean
-                              textColor:[UIColor clearColor]];
+      UILabel *eanLabel = [self makeItemLabel:product.ean
+                                    textColor:[UIColor clearColor]
+                                   fontOfSize:12.2];
       height += [Helper getSizeOfLabel:eanLabel inWidth:width].height;
       height += kLabelMargin;
       height += 8.0;
       // comment label
-      UILabel *commentLabel = [self makeLabel:product.comment
-                                    textColor:[UIColor clearColor]];
+      UILabel *commentLabel = [self makeItemLabel:product.comment
+                                        textColor:[UIColor clearColor]
+                                       fontOfSize:12.2];
       height += [Helper getSizeOfLabel:commentLabel inWidth:width].height;
       height += kLabelMargin;
       height += 8.0;
@@ -476,111 +474,93 @@ viewForHeaderInSection:(NSInteger)section
   reuseIdentifier:cellIdentifier];
   cell.contentView.translatesAutoresizingMaskIntoConstraints = YES;
 
+  UILabel *label;
   if (tableView == self.infoView) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    CGRect frame = CGRectMake(
-      12.0, 0, self.infoView.frame.size.width, 25.0);
-
-    if (@available(iOS 11, *)) {
-      // for iPhone X issue
-      frame.size.width = self.infoView.frame.size.width - (
-          self.view.safeAreaInsets.left * 2);
-    }
-
-    UILabel *label = [[UILabel alloc] initWithFrame:frame];
     if (indexPath.section == kSectionMeta) {
       // place_date
-      label.font = [UIFont systemFontOfSize:13.8];
-      label.textAlignment = kTextAlignmentLeft;
-      label.textColor = [UIColor blackColor];
-      label.backgroundColor = [UIColor clearColor];
-      label.text = self.receipt.placeDate;
-    } else if (indexPath.section == kSectionOperator) {
-      Operator *operator = self.receipt.operator;
-      if (operator) {
-        label.font = [UIFont systemFontOfSize:13.0];
-        label.textAlignment = kTextAlignmentLeft;
-        label.textColor = [UIColor blackColor];
-        label.backgroundColor = [UIColor clearColor];
-        if (indexPath.row == 0) {
-          // given_name + family_name
-          label.text = [NSString stringWithFormat:@"%@ %@",
-            operator.givenName, operator.familyName, nil];
-          if (![operator.title isEqualToString:@""]) {
-            label.text = [operator.title stringByAppendingString:[
-              NSString stringWithFormat:@" %@", label.text, nil]];
+      label = [self makeInfoLabel:self.receipt.placeDate
+                        textColor:[UIColor blackColor]
+                       fontOfSize:13.8];
+    } else {  // operator or patient
+      label = [self makeInfoLabel:@""
+                        textColor:[UIColor blackColor]
+                       fontOfSize:13.0];
+      if (indexPath.section == kSectionOperator) {
+        Operator *operator = self.receipt.operator;
+        if (operator) {
+          if (indexPath.row == 0) {
+            // given_name + family_name
+            label.text = [NSString stringWithFormat:@"%@ %@",
+              operator.givenName, operator.familyName, nil];
+            if (![operator.title isEqualToString:@""]) {
+              label.text = [operator.title stringByAppendingString:[
+                NSString stringWithFormat:@" %@", label.text, nil]];
+            }
+            // signature image
+            if (![operator.signature isEqualToString:@""]) {
+              UIImageView *signatureView = [[UIImageView alloc]
+                initWithImage:operator.signatureThumbnail];
+              // using label.frame.size
+              [signatureView setFrame:CGRectMake(
+                  label.frame.size.width - 100.0, 0, 90.0, 45.0)];
+              signatureView.contentMode = UIViewContentModeTopRight;
+              [cell.contentView addSubview:signatureView];
+            }
+          } else if (indexPath.row == 1) { // postal_address
+            label.text = operator.address;
+          } else if (indexPath.row == 2) { // city country
+            label.text = [NSString stringWithFormat:@"%@ %@",
+              operator.city, operator.country, nil];
+          } else if (indexPath.row == 3) { // phone
+            label.text = operator.phone;
+          } else if (indexPath.row == 4) { // email
+            label.text = operator.email;
           }
-          // signature image
-          if (![operator.signature isEqualToString:@""]) {
-            UIImageView *signatureView = [[UIImageView alloc]
-              initWithImage:operator.signatureThumbnail];
-            [signatureView setFrame:CGRectMake(
-                frame.size.width - 100.0, 0, 90.0, 45.0)];
-            signatureView.contentMode = UIViewContentModeTopRight;
-            [cell.contentView addSubview:signatureView];
+        }
+      } else if (indexPath.section == kSectionPatient) {
+        Patient *patient = self.receipt.patient;
+        if (patient) {
+          if (indexPath.row == 0) { // given_name + family_name
+            label.text = [NSString stringWithFormat:@"%@ %@",
+              patient.givenName, patient.familyName, nil];
+          } else if (indexPath.row == 1) {
+            // weight_kg/height_cm gender birth_date
+            label.text = @"";
+            if (![patient.weight isEqualToString:@""]) {
+              label.text = [label.text stringByAppendingString:[
+                NSString stringWithFormat:@"%@kg",
+                patient.weight, nil]];
+            }
+            if (![patient.height isEqualToString:@""]) {
+              label.text = [label.text stringByAppendingString:[
+                NSString stringWithFormat:@"/%@cm",
+                patient.height, nil]];
+            }
+            if (![patient.gender isEqualToString:@""]) {
+              // use sign F/M or any capitalized char
+              label.text = [label.text stringByAppendingString:[
+                NSString stringWithFormat:@" %@", patient.genderSign, nil]];
+            }
+            if (![patient.birthDate isEqualToString:@""]) {
+              label.text = [label.text stringByAppendingString:[
+                NSString stringWithFormat:@" %@",
+                patient.birthDate, nil]];
+            }
+          } else if (indexPath.row == 2) { // postal_address
+            label.text = patient.address;
+          } else if (indexPath.row == 3) { // city country
+            label.text = [NSString stringWithFormat:@"%@ %@",
+              patient.city, patient.country, nil];
+          } else if (indexPath.row == 4) { // phone
+            label.text = patient.phone;
+          } else if (indexPath.row == 5) { // email
+            label.text = patient.email;
           }
-        } else if (indexPath.row == 1) { // postal_address
-          label.text = operator.address;
-        } else if (indexPath.row == 2) { // city country
-          label.text = [NSString stringWithFormat:@"%@ %@",
-            operator.city, operator.country, nil];
-        } else if (indexPath.row == 3) { // phone
-          label.text = operator.phone;
-        } else if (indexPath.row == 4) { // email
-          label.text = operator.email;
         }
       }
-    } else if (indexPath.section == kSectionPatient) {
-      Patient *patient = self.receipt.patient;
-      if (patient) {
-        label.font = [UIFont systemFontOfSize:13.0];
-        label.textAlignment = kTextAlignmentLeft;
-        label.textColor = [UIColor blackColor];
-        label.backgroundColor = [UIColor clearColor];
-        if (indexPath.row == 0) { // given_name + family_name
-          label.text = [NSString stringWithFormat:@"%@ %@",
-            patient.givenName, patient.familyName, nil];
-        } else if (indexPath.row == 1) {
-          // weight_kg/height_cm gender birth_date
-          label.text = @"";
-          if (![patient.weight isEqualToString:@""]) {
-            label.text = [label.text stringByAppendingString:[
-              NSString stringWithFormat:@"%@kg",
-              patient.weight, nil]];
-          }
-          if (![patient.height isEqualToString:@""]) {
-            label.text = [label.text stringByAppendingString:[
-              NSString stringWithFormat:@"/%@cm",
-              patient.height, nil]];
-          }
-          if (![patient.gender isEqualToString:@""]) {
-            // use sign F/M or any capitalized char
-            label.text = [label.text stringByAppendingString:[
-              NSString stringWithFormat:@" %@", patient.genderSign, nil]];
-          }
-          if (![patient.birthDate isEqualToString:@""]) {
-            label.text = [label.text stringByAppendingString:[
-              NSString stringWithFormat:@" %@",
-              patient.birthDate, nil]];
-          }
-        } else if (indexPath.row == 2) { // postal_address
-          label.text = patient.address;
-        } else if (indexPath.row == 3) { // city country
-          label.text = [NSString stringWithFormat:@"%@ %@",
-            patient.city, patient.country, nil];
-        } else if (indexPath.row == 4) { // phone
-          label.text = patient.phone;
-        } else if (indexPath.row == 5) { // email
-          label.text = patient.email;
-        }
-      }
-    } else {
-      // unexpected
     }
-    if (label.text) { // 1 cell per row
-      label.lineBreakMode = NSLineBreakByWordWrapping;
-      label.numberOfLines = 0;
-      label.preferredMaxLayoutWidth = frame.size.width;
+    if (label.text && ![label.text isEqualToString:@""]) {
       [label sizeToFit];
       [cell.contentView addSubview:label];
     }
@@ -588,12 +568,15 @@ viewForHeaderInSection:(NSInteger)section
     Product *product;
     product = [self.receipt.products objectAtIndex:indexPath.row];
     if (product) {
-      UILabel *packLabel = [self makeLabel:product.pack
-                                 textColor:[UIColor blackColor]];
-      UILabel *eanLabel = [self makeLabel:product.ean
-                                textColor:[UIColor darkGrayColor]];
-      UILabel *commentLabel = [self makeLabel:product.comment
-                                    textColor:[UIColor darkGrayColor]];
+      UILabel *packLabel = [self makeItemLabel:product.pack
+                                     textColor:[UIColor blackColor]
+                                    fontOfSize:12.2];
+      UILabel *eanLabel = [self makeItemLabel:product.ean
+                                    textColor:[UIColor darkGrayColor]
+                                   fontOfSize:12.2];
+      UILabel *commentLabel = [self makeItemLabel:product.comment
+                                        textColor:[UIColor darkGrayColor]
+                                       fontOfSize:12.2];
       // layout
       CGRect eanFrame = CGRectMake(
           12.0,
@@ -640,32 +623,67 @@ viewForHeaderInSection:(NSInteger)section
 }
 
 
-# pragma mark - UI
+#pragma mark - UI
 
-- (UILabel *)makeLabel:(NSString *)text textColor:(UIColor *)color
+- (UILabel *)makeInfoLabel:(NSString *)text
+                 textColor:(UIColor *)color
+                  fontOfSize:(CGFloat)size
+{
+  CGRect frame = CGRectMake(
+    12.0, 0, self.infoView.frame.size.width, 25.0);
+
+  if (@available(iOS 11, *)) {
+    // for iPhone X issue
+    frame.size.width = self.infoView.frame.size.width - (
+        self.view.safeAreaInsets.left * 2);
+  }
+
+  UILabel *label = [[UILabel alloc] initWithFrame:frame];
+  label.font = [UIFont systemFontOfSize:size];
+  label.textAlignment = kTextAlignmentLeft;
+  label.textColor = color;
+  label.text = text;
+  label.backgroundColor = [UIColor clearColor];
+  label.highlighted = NO;
+
+  // use multiple lines for wrapped text as required
+  label.numberOfLines = 0;
+  label.preferredMaxLayoutWidth = frame.size.width;
+
+  label.lineBreakMode = NSLineBreakByWordWrapping;
+
+  [label sizeToFit];  // this line must be after `numberOfLines`
+  return label;
+}
+
+- (UILabel *)makeItemLabel:(NSString *)text
+                 textColor:(UIColor *)color
+                 fontOfSize:(CGFloat)size
 {
   CGRect frame = CGRectMake(
     12.0,
      8.0,
     (self.canvasView.bounds.size.width - 24.0),
     kItemCellHeight);
+
   UILabel *label = [[UILabel alloc] initWithFrame:frame];
-  label.font = [UIFont systemFontOfSize:12.2];
+  label.font = [UIFont systemFontOfSize:size];
   label.textAlignment = kTextAlignmentLeft;
   label.textColor = color;
   label.text = text;
   label.backgroundColor = [UIColor clearColor];
   label.highlighted = NO;
+
   // use multiple lines for wrapped text as required
   label.numberOfLines = 0;
   label.preferredMaxLayoutWidth = frame.size.width;
-  // this line must be after `numberOfLines`
-  [label sizeToFit];
+  
+  [label sizeToFit];  // this line must be after `numberOfLines`
   return label;
 }
 
 
-# pragma mark - Action
+#pragma mark - Action
 
 - (void)loadReceipt:(Receipt *)receipt
 {
