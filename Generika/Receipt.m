@@ -87,7 +87,8 @@
   rect.size.width = image.size.width * ratio;
   rect.size.height = image.size.height * ratio;
   rect.origin.x = (size.width - rect.size.width) / 2.0f;
-  rect.origin.y = (size.height - rect.size.height) / 2.0f;
+  // top aligned
+  rect.origin.y = 0.0;
   
   UIGraphicsBeginImageContextWithOptions(size, NO, 0 );
   [image drawInRect:rect];
