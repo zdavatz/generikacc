@@ -1021,7 +1021,7 @@
 				935F8A45153DBCBE00642BDB /* Generika_AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		8192739C1535D56E0060859C /* Build configuration list for PBXNativeTarget "Generika" */ = {
 			isa = XCConfigurationList;
@@ -1031,7 +1031,7 @@
 				935F8A46153DBCBE00642BDB /* Generika_AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		8192739F1535D56E0060859C /* Build configuration list for PBXNativeTarget "GenerikaTests" */ = {
 			isa = XCConfigurationList;
@@ -1041,7 +1041,7 @@
 				935F8A47153DBCBE00642BDB /* Generika_AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
