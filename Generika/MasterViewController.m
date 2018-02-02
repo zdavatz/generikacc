@@ -1569,7 +1569,7 @@ didPickDocumentAtURL:(NSURL *)url
                                   code:99
                               userInfo:@{
              NSLocalizedDescriptionKey:[NSString
-               stringWithFormat:@"You have been already imported %@", filename]
+               stringWithFormat:@"You have already imported %@", filename]
       }];
     }
   }
