@@ -239,6 +239,9 @@ static const int kSectionProduct = 0;
 - (void)viewWillAppear:(BOOL)animated
 {
   [self.navigationController setToolbarHidden:YES animated:YES];
+  // This line looks unnecessary. but, apparently, this can fixe wrong width
+  // issue from master vview at landscape mode
+  [self layoutFrames];
 
   // force layout (previous views will be cleared, if exist)
   // because sometimes table view cells have corrupted width :'(
