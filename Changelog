@@ -1,5 +1,20 @@
 *Generika.cc (18 Dec 2017)
 
+	01 Feb 2018; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
+	* Fix signature image position
+
+	21 Jan 2018; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
+	* Fix layout on iPhone X
+
+	20 Jan 2018; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
+	* Add receipt usage view (text view)
+
+	07 Jan 2018; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
+	* Add Receipt detail view
+
+	31 Dec 2017; Yasuhiro Asaka <yasuhiro.asaka@grauwoelfchen.net>:
+	* Add Receipt importing feature
+
 	19 Dec 2017; Zeno R.R. Davatz <zdavatz@ywesee.com>:
 	* Change LICENSE to `GPL-3.0`
 

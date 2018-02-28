@@ -239,6 +239,9 @@ static const int kSectionProduct = 0;
 - (void)viewWillAppear:(BOOL)animated
 {
   [self.navigationController setToolbarHidden:YES animated:YES];
+  // This line looks unnecessary. but, apparently, this can fixe wrong width
+  // issue from master vview at landscape mode
+  [self layoutFrames];
 
   // force layout (previous views will be cleared, if exist)
   // because sometimes table view cells have corrupted width :'(
@@ -507,6 +510,7 @@ viewForHeaderInSection:(NSInteger)section
   }
 
   UILabel *label;
+  int labelIndex = 0;
   if (tableView == self.infoView) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     if (indexPath.section == kSectionMeta) {
@@ -529,15 +533,25 @@ viewForHeaderInSection:(NSInteger)section
               label.text = [operator.title stringByAppendingString:[
                 NSString stringWithFormat:@" %@", label.text, nil]];
             }
-            // signature image
+            // signature image (90.0 x 45.0)
             if (![operator.signature isEqualToString:@""]) {
               UIImageView *signatureView = [[UIImageView alloc]
                 initWithImage:operator.signatureThumbnail];
-              // using label.frame.size
-              [signatureView setFrame:CGRectMake(
-                  label.frame.size.width - 100.0, 0, 90.0, 45.0)];
+              CGFloat imageWidth = 90.0;
+              CGRect imageFrame = CGRectMake(
+                  self.infoView.frame.size.width - (imageWidth + 10.0),
+                  0, imageWidth, 45.0);
+              // for iPhone X issue
+              if (@available(iOS 11, *)) {
+                imageFrame.origin.x = self.infoView.frame.size.width - (
+                    self.view.safeAreaInsets.left * 2) - (imageWidth + 10.0);
+              }
+              [signatureView setFrame:imageFrame];
               signatureView.contentMode = UIViewContentModeTopRight;
+              signatureView.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 10);
+              [signatureView setNeedsDisplay];
               [cell.contentView addSubview:signatureView];
+              labelIndex += 1;
             }
           } else if (indexPath.row == 1) { // postal_address
             label.text = operator.address;
@@ -594,7 +608,7 @@ viewForHeaderInSection:(NSInteger)section
     }
     if (label.text && ![label.text isEqualToString:@""]) {
       [label sizeToFit];
-      [cell.contentView addSubview:label];
+      [cell.contentView insertSubview:label atIndex:labelIndex];
     }
   } else if (tableView == self.itemView) { // medications
     Product *product;
