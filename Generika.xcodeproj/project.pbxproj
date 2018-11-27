@@ -53,6 +53,7 @@
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */; };
 		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
+		CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF67853B21ACEDBB006B786A /* ScannerViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,6 +129,8 @@
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
 		9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.release.xcconfig"; sourceTree = "<group>"; };
 		B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
+		CF67853A21ACEDBB006B786A /* ScannerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScannerViewController.h; sourceTree = "<group>"; };
+		CF67853B21ACEDBB006B786A /* ScannerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScannerViewController.m; sourceTree = "<group>"; };
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
 		EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GenerikaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -285,6 +288,8 @@
 				819273801535D56E0060859C /* MasterViewController.m */,
 				818CED291A3AF17C00A68885 /* ReaderViewController.h */,
 				818CED2A1A3AF1B800A68885 /* ReaderViewController.m */,
+				CF67853A21ACEDBB006B786A /* ScannerViewController.h */,
+				CF67853B21ACEDBB006B786A /* ScannerViewController.m */,
 				812B9A4B17AF7DF50001A5A8 /* SettingsViewController.h */,
 				812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */,
 				8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */,
@@ -549,6 +554,7 @@
 				8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */,
 				818CED2B1A3AF1B800A68885 /* ReaderViewController.m in Sources */,
 				8127F27D201C4BA30029F080 /* Helper.m in Sources */,
+				CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */,
 				81B8CEB917D46EDE00DF463B /* Product.m in Sources */,
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
 				81888E1C20133F2B00515D3D /* ReceiptUsageViewController.m in Sources */,
