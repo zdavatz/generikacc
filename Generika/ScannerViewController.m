@@ -8,8 +8,9 @@
 
 #import "ScannerViewController.h"
 #import <AVFoundation/AVFoundation.h>
+#import <Vision/Vision.h>
 
-@interface ScannerViewController ()
+@interface ScannerViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property (atomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
 @property (atomic, strong) AVCaptureSession *captureSession;
@@ -62,6 +63,14 @@
     if ([self.captureSession canAddInput:input]) {
         [self.captureSession addInput:input];
     }
+
+    AVCaptureVideoDataOutput *output = [[AVCaptureVideoDataOutput alloc] init];
+    [output setSampleBufferDelegate:self
+                              queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
+    if ([self.captureSession canAddOutput:output]) {
+        [self.captureSession addOutput:output];
+    }
+
     [self.captureSession startRunning];
 
     self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.captureSession];
@@ -89,14 +98,48 @@
                                     CGRectGetHeight(self.toolbar.frame));
 }
 
-- (void)dealloc {
-    [self.captureSession stopRunning];
-    self.captureSession = nil;
+- (void)captureOutput:(AVCaptureOutput *)output
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+       fromConnection:(AVCaptureConnection *)connection {
+    VNImageRequestHandler *requestHandler =
+        [[VNImageRequestHandler alloc] initWithCVPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)
+                                             orientation:[self convertVideoOrientation:connection.videoOrientation]
+                                                 options:@{}];
+    VNDetectBarcodesRequest *barcodeRequest = [[VNDetectBarcodesRequest alloc] initWithCompletionHandler:^(VNRequest *request, NSError *error) {
+        BarcodeExtractor *extractor = [[BarcodeExtractor alloc] init];
+        for (VNBarcodeObservation *result in request.results) {
+            NSLog(@"string value %@", result.payloadStringValue);
+        }
+    }];
+    barcodeRequest.symbologies = @[VNBarcodeSymbologyEAN13, VNBarcodeSymbologyDataMatrix];
+    NSError *error = nil;
+    [requestHandler performRequests:@[barcodeRequest] error:&error];
+    if (error != nil) {
+        NSLog(@"perform error %@", error);
+    }
 }
 
 - (void)cancel {
     [self dismissViewControllerAnimated:YES
                              completion:nil];
+}
+
+- (void)dealloc {
+    [self.captureSession stopRunning];
+    self.captureSession = nil;
+}
+
+- (CGImagePropertyOrientation)convertVideoOrientation:(AVCaptureVideoOrientation)orientation {
+    switch (orientation) {
+        case AVCaptureVideoOrientationPortrait:
+            return UIImageOrientationUp;
+        case AVCaptureVideoOrientationPortraitUpsideDown:
+            return UIImageOrientationDown;
+        case AVCaptureVideoOrientationLandscapeRight:
+            return UIImageOrientationRight;
+        case AVCaptureVideoOrientationLandscapeLeft:
+            return UIImageOrientationLeft;
+    }
 }
 
 @end
