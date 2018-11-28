@@ -9,6 +9,9 @@
 #import "ScannerViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import <Vision/Vision.h>
+#import "DataMatrixResult.h"
+#import "BarcodeExtractor.h"
+#import "Helper.h"
 
 @interface ScannerViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -109,6 +112,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         BarcodeExtractor *extractor = [[BarcodeExtractor alloc] init];
         for (VNBarcodeObservation *result in request.results) {
             NSLog(@"string value %@", result.payloadStringValue);
+            if (result.symbology == VNBarcodeSymbologyDataMatrix) {
+                DataMatrixResult *r = [extractor extractGS1DataFrom:result.payloadStringValue];
+            }
         }
     }];
     barcodeRequest.symbologies = @[VNBarcodeSymbologyEAN13, VNBarcodeSymbologyDataMatrix];

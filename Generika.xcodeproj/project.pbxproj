@@ -53,6 +53,8 @@
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */; };
 		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
+		CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */; };
+		CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
 		CF67853921ACE789006B786A /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF67853821ACE789006B786A /* Vision.framework */; };
 		CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF67853B21ACEDBB006B786A /* ScannerViewController.m */; };
 /* End PBXBuildFile section */
@@ -130,6 +132,10 @@
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
 		9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.release.xcconfig"; sourceTree = "<group>"; };
 		B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
+		CF4B16C821AEE5FE0005C693 /* DataMatrixResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataMatrixResult.h; sourceTree = "<group>"; };
+		CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataMatrixResult.m; sourceTree = "<group>"; };
+		CF4B16CB21AEEC120005C693 /* BarcodeExtractor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeExtractor.h; sourceTree = "<group>"; };
+		CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BarcodeExtractor.m; sourceTree = "<group>"; };
 		CF67853821ACE789006B786A /* Vision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Vision.framework; path = System/Library/Frameworks/Vision.framework; sourceTree = SDKROOT; };
 		CF67853A21ACEDBB006B786A /* ScannerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScannerViewController.h; sourceTree = "<group>"; };
 		CF67853B21ACEDBB006B786A /* ScannerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScannerViewController.m; sourceTree = "<group>"; };
@@ -277,6 +283,8 @@
 				81B8CEB817D46EDE00DF463B /* Product.m */,
 				81B8CEBE17D4767500DF463B /* ProductManager.h */,
 				81B8CEBF17D4767500DF463B /* ProductManager.m */,
+				CF4B16C821AEE5FE0005C693 /* DataMatrixResult.h */,
+				CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -317,6 +325,8 @@
 				8127F27B201C4BA20029F080 /* Helper.m */,
 				8129BA54153D46F100CB5896 /* Reachability.h */,
 				8129BA55153D46F100CB5896 /* Reachability.m */,
+				CF4B16CB21AEEC120005C693 /* BarcodeExtractor.h */,
+				CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -553,8 +563,10 @@
 			files = (
 				8133166A1FE66E70002B07D8 /* ReceiptManager.m in Sources */,
 				8127F280201CBEEA0029F080 /* ReceiptViewController.m in Sources */,
+				CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */,
 				819273741535D56E0060859C /* main.m in Sources */,
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
+				CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */,
 				8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */,
 				818CED2B1A3AF1B800A68885 /* ReaderViewController.m in Sources */,
 				8127F27D201C4BA30029F080 /* Helper.m in Sources */,

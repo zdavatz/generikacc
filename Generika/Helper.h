@@ -12,5 +12,6 @@
 
 + (NSString *)detectStringWithRegexp:(NSString *)regexpString
                                 from:(NSString *)fromString;
++ (BOOL)isStringNumber:(NSString *)string;
 
 @end
