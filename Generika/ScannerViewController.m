@@ -25,7 +25,11 @@
 
 - (void)loadView {
     self.view = [[UIView alloc] initWithFrame:CGRectZero];
+    self.view.backgroundColor = [UIColor blackColor];
+}
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]) {
         case AVAuthorizationStatusAuthorized:
             [self setupCaptureSession];
@@ -68,6 +72,7 @@
     }
 
     AVCaptureVideoDataOutput *output = [[AVCaptureVideoDataOutput alloc] init];
+    output.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_32BGRA)};
     [output setSampleBufferDelegate:self
                               queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
     if ([self.captureSession canAddOutput:output]) {
@@ -104,25 +109,37 @@
 - (void)captureOutput:(AVCaptureOutput *)output
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection {
+    connection.videoOrientation = AVCaptureVideoOrientationPortrait;
     VNImageRequestHandler *requestHandler =
         [[VNImageRequestHandler alloc] initWithCVPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)
                                              orientation:[self convertVideoOrientation:connection.videoOrientation]
                                                  options:@{}];
     VNDetectBarcodesRequest *barcodeRequest = [[VNDetectBarcodesRequest alloc] initWithCompletionHandler:^(VNRequest *request, NSError *error) {
-        BarcodeExtractor *extractor = [[BarcodeExtractor alloc] init];
+        if (!request.results.count) {
+            return;
+        }
+        UIImage *image = [Helper sampleBufferToUIImage:sampleBuffer];
         for (VNBarcodeObservation *result in request.results) {
-            NSLog(@"string value %@", result.payloadStringValue);
             if (result.symbology == VNBarcodeSymbologyDataMatrix) {
+                BarcodeExtractor *extractor = [[BarcodeExtractor alloc] init];
                 DataMatrixResult *r = [extractor extractGS1DataFrom:result.payloadStringValue];
+                [self.delegate scannerViewController:self
+                                didScannedDataMatrix:r
+                                           withImage:image];
+            } else if (result.symbology == VNBarcodeSymbologyEAN13) {
+                [self.delegate scannerViewController:self
+                                     didScannedEan13:result.payloadStringValue
+                                           withImage:image];
             }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.captureSession stopRunning];
+            });
+            break;
         }
     }];
     barcodeRequest.symbologies = @[VNBarcodeSymbologyEAN13, VNBarcodeSymbologyDataMatrix];
     NSError *error = nil;
     [requestHandler performRequests:@[barcodeRequest] error:&error];
-    if (error != nil) {
-        NSLog(@"perform error %@", error);
-    }
 }
 
 - (void)cancel {

@@ -4,6 +4,7 @@
 //
 //  Copyright (c) 2013-2017 ywesee GmbH. All rights reserved.
 //
+#import <CoreMedia/CoreMedia.h>
 
 @interface Helper : NSObject
 
@@ -13,5 +14,6 @@
 + (NSString *)detectStringWithRegexp:(NSString *)regexpString
                                 from:(NSString *)fromString;
 + (BOOL)isStringNumber:(NSString *)string;
++ (UIImage*)sampleBufferToUIImage:(CMSampleBufferRef)sampleBuffer;
 
 @end
