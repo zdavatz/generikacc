@@ -15,6 +15,8 @@
 
 @interface ScannerViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
+@property (atomic) BOOL didSendResult;
+
 @property (atomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
 @property (atomic, strong) AVCaptureSession *captureSession;
 @property (atomic, strong) UIToolbar *toolbar;
@@ -109,6 +111,7 @@
 - (void)captureOutput:(AVCaptureOutput *)output
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection {
+    if (self.didSendResult) return;
     connection.videoOrientation = AVCaptureVideoOrientationPortrait;
     VNImageRequestHandler *requestHandler =
         [[VNImageRequestHandler alloc] initWithCVPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)
@@ -131,6 +134,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                      didScannedEan13:result.payloadStringValue
                                            withImage:image];
             }
+            self.didSendResult = YES;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.captureSession stopRunning];
             });
