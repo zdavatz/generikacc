@@ -23,6 +23,7 @@
 #import "ReceiptViewController.h"
 #import "ReceiptUsageViewController.h"
 #import "ReaderViewController.h"
+#import "ScannerViewController.h"
 #import "MasterViewController.h"
 
 
@@ -31,7 +32,7 @@ static const int kSegmentedControlTag = 100;
 static const int kSegmentProduct = 0;
 static const int kSegmentReceipt = 1;
 
-@interface MasterViewController ()
+@interface MasterViewController () <ScannerViewControllerDelegate>
 
 @property (nonatomic, strong, readwrite) Reachability *reachability;
 @property (nonatomic, strong, readwrite) NSMutableArray *filtered;
@@ -659,9 +660,27 @@ static const int kSegmentReceipt = 1;
   }
 }
 
-- (void)imagePickerController:(UIImagePickerController *)reader
-didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
+- (void)scannerViewController:(id)sender didScannedEan13:(NSString *)ean withImage:(UIImage *)image {
+    dispatch_async(dispatch_get_main_queue(),^{
+        [self didScanProductWithEan:ean
+                          expiresAt:nil
+                              image:image];
+        [sender dismissViewControllerAnimated:YES completion:nil];
+    });
+}
+
+- (void)scannerViewController:(id)sender didScannedDataMatrix:(DataMatrixResult *)result withImage:(UIImage *)image {
+    dispatch_async(dispatch_get_main_queue(),^{
+        [self didScanProductWithEan:result.gtin
+                          expiresAt:result.expiryDate
+                              image:image];
+        [sender dismissViewControllerAnimated:YES completion:nil];
+    });
+}
+
+- (void)didScanProductWithEan:(NSString*)ean
+                    expiresAt:(NSString*)expiresAt
+                        image:(UIImage*)image {
   if (![self isReachable]) {
     UIAlertView *alert = [[UIAlertView alloc]
       initWithTitle:@"Keine Verbindung zum Internet!"
@@ -672,13 +691,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [alert show];
     return;
   }
-  id<NSFastEnumeration> results =
-    [info objectForKey: ZBarReaderControllerResults];
-  ZBarSymbol *symbol = nil;
-  for (symbol in results) {
-    break;
-  }
-  NSString *ean = [NSString stringWithString:symbol.data];
   NSInteger selectedTypeIndex = [self.userDefaults
     integerForKey:@"search.result.type"];
   NSString *type = [[Constant searchTypes] objectAtIndex:selectedTypeIndex];
@@ -686,8 +698,6 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     [self notFoundEan:ean];
   } else {
     // API Request
-    UIImage *barcode = [info objectForKey:
-      UIImagePickerControllerOriginalImage];
     NSString *searchURL = [NSString stringWithFormat:
       @"%@/%@", kOddbProductSearchBaseURL, ean];
     NSURL *productSearch = [NSURL URLWithString:searchURL];
@@ -700,7 +710,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
          success:^(NSURLSessionTask *task, id responseObject) {
            ProductManager *manager = [ProductManager sharedManager];
            NSUInteger before = [manager.products count];
-           [self didFinishPicking:responseObject withEan:ean barcode:barcode];
+           [self didFinishPicking:responseObject withEan:ean expiresAt: expiresAt barcode:image];
            NSUInteger after = [manager.products count];
            if ([type isEqualToString:@"PI"] && before < after) {
              Product *product = [manager productAtIndex:0];
@@ -717,11 +727,11 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
       [self searchInfoForProduct:product];
     }
   }
-  [self.reader dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didFinishPicking:(id)json
                  withEan:(NSString *)ean
+               expiresAt:(NSString *)expiresAt
                  barcode:(UIImage *)barcode
 {
   if (json == nil || [(NSArray *)json count] == 0) {
@@ -751,7 +761,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     Product *product = [Product importFromDict:dict];
     // additional values
     [product setValue:barcodePath forKey:@"barcode"];
-    [product setValue:@"" forKey:@"expiresAt"];
+    [product setValue:expiresAt ?: @"" forKey:@"expiresAt"];
     [product setValue:datetime forKey:@"datetime"];
 
     BOOL saved = [manager insertProduct:product atIndex:0];
@@ -791,30 +801,13 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)openReader
 {
-  self.reader.readerDelegate = self;
-  self.reader.supportedOrientationsMask = ZBarOrientationMaskAll;
-  ZBarImageScanner *scanner = self.reader.scanner;
-  // disable
-  [scanner setSymbology:ZBAR_I25
-                 config:ZBAR_CFG_ENABLE
-                     to:0];
-  [scanner setSymbology:ZBAR_UPCA
-                 config:ZBAR_CFG_ENABLE
-                     to:0];
-  [scanner setSymbology:ZBAR_UPCE
-                 config:ZBAR_CFG_ENABLE
-                     to:0];
-  [scanner setSymbology:ZBAR_ISBN10
-                 config:ZBAR_CFG_ENABLE
-                     to:0];
-  [scanner setSymbology:ZBAR_ISBN13
-                 config:ZBAR_CFG_ENABLE
-                     to:0];
-  [scanner setSymbology:ZBAR_QRCODE
-                 config:ZBAR_CFG_ENABLE
-                     to:0];
+    ScannerViewController *scannerViewController = [[ScannerViewController alloc] init];
+    scannerViewController.delegate = self;
+    [self presentViewController:scannerViewController
+                       animated:YES
+                     completion:nil];
 
-  [self presentViewController:self.reader animated:YES completion:nil];
+  self.reader.readerDelegate = self;
 }
 
 

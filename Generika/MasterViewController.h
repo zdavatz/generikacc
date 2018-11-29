@@ -14,7 +14,6 @@
   SettingsViewController, ReaderViewController;
 
 @interface MasterViewController : UITableViewController <
-  ZBarReaderDelegate,
   UIDocumentPickerDelegate,
   UISearchDisplayDelegate,
   UISearchBarDelegate,
