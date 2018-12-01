@@ -664,6 +664,7 @@ static const int kSegmentReceipt = 1;
     dispatch_async(dispatch_get_main_queue(),^{
         [self didScanProductWithEan:ean
                           expiresAt:nil
+                          lotNumber:nil
                               image:image];
         [sender dismissViewControllerAnimated:YES completion:nil];
     });
@@ -673,14 +674,16 @@ static const int kSegmentReceipt = 1;
     dispatch_async(dispatch_get_main_queue(),^{
         [self didScanProductWithEan:result.gtin
                           expiresAt:result.expiryDate
+                          lotNumber:result.batchOrLotNumber
                               image:image];
         [sender dismissViewControllerAnimated:YES completion:nil];
     });
 }
 
-- (void)didScanProductWithEan:(NSString*)ean
-                    expiresAt:(NSString*)expiresAt
-                        image:(UIImage*)image {
+- (void)didScanProductWithEan:(NSString *)ean
+                    expiresAt:(NSString *)expiresAt
+                    lotNumber:(NSString *)lotNumber
+                        image:(UIImage *)image {
   if (![self isReachable]) {
     UIAlertView *alert = [[UIAlertView alloc]
       initWithTitle:@"Keine Verbindung zum Internet!"
@@ -710,7 +713,7 @@ static const int kSegmentReceipt = 1;
          success:^(NSURLSessionTask *task, id responseObject) {
            ProductManager *manager = [ProductManager sharedManager];
            NSUInteger before = [manager.products count];
-           [self didFinishPicking:responseObject withEan:ean expiresAt: expiresAt barcode:image];
+           [self didFinishPicking:responseObject withEan:ean expiresAt:expiresAt lotNumber:lotNumber barcode:image];
            NSUInteger after = [manager.products count];
            if ([type isEqualToString:@"PI"] && before < after) {
              Product *product = [manager productAtIndex:0];
@@ -732,6 +735,7 @@ static const int kSegmentReceipt = 1;
 - (void)didFinishPicking:(id)json
                  withEan:(NSString *)ean
                expiresAt:(NSString *)expiresAt
+               lotNumber:(NSString *)lotNumber
                  barcode:(UIImage *)barcode
 {
   if (json == nil || [(NSArray *)json count] == 0) {
@@ -774,7 +778,7 @@ static const int kSegmentReceipt = 1;
         publicPrice = [NSString stringWithFormat:@"CHF: %@", product.price];
       }
       NSString *message = [NSString stringWithFormat:
-        @"%@,\n%@\n%@", product.name, product.size, publicPrice];
+      @"%@,%@\n%@\n%@", product.name, lotNumber ?: @"", product.size, publicPrice];
       UIAlertView *alert = [[UIAlertView alloc]
           initWithTitle:@"Generika.cc sagt:"
                 message:message
