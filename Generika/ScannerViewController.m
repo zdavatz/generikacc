@@ -16,10 +16,14 @@
 @interface ScannerViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property (atomic) BOOL didSendResult;
+// atomic view size for calculating coordinates in background thread
+@property (atomic) CGSize viewSize;
 
-@property (atomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
-@property (atomic, strong) AVCaptureSession *captureSession;
-@property (atomic, strong) UIToolbar *toolbar;
+@property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
+@property (nonatomic, strong) AVCaptureSession *captureSession;
+@property (nonatomic, strong) UIToolbar *toolbar;
+
+@property (nonatomic) CAShapeLayer *shapeLayer;
 
 @end
 
@@ -32,6 +36,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    self.viewSize = self.view.bounds.size;
     switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]) {
         case AVAuthorizationStatusAuthorized:
             [self setupCaptureSession];
@@ -84,8 +89,16 @@
     [self.captureSession startRunning];
 
     self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.captureSession];
+    self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     [self.view.layer addSublayer:self.previewLayer];
     self.previewLayer.frame = self.view.bounds;
+
+    self.shapeLayer = [CAShapeLayer layer];
+    self.shapeLayer.fillColor = nil;
+    self.shapeLayer.opacity = 1.0;
+    self.shapeLayer.strokeColor = [UIColor greenColor].CGColor;
+    self.shapeLayer.lineWidth = 2;
+    [self.view.layer addSublayer:self.shapeLayer];
 
     self.toolbar = [[UIToolbar alloc] init];
     self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
@@ -102,6 +115,8 @@
 
 - (void)viewDidLayoutSubviews {
     self.previewLayer.frame = self.view.bounds;
+    self.shapeLayer.frame = self.view.bounds;
+    self.viewSize = self.view.bounds.size;
     self.toolbar.frame = CGRectMake(0,
                                     CGRectGetHeight(self.view.bounds) - CGRectGetHeight(self.toolbar.frame),
                                     CGRectGetWidth(self.view.bounds),
@@ -119,21 +134,34 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                  options:@{}];
     VNDetectBarcodesRequest *barcodeRequest = [[VNDetectBarcodesRequest alloc] initWithCompletionHandler:^(VNRequest *request, NSError *error) {
         if (!request.results.count) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.shapeLayer.path = nil;
+            });
             return;
         }
         UIImage *image = [Helper sampleBufferToUIImage:sampleBuffer];
         for (VNBarcodeObservation *result in request.results) {
-            if (result.symbology == VNBarcodeSymbologyDataMatrix) {
-                BarcodeExtractor *extractor = [[BarcodeExtractor alloc] init];
-                DataMatrixResult *r = [extractor extractGS1DataFrom:result.payloadStringValue];
-                [self.delegate scannerViewController:self
-                                didScannedDataMatrix:r
-                                           withImage:image];
-            } else if (result.symbology == VNBarcodeSymbologyEAN13) {
-                [self.delegate scannerViewController:self
-                                     didScannedEan13:result.payloadStringValue
-                                           withImage:image];
-            }
+            CGPoint tl = result.topLeft, tr = result.topRight, bl = result.bottomLeft, br = result.bottomRight;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIBezierPath *path = [UIBezierPath bezierPath];
+                [path moveToPoint:[self relativePointToAbsolutePoint:tl withImageSize:image.size viewSize:self.viewSize]];
+                [path addLineToPoint:[self relativePointToAbsolutePoint:tr withImageSize:image.size viewSize:self.viewSize]];
+                [path addLineToPoint:[self relativePointToAbsolutePoint:br withImageSize:image.size viewSize:self.viewSize]];
+                [path addLineToPoint:[self relativePointToAbsolutePoint:bl withImageSize:image.size viewSize:self.viewSize]];
+                [path closePath];
+                self.shapeLayer.path = path.CGPath;
+            });
+           if (result.symbology == VNBarcodeSymbologyDataMatrix) {
+               BarcodeExtractor *extractor = [[BarcodeExtractor alloc] init];
+               DataMatrixResult *r = [extractor extractGS1DataFrom:result.payloadStringValue];
+               [self.delegate scannerViewController:self
+                               didScannedDataMatrix:r
+                                          withImage:image];
+           } else if (result.symbology == VNBarcodeSymbologyEAN13) {
+               [self.delegate scannerViewController:self
+                                    didScannedEan13:result.payloadStringValue
+                                          withImage:image];
+           }
             self.didSendResult = YES;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.captureSession stopRunning];
@@ -167,6 +195,25 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         case AVCaptureVideoOrientationLandscapeLeft:
             return UIImageOrientationLeft;
     }
+}
+
+- (CGPoint)relativePointToAbsolutePoint:(CGPoint)point withImageSize:(CGSize)imageSize viewSize:(CGSize)viewSize {
+    CGFloat scale = MAX(viewSize.width / imageSize.width, viewSize.height / imageSize.height);
+    CGFloat trimmedX = (imageSize.width * scale - viewSize.width) / 2;
+    CGFloat trimmedY = (imageSize.height * scale - viewSize.height) / 2;
+    switch ([self currentVideoOrientation]) {
+        case AVCaptureVideoOrientationPortrait:
+            point = CGPointMake(point.x, 1.0 - point.y);
+            break;
+        case AVCaptureVideoOrientationLandscapeRight:
+            point = CGPointMake(1.0-point.x, point.y);
+            break;
+        case AVCaptureVideoOrientationLandscapeLeft:
+            point = CGPointMake(1.0 - point.x, 1.0 - point.y);
+            break;
+    }
+    return CGPointMake(point.x * imageSize.width * scale - trimmedX,
+                       point.y * imageSize.height * scale - trimmedY);
 }
 
 @end
