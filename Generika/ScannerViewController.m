@@ -32,6 +32,18 @@
 - (void)loadView {
     self.view = [[UIView alloc] initWithFrame:CGRectZero];
     self.view.backgroundColor = [UIColor blackColor];
+
+    self.toolbar = [[UIToolbar alloc] init];
+    self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
+    self.toolbar.barStyle = UIBarStyleBlackTranslucent;
+    UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                            target:self
+                                                                            action:@selector(cancel)];
+    [self.toolbar setItems:@[cancel,
+                             [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                           target:nil
+                                                                           action:nil]]];
+    [self.view addSubview:self.toolbar];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -46,7 +58,7 @@
                 if (granted) {
                     [self setupCaptureSession];
                 } else {
-                    // TODO: display permission denined message
+                    [self displayError:NSLocalizedString(@"Permission denined",@"")];
                 }
             }];
             break;
@@ -65,12 +77,7 @@
     AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device
                                                                         error:&error];
     if (error != nil) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
-                                                                       message:error.localizedDescription
-                                                                preferredStyle:UIAlertControllerStyleAlert];
-        [self presentViewController:alert
-                           animated:YES
-                         completion:nil];
+        [self displayError:error.localizedDescription];
         return;
     }
 
@@ -105,17 +112,7 @@
     self.shapeLayer.lineWidth = 2;
     [self.view.layer addSublayer:self.shapeLayer];
 
-    self.toolbar = [[UIToolbar alloc] init];
-    self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
-    self.toolbar.barStyle = UIBarStyleBlackTranslucent;
-    UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                            target:self
-                                                                            action:@selector(cancel)];
-    [self.toolbar setItems:@[cancel,
-                             [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                           target:nil
-                                                                           action:nil]]];
-    [self.view addSubview:self.toolbar];
+    [self.view bringSubviewToFront:self.toolbar];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -142,6 +139,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 self.shapeLayer.path = nil;
             });
             return;
+        }
+        if (error != nil) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self displayError:error.localizedDescription];
+            });
         }
         UIImage *image = [Helper sampleBufferToUIImage:sampleBuffer];
         for (VNBarcodeObservation *result in request.results) {
@@ -176,6 +178,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     barcodeRequest.symbologies = @[VNBarcodeSymbologyEAN13, VNBarcodeSymbologyDataMatrix];
     NSError *error = nil;
     [requestHandler performRequests:@[barcodeRequest] error:&error];
+    if (error != nil) {
+        [self displayError:error.localizedDescription];
+    }
+}
+
+- (void)displayError:(NSString *)errorMessage {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
+                                                                   message:errorMessage
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+    [self presentViewController:alert
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)cancel {
