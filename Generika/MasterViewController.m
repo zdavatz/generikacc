@@ -22,7 +22,6 @@
 #import "SettingsViewController.h"
 #import "ReceiptViewController.h"
 #import "ReceiptUsageViewController.h"
-#import "ReaderViewController.h"
 #import "ScannerViewController.h"
 #import "MasterViewController.h"
 
@@ -206,10 +205,6 @@ static const int kSegmentReceipt = 1;
          selector:@selector(refresh)
              name:@"productsDidLoaded"
            object:manager];
-    // reader
-    if (!self.reader) {
-      self.reader = [[ReaderViewController alloc] init];
-    }
     // delay
     double delayInSeconds = 0.1;
     dispatch_time_t popTime = dispatch_time(
@@ -290,22 +285,9 @@ static const int kSegmentReceipt = 1;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)orient
                                 duration:(NSTimeInterval) duration
 {
-  if ([self currentSegmentedType] == kSegmentProduct) {
-    self.reader.readerView.captureReader.enableReader = NO;
-    [self.reader.readerView willRotateToInterfaceOrientation:orient
-                                                    duration:0];
-  }
   [self layoutToolbar];
   [super willRotateToInterfaceOrientation:orient
                                  duration:duration];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)orient
-{
-  [super didRotateFromInterfaceOrientation:orient];
-  if ([self currentSegmentedType] == kSegmentProduct) {
-    self.reader.readerView.captureReader.enableReader = YES;
-  }
 }
 
 
@@ -522,9 +504,6 @@ static const int kSegmentReceipt = 1;
 - (void)segmentChanged:(UISegmentedControl *)control
 {
   [self setEditing:NO animated:YES]; // tableview
-  if (self.reader) { // dissmiss reader if exists
-    [self.reader dismissViewControllerAnimated:NO completion:nil];
-  }
   if (self.search) { // cancel search
     self.navigationItem.leftBarButtonItem.enabled = YES;
     [self.search setActive:NO];
@@ -810,8 +789,6 @@ static const int kSegmentReceipt = 1;
     [self presentViewController:scannerViewController
                        animated:YES
                      completion:nil];
-
-  self.reader.readerDelegate = self;
 }
 
 
