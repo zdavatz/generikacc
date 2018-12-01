@@ -88,10 +88,15 @@
 
     [self.captureSession startRunning];
 
+    for (AVCaptureConnection *connection in [output connections]){
+        connection.videoOrientation = [self currentVideoOrientation];
+    }
+
     self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.captureSession];
     self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     [self.view.layer addSublayer:self.previewLayer];
     self.previewLayer.frame = self.view.bounds;
+    self.previewLayer.connection.videoOrientation = [self currentVideoOrientation];
 
     self.shapeLayer = [CAShapeLayer layer];
     self.shapeLayer.fillColor = nil;
@@ -114,9 +119,9 @@
 }
 
 - (void)viewDidLayoutSubviews {
-    self.previewLayer.frame = self.view.bounds;
-    self.shapeLayer.frame = self.view.bounds;
     self.viewSize = self.view.bounds.size;
+    self.shapeLayer.frame = self.view.bounds;
+    self.previewLayer.frame = self.view.bounds;
     self.toolbar.frame = CGRectMake(0,
                                     CGRectGetHeight(self.view.bounds) - CGRectGetHeight(self.toolbar.frame),
                                     CGRectGetWidth(self.view.bounds),
@@ -127,7 +132,6 @@
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection {
     if (self.didSendResult) return;
-    connection.videoOrientation = AVCaptureVideoOrientationPortrait;
     VNImageRequestHandler *requestHandler =
         [[VNImageRequestHandler alloc] initWithCVPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)
                                              orientation:[self convertVideoOrientation:connection.videoOrientation]
@@ -182,6 +186,31 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)dealloc {
     [self.captureSession stopRunning];
     self.captureSession = nil;
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+
+    AVCaptureConnection *connection = self.previewLayer.connection;
+    connection.videoOrientation = [self currentVideoOrientation];
+
+    for (AVCaptureConnection *connection in [[[self.captureSession outputs] firstObject] connections]){
+        connection.videoOrientation = [self currentVideoOrientation];
+    }
+}
+
+- (AVCaptureVideoOrientation)currentVideoOrientation {
+    switch ([[UIApplication sharedApplication] statusBarOrientation]) {
+        case UIInterfaceOrientationPortrait:
+            return AVCaptureVideoOrientationPortrait;
+        case UIInterfaceOrientationLandscapeLeft:
+            return AVCaptureVideoOrientationLandscapeLeft;
+        case UIInterfaceOrientationLandscapeRight:
+            return AVCaptureVideoOrientationLandscapeRight;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            return AVCaptureVideoOrientationPortraitUpsideDown;
+    }
+    return AVCaptureVideoOrientationPortrait;
 }
 
 - (CGImagePropertyOrientation)convertVideoOrientation:(AVCaptureVideoOrientation)orientation {
