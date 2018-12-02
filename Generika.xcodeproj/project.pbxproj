@@ -53,6 +53,7 @@
 		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
 		CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */; };
 		CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
+		CF6224D721B4197E00A52CAC /* BarcodeExtractorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CF6224D621B4197E00A52CAC /* BarcodeExtractorTests.m */; };
 		CF67853921ACE789006B786A /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF67853821ACE789006B786A /* Vision.framework */; };
 		CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF67853B21ACEDBB006B786A /* ScannerViewController.m */; };
 /* End PBXBuildFile section */
@@ -132,6 +133,7 @@
 		CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataMatrixResult.m; sourceTree = "<group>"; };
 		CF4B16CB21AEEC120005C693 /* BarcodeExtractor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeExtractor.h; sourceTree = "<group>"; };
 		CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BarcodeExtractor.m; sourceTree = "<group>"; };
+		CF6224D621B4197E00A52CAC /* BarcodeExtractorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BarcodeExtractorTests.m; sourceTree = "<group>"; };
 		CF67853821ACE789006B786A /* Vision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Vision.framework; path = System/Library/Frameworks/Vision.framework; sourceTree = SDKROOT; };
 		CF67853A21ACEDBB006B786A /* ScannerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScannerViewController.h; sourceTree = "<group>"; };
 		CF67853B21ACEDBB006B786A /* ScannerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScannerViewController.m; sourceTree = "<group>"; };
@@ -254,6 +256,7 @@
 				8173D3E11FDE73C300C7CFF4 /* ProductManagerTests.m */,
 				8145D9EB1FD3D958002779FD /* ProductTests.m */,
 				819273981535D56E0060859C /* GenerikaTests.m */,
+				CF6224D621B4197E00A52CAC /* BarcodeExtractorTests.m */,
 				819273921535D56E0060859C /* Supporting Files */,
 			);
 			path = GenerikaTests;
@@ -519,6 +522,7 @@
 				8173D3E21FDE73C300C7CFF4 /* ProductManagerTests.m in Sources */,
 				8145D9EC1FD3D959002779FD /* ProductTests.m in Sources */,
 				812B9A4E17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
+				CF6224D721B4197E00A52CAC /* BarcodeExtractorTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
