@@ -21,7 +21,7 @@ echo "Target is $TARGET"
 xcodebuild archive \
   -verbose \
   -jobs 2 \
-  -project Generika.xcodeproj \
+  -workspace Generika.xcworkspace \
     CONFIGURATION_BUILD_DIR="$(PWD)/build" \
     -scheme Generika \
     -configuration $TARGET \
