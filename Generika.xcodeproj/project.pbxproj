@@ -739,7 +739,6 @@
 					"-l\"AFNetworking\"",
 					"-l\"JSONKit-NoWarning\"",
 					"-l\"NTMonthYearPicker\"",
-					"-l\"ZBarSDK\"",
 					"-l\"iconv\"",
 					"-framework",
 					"\"AVFoundation\"",
