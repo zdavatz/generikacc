@@ -17,22 +17,26 @@ PODS:
   - JSONKit-NoWarning (1.2)
   - NTMonthYearPicker (1.0.0)
   - OCMock (3.4.1)
-  - ZBarSDK (1.3.1)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.1.0)
   - JSONKit-NoWarning (~> 1.2)
   - NTMonthYearPicker (~> 1.0)
   - OCMock (~> 3.4.1)
-  - ZBarSDK (~> 1.3.1)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - AFNetworking
+    - JSONKit-NoWarning
+    - NTMonthYearPicker
+    - OCMock
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   JSONKit-NoWarning: 3d27e6f9e6846ecf741e8c64dcadd7d5aa7193cb
   NTMonthYearPicker: 27e1739d6e29428628c8275a7c1a9e4835c352f4
   OCMock: 2cd0716969bab32a2283ff3a46fd26a8c8b4c5e3
-  ZBarSDK: 4c1b5daeb7d6cc67dc9355e690af0230a661f6ec
 
-PODFILE CHECKSUM: 48a63eee8dbb294f781cfd424960de28347821e7
+PODFILE CHECKSUM: f8deebd2d7a343987bcf9c84831277a1a288515d
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.5.3

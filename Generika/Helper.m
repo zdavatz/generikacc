@@ -60,4 +60,28 @@
   return str;
 }
 
++ (BOOL)isStringNumber:(NSString *)string {
+    return [@[@"0",@"1",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9"] containsObject:string];
+}
+
++ (UIImage*)sampleBufferToUIImage:(CMSampleBufferRef)sampleBuffer {
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CVPixelBufferLockBaseAddress(imageBuffer,0);        // Lock the image buffer
+
+    uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddressOfPlane(imageBuffer, 0);   // Get information of the image
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+
+    CGContextRef newContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    CGImageRef cgImage = CGBitmapContextCreateImage(newContext);
+    CGContextRelease(newContext);
+
+    CGColorSpaceRelease(colorSpace);
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+    UIImage *newImage = [UIImage imageWithCGImage: cgImage];
+    return newImage;
+}
+
 @end

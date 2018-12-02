@@ -25,8 +25,6 @@
 		8148C65C17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */; };
 		8173D3E21FDE73C300C7CFF4 /* ProductManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8173D3E11FDE73C300C7CFF4 /* ProductManagerTests.m */; };
 		81888E1C20133F2B00515D3D /* ReceiptUsageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81888E1A20133F2B00515D3D /* ReceiptUsageViewController.m */; };
-		818CED2B1A3AF1B800A68885 /* ReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 818CED2A1A3AF1B800A68885 /* ReaderViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		818CED2C1A3AF1B800A68885 /* ReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 818CED2A1A3AF1B800A68885 /* ReaderViewController.m */; };
 		819273681535D56E0060859C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273671535D56E0060859C /* UIKit.framework */; };
 		8192736A1535D56E0060859C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819273691535D56E0060859C /* Foundation.framework */; };
 		8192736C1535D56E0060859C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8192736B1535D56E0060859C /* CoreGraphics.framework */; };
@@ -53,6 +51,10 @@
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */; };
 		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
+		CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */; };
+		CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
+		CF67853921ACE789006B786A /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF67853821ACE789006B786A /* Vision.framework */; };
+		CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF67853B21ACEDBB006B786A /* ScannerViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,8 +97,6 @@
 		8181AD8B1A31BC9F004454C8 /* generikaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = generikaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		81888E1A20133F2B00515D3D /* ReceiptUsageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiptUsageViewController.m; sourceTree = "<group>"; };
 		81888E1B20133F2B00515D3D /* ReceiptUsageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiptUsageViewController.h; sourceTree = "<group>"; };
-		818CED291A3AF17C00A68885 /* ReaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReaderViewController.h; sourceTree = "<group>"; };
-		818CED2A1A3AF1B800A68885 /* ReaderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReaderViewController.m; sourceTree = "<group>"; };
 		819273671535D56E0060859C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		819273691535D56E0060859C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8192736B1535D56E0060859C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -128,6 +128,13 @@
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
 		9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.release.xcconfig"; sourceTree = "<group>"; };
 		B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
+		CF4B16C821AEE5FE0005C693 /* DataMatrixResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataMatrixResult.h; sourceTree = "<group>"; };
+		CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataMatrixResult.m; sourceTree = "<group>"; };
+		CF4B16CB21AEEC120005C693 /* BarcodeExtractor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeExtractor.h; sourceTree = "<group>"; };
+		CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BarcodeExtractor.m; sourceTree = "<group>"; };
+		CF67853821ACE789006B786A /* Vision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Vision.framework; path = System/Library/Frameworks/Vision.framework; sourceTree = SDKROOT; };
+		CF67853A21ACEDBB006B786A /* ScannerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScannerViewController.h; sourceTree = "<group>"; };
+		CF67853B21ACEDBB006B786A /* ScannerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScannerViewController.m; sourceTree = "<group>"; };
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
 		EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GenerikaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -138,6 +145,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF67853921ACE789006B786A /* Vision.framework in Frameworks */,
 				810A928D179CD50A00DAA963 /* Security.framework in Frameworks */,
 				8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */,
 				819273A91535D6990060859C /* QuartzCore.framework in Frameworks */,
@@ -200,6 +208,7 @@
 		819273661535D56E0060859C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CF67853821ACE789006B786A /* Vision.framework */,
 				810A928C179CD50A00DAA963 /* Security.framework */,
 				8129BA58153D480100CB5896 /* SystemConfiguration.framework */,
 				819273A81535D6990060859C /* QuartzCore.framework */,
@@ -270,6 +279,8 @@
 				81B8CEB817D46EDE00DF463B /* Product.m */,
 				81B8CEBE17D4767500DF463B /* ProductManager.h */,
 				81B8CEBF17D4767500DF463B /* ProductManager.m */,
+				CF4B16C821AEE5FE0005C693 /* DataMatrixResult.h */,
+				CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -283,8 +294,8 @@
 				819273771535D56E0060859C /* AppDelegate.m */,
 				8192737F1535D56E0060859C /* MasterViewController.h */,
 				819273801535D56E0060859C /* MasterViewController.m */,
-				818CED291A3AF17C00A68885 /* ReaderViewController.h */,
-				818CED2A1A3AF1B800A68885 /* ReaderViewController.m */,
+				CF67853A21ACEDBB006B786A /* ScannerViewController.h */,
+				CF67853B21ACEDBB006B786A /* ScannerViewController.m */,
 				812B9A4B17AF7DF50001A5A8 /* SettingsViewController.h */,
 				812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */,
 				8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */,
@@ -308,6 +319,8 @@
 				8127F27B201C4BA20029F080 /* Helper.m */,
 				8129BA54153D46F100CB5896 /* Reachability.h */,
 				8129BA55153D46F100CB5896 /* Reachability.m */,
+				CF4B16CB21AEEC120005C693 /* BarcodeExtractor.h */,
+				CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -334,8 +347,6 @@
 				8192735F1535D56E0060859C /* Sources */,
 				819273601535D56E0060859C /* Frameworks */,
 				819273611535D56E0060859C /* Resources */,
-				D9623216DF874DB1C29E7927 /* [CP] Embed Pods Frameworks */,
-				09346C184EDEB8AFBFC810FF /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -354,8 +365,6 @@
 				819273851535D56E0060859C /* Sources */,
 				819273861535D56E0060859C /* Frameworks */,
 				819273871535D56E0060859C /* Resources */,
-				3C619177517A174B09387DEB /* [CP] Embed Pods Frameworks */,
-				E9DB5BE1F3F22A1E757E19B3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -433,27 +442,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		09346C184EDEB8AFBFC810FF /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Generika/Pods-Generika-resources.sh",
-				"${PODS_ROOT}/ZBarSDK/iphone/res/zbar-back.png",
-				"${PODS_ROOT}/ZBarSDK/iphone/res/zbar-help.html",
-				"${PODS_ROOT}/ZBarSDK/iphone/res/zbar-helpicons.png",
-				"${PODS_ROOT}/ZBarSDK/iphone/res/zbar-samples.png",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Generika/Pods-Generika-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		373E64B17D12D2CDEBE84062 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -470,21 +458,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3C619177517A174B09387DEB /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A218F00D0A4C7EC498B9055A /* [CP] Check Pods Manifest.lock */ = {
@@ -505,36 +478,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D9623216DF874DB1C29E7927 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Generika/Pods-Generika-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E9DB5BE1F3F22A1E757E19B3 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -544,11 +487,13 @@
 			files = (
 				8133166A1FE66E70002B07D8 /* ReceiptManager.m in Sources */,
 				8127F280201CBEEA0029F080 /* ReceiptViewController.m in Sources */,
+				CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */,
 				819273741535D56E0060859C /* main.m in Sources */,
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
+				CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */,
 				8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */,
-				818CED2B1A3AF1B800A68885 /* ReaderViewController.m in Sources */,
 				8127F27D201C4BA30029F080 /* Helper.m in Sources */,
+				CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */,
 				81B8CEB917D46EDE00DF463B /* Product.m in Sources */,
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
 				81888E1C20133F2B00515D3D /* ReceiptUsageViewController.m in Sources */,
@@ -573,7 +518,6 @@
 				819E165A17B20E8B00B315B3 /* Constant.m in Sources */,
 				8173D3E21FDE73C300C7CFF4 /* ProductManagerTests.m in Sources */,
 				8145D9EC1FD3D959002779FD /* ProductTests.m in Sources */,
-				818CED2C1A3AF1B800A68885 /* ReaderViewController.m in Sources */,
 				812B9A4E17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -740,7 +684,6 @@
 					"-l\"AFNetworking\"",
 					"-l\"JSONKit-NoWarning\"",
 					"-l\"NTMonthYearPicker\"",
-					"-l\"ZBarSDK\"",
 					"-l\"iconv\"",
 					"-framework",
 					"\"AVFoundation\"",
@@ -953,7 +896,6 @@
 					"-l\"AFNetworking\"",
 					"-l\"JSONKit-NoWarning\"",
 					"-l\"NTMonthYearPicker\"",
-					"-l\"ZBarSDK\"",
 					"-l\"iconv\"",
 					"-framework",
 					"\"AVFoundation\"",

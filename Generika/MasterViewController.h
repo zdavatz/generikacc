@@ -5,8 +5,6 @@
 //  Copyright (c) 2012-2017 ywesee GmbH. All rights reserved.
 //
 
-#import <ZBarSDK/ZBarSDK.h>
-
 @class Product;
 @class Receipt;
 @class Reachability,
@@ -14,7 +12,6 @@
   SettingsViewController, ReaderViewController;
 
 @interface MasterViewController : UITableViewController <
-  ZBarReaderDelegate,
   UIDocumentPickerDelegate,
   UISearchDisplayDelegate,
   UISearchBarDelegate,
