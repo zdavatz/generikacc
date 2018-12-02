@@ -1,5 +1,7 @@
 #!/bin/bash
 
+security unlock-keychain
+
 usage() {
   echo """Target Usage:\n$0 [Debug|Staging|Release]
   """ 1>&2;
