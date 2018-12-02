@@ -22,11 +22,11 @@ xcodebuild archive \
   -verbose \
   -jobs 2 \
   -project Generika.xcodeproj \
-    CONFIGURATION_BUILD_DIR=$(PWD)/build \
+    CONFIGURATION_BUILD_DIR="$(PWD)/build" \
     -scheme Generika \
     -configuration $TARGET \
     -derivedDataPath "$PWD/DerivedData" \
-    -archivePath $PWD/build/Generika.xcarchive \
+    -archivePath "$PWD/build/Generika.xcarchive" \
     || exit 1
 
 
