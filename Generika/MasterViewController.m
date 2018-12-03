@@ -757,7 +757,7 @@ static const int kSegmentReceipt = 1;
         publicPrice = [NSString stringWithFormat:@"CHF: %@", product.price];
       }
       NSString *message = [NSString stringWithFormat:
-      @"%@,%@\n%@\n%@", product.name, lotNumber ?: @"", product.size, publicPrice];
+      @"%@, %@\n%@\n%@", product.name, lotNumber ?: @"", product.size, publicPrice];
       UIAlertView *alert = [[UIAlertView alloc]
           initWithTitle:@"Generika.cc sagt:"
                 message:message
