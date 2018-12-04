@@ -44,6 +44,27 @@
                                                                            target:nil
                                                                            action:nil]]];
     [self.view addSubview:self.toolbar];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.toolbar
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1
+                                                           constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.toolbar
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1
+                                                           constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.toolbar
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:0]];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -119,10 +140,6 @@
     self.viewSize = self.view.bounds.size;
     self.shapeLayer.frame = self.view.bounds;
     self.previewLayer.frame = self.view.bounds;
-    self.toolbar.frame = CGRectMake(0,
-                                    CGRectGetHeight(self.view.bounds) - CGRectGetHeight(self.toolbar.frame),
-                                    CGRectGetWidth(self.view.bounds),
-                                    CGRectGetHeight(self.toolbar.frame));
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
