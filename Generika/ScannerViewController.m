@@ -148,8 +148,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (self.didSendResult) return;
     VNImageRequestHandler *requestHandler =
         [[VNImageRequestHandler alloc] initWithCVPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)
-                                             orientation:[self convertVideoOrientation:connection.videoOrientation]
-                                                 options:@{}];
+                                                     options:@{}];
     VNDetectBarcodesRequest *barcodeRequest = [[VNDetectBarcodesRequest alloc] initWithCompletionHandler:^(VNRequest *request, NSError *error) {
         if (!request.results.count) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -247,34 +246,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     return AVCaptureVideoOrientationPortrait;
 }
 
-- (CGImagePropertyOrientation)convertVideoOrientation:(AVCaptureVideoOrientation)orientation {
-    switch (orientation) {
-        case AVCaptureVideoOrientationPortrait:
-            return UIImageOrientationUp;
-        case AVCaptureVideoOrientationPortraitUpsideDown:
-            return UIImageOrientationDown;
-        case AVCaptureVideoOrientationLandscapeRight:
-            return UIImageOrientationRight;
-        case AVCaptureVideoOrientationLandscapeLeft:
-            return UIImageOrientationLeft;
-    }
-}
-
 - (CGPoint)relativePointToAbsolutePoint:(CGPoint)point withImageSize:(CGSize)imageSize viewSize:(CGSize)viewSize {
     CGFloat scale = MAX(viewSize.width / imageSize.width, viewSize.height / imageSize.height);
     CGFloat trimmedX = (imageSize.width * scale - viewSize.width) / 2;
     CGFloat trimmedY = (imageSize.height * scale - viewSize.height) / 2;
-    switch ([self currentVideoOrientation]) {
-        case AVCaptureVideoOrientationPortrait:
-            point = CGPointMake(point.x, 1.0 - point.y);
-            break;
-        case AVCaptureVideoOrientationLandscapeRight:
-            point = CGPointMake(1.0-point.x, point.y);
-            break;
-        case AVCaptureVideoOrientationLandscapeLeft:
-            point = CGPointMake(1.0 - point.x, 1.0 - point.y);
-            break;
-    }
+    point = CGPointMake(point.x, 1.0 - point.y);
     return CGPointMake(point.x * imageSize.width * scale - trimmedX,
                        point.y * imageSize.height * scale - trimmedY);
 }
