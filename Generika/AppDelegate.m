@@ -60,17 +60,15 @@
   return YES;
 }
 
-- (BOOL)application:(UIApplication *)application
+- (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation
-{
-  if (url != nil && [url isFileURL]) {
-    MasterViewController *masterViewController = (MasterViewController *)[
-      _navigationController.viewControllers objectAtIndex:0];
-    [self importURL:url to:masterViewController];
-  }
-  return YES;
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    if (url != nil && [url isFileURL]) {
+        MasterViewController *masterViewController = (MasterViewController *)[
+                                                                              _navigationController.viewControllers objectAtIndex:0];
+        [self importURL:url to:masterViewController];
+    }
+    return YES;
 }
 
 - (void)importURL:(NSURL *)url to:(MasterViewController *)masterViewController
