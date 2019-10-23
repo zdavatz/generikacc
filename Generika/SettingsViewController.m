@@ -185,10 +185,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   UIColor *sectionColor;
   if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
     sectionFont = [UIFont boldSystemFontOfSize:17.0];
-    sectionColor = [UIColor colorWithRed:0.29
-                                   green:0.33
-                                    blue:0.42
-                                   alpha:1]; // default color
+      sectionColor = [UIColor darkTextColor];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
       leftMargin += 30.0;
     }
@@ -245,7 +242,7 @@ static const float kCellHeight = 44.0; // default = 44.0
   UILabel *nameLabel = [[UILabel alloc] initWithFrame:nameFrame];
   nameLabel.font = nameFont;
   nameLabel.textAlignment = kTextAlignmentLeft;
-  nameLabel.textColor = [UIColor blackColor];
+  nameLabel.textColor = [UIColor labelColor];
   [nameLabel setAutoresizingMask:
    UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
   nameLabel.backgroundColor = [UIColor clearColor];
@@ -264,7 +261,7 @@ static const float kCellHeight = 44.0; // default = 44.0
     optionFrame = CGRectMake(frame.origin.x + 25.0, frame.origin.y + 10.0,
                              frame.size.width - 25.0, 25.0);
     optionFont = [UIFont systemFontOfSize:15.0];
-    optionColor = [UIColor lightGrayColor];
+    optionColor = [UIColor secondaryLabelColor];
   }
   UILabel *optionLabel = [[UILabel alloc] initWithFrame:optionFrame];
   optionLabel.font = optionFont;

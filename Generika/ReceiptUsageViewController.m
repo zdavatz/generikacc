@@ -59,7 +59,7 @@
 
   // attach usageView as view
   self.canvasView = [[UIView alloc] initWithFrame:mainFrame];
-  self.canvasView.backgroundColor = [UIColor whiteColor];
+  self.canvasView.backgroundColor = [UIColor systemBackgroundColor];
   [self.canvasView addSubview:self.usageView];
   self.view = self.canvasView;
 }
@@ -122,7 +122,7 @@
   textFrame.size.width = textFrame.size.width;
   UIView *textView = [[UIView alloc] initWithFrame:CGRectMake(
     0.0, 0.0, textFrame.size.width, textFrame.size.height)];
-  textView.backgroundColor = [UIColor whiteColor];
+  textView.backgroundColor = [UIColor systemBackgroundColor];
 
   UILabel *noteLabel = [[UILabel alloc] initWithFrame:CGRectMake(
     18.0, 16.0, textView.frame.size.width - 29.5, textView.frame.size.height)];

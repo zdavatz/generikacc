@@ -124,7 +124,9 @@ static const int kSegmentReceipt = 1;
   self.itemsView.dataSource = self;
   self.itemsView.rowHeight = kCellHeight;
   self.view = self.itemsView;
-
+  UIView *backgroundView = [[UIView alloc] init];
+  backgroundView.backgroundColor = [UIColor systemBackgroundColor];
+  self.itemsView.backgroundView = backgroundView;
   [self layoutTableViewSeparator:self.view];
 }
 
@@ -913,7 +915,7 @@ static const int kSegmentReceipt = 1;
         7.2, 8.0, itemView.frame.size.width - 22.0, 14.0)];
       placeDateLabel.font = [UIFont boldSystemFontOfSize:13.0];
       placeDateLabel.textAlignment = kTextAlignmentLeft;
-      placeDateLabel.textColor = [UIColor blackColor];
+      placeDateLabel.textColor = [UIColor labelColor];
       placeDateLabel.backgroundColor = [UIColor clearColor];
       placeDateLabel.text = receipt.placeDate;
       [cell.contentView addSubview:placeDateLabel];
@@ -934,7 +936,7 @@ static const int kSegmentReceipt = 1;
       }
       nameLabel.font = [UIFont systemFontOfSize:11.5];
       nameLabel.textAlignment = kTextAlignmentLeft;
-      nameLabel.textColor = [UIColor blackColor];
+      nameLabel.textColor = [UIColor labelColor];
       nameLabel.backgroundColor = [UIColor clearColor];
       nameLabel.text = [NSString stringWithFormat:@"%@ %@",
         operator.givenName, operator.familyName, nil];
@@ -953,7 +955,7 @@ static const int kSegmentReceipt = 1;
       }
       phoneLabel.font = [UIFont systemFontOfSize:11.5];
       phoneLabel.textAlignment = kTextAlignmentLeft;
-      phoneLabel.textColor = [UIColor blackColor];
+      phoneLabel.textColor = [UIColor labelColor];
       phoneLabel.backgroundColor = [UIColor clearColor];
       phoneLabel.text = operator.phone;
       [cell.contentView addSubview:phoneLabel];
@@ -967,7 +969,7 @@ static const int kSegmentReceipt = 1;
       }
       emailLabel.font = [UIFont systemFontOfSize:11.5];
       emailLabel.textAlignment = kTextAlignmentLeft;
-      emailLabel.textColor = [UIColor blackColor];
+      emailLabel.textColor = [UIColor labelColor];
       emailLabel.backgroundColor = [UIColor clearColor];
       emailLabel.text = operator.email;
       [cell.contentView addSubview:emailLabel];
@@ -985,7 +987,7 @@ static const int kSegmentReceipt = 1;
       }
       filenameLabel.font = [UIFont systemFontOfSize:10.5];
       filenameLabel.textAlignment = kTextAlignmentLeft;
-      filenameLabel.textColor = [UIColor grayColor];
+      filenameLabel.textColor = [UIColor secondaryLabelColor];
       filenameLabel.backgroundColor = [UIColor clearColor];
       filenameLabel.text = [receipt.filename lastPathComponent];
       [cell.contentView addSubview:filenameLabel];
@@ -1001,7 +1003,7 @@ static const int kSegmentReceipt = 1;
     }
     datetimeLabel.font = [UIFont systemFontOfSize:10.5];
     datetimeLabel.textAlignment = kTextAlignmentLeft;
-    datetimeLabel.textColor = [UIColor grayColor];
+    datetimeLabel.textColor = [UIColor secondaryLabelColor];
     datetimeLabel.backgroundColor = [UIColor clearColor];
     datetimeLabel.text = receipt.importedAt;
     [cell.contentView addSubview:datetimeLabel];
@@ -1016,7 +1018,7 @@ static const int kSegmentReceipt = 1;
     }
     productsLabel.font = [UIFont systemFontOfSize:10.5];
     productsLabel.textAlignment = kTextAlignmentLeft;
-    productsLabel.textColor = [UIColor grayColor];
+    productsLabel.textColor = [UIColor secondaryLabelColor];
     productsLabel.backgroundColor = [UIColor clearColor];
     NSInteger count = [receipt.products count];
     NSString *format = @"%d Medikamente";
@@ -1072,7 +1074,7 @@ static const int kSegmentReceipt = 1;
       70.0, 2.0, 230.0, 25.0)];
     nameLabel.font = [UIFont boldSystemFontOfSize:14.0];
     nameLabel.textAlignment = kTextAlignmentLeft;
-    nameLabel.textColor = [UIColor blackColor];
+    nameLabel.textColor = [UIColor labelColor];
     nameLabel.text = product.name;
     [cell.contentView addSubview:nameLabel];
     // size
@@ -1080,7 +1082,7 @@ static const int kSegmentReceipt = 1;
       70.0, 26.0, 110.0, 16.0)];
     sizeLabel.font = [UIFont boldSystemFontOfSize:12.0];
     sizeLabel.textAlignment = kTextAlignmentLeft;
-    sizeLabel.textColor = [UIColor blackColor];
+    sizeLabel.textColor = [UIColor labelColor];
     sizeLabel.text = product.size;
     [cell.contentView addSubview:sizeLabel];
     // datetime
@@ -1089,7 +1091,7 @@ static const int kSegmentReceipt = 1;
         175.0, 27.0, 100.0, 16.0)];
       dateLabel.font = [UIFont systemFontOfSize:12.0];
       dateLabel.textAlignment = kTextAlignmentLeft;
-      dateLabel.textColor = [UIColor grayColor];
+      dateLabel.textColor = [UIColor secondaryLabelColor];
       dateLabel.text = product.datetime;
       [cell.contentView addSubview:dateLabel];
     }
@@ -1098,7 +1100,7 @@ static const int kSegmentReceipt = 1;
       70.0, 45.0, 60.0, 16.0)];
     priceLabel.font = [UIFont systemFontOfSize:12.0];
     priceLabel.textAlignment = kTextAlignmentLeft;
-    priceLabel.textColor = [UIColor grayColor];
+    priceLabel.textColor = [UIColor secondaryLabelColor];
     NSString *price = product.price;
     if (![price isEqualToString:@"k.A."]) {
       priceLabel.text = price;
@@ -1109,7 +1111,7 @@ static const int kSegmentReceipt = 1;
       125.0, 45.0, 60.0, 16.0)];
     deductionLabel.font = [UIFont systemFontOfSize:12.0];
     deductionLabel.textAlignment = kTextAlignmentLeft;
-    deductionLabel.textColor = [UIColor grayColor];
+    deductionLabel.textColor = [UIColor secondaryLabelColor];
     NSString *deduction = product.deduction;
     if (![deduction isEqualToString:@"k.A."]) {
       deductionLabel.text = deduction;
@@ -1120,7 +1122,7 @@ static const int kSegmentReceipt = 1;
       176.0, 45.0, 190.0, 16.0)];
     categoryLabel.font = [UIFont systemFontOfSize:12.0];
     categoryLabel.textAlignment = kTextAlignmentLeft;
-    categoryLabel.textColor = [UIColor grayColor];
+    categoryLabel.textColor = [UIColor secondaryLabelColor];
     categoryLabel.text = product.category;
     [cell.contentView addSubview:categoryLabel];
     // ean
@@ -1128,7 +1130,7 @@ static const int kSegmentReceipt = 1;
       70.0, 62.0, 110.0, 16.0)];
     eanLabel.font = [UIFont systemFontOfSize:12.0];
     eanLabel.textAlignment = kTextAlignmentLeft;
-    eanLabel.textColor = [UIColor grayColor];
+    eanLabel.textColor = [UIColor secondaryLabelColor];
     eanLabel.text = product.ean;
     [cell.contentView addSubview:eanLabel];
     // expires_at
@@ -1156,7 +1158,7 @@ static const int kSegmentReceipt = 1;
     } else {
       expiresAtLabel.text = @"+ EXP; Verfalldatum";
       expiresAtLabel.font = [UIFont systemFontOfSize:9.0];
-      expiresAtLabel.textColor = [UIColor grayColor];
+      expiresAtLabel.textColor = [UIColor secondaryLabelColor];
     }
     [cell.contentView addSubview:expiresAtLabel];
   }
