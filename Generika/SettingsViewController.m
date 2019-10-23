@@ -16,7 +16,6 @@ static const float kCellHeight = 44.0; // default = 44.0
 @property (nonatomic, strong, readwrite) SettingsDetailViewController
   *settingsDetail;
 @property (nonatomic, strong, readwrite) NSUserDefaults *userDefaults;
-@property (nonatomic, strong) UIView *canvasView;
 @property (nonatomic, strong, readwrite) UITableView *settingsView;
 @property (nonatomic, strong, readwrite) NSArray *entries;
 
@@ -47,7 +46,6 @@ static const float kCellHeight = 44.0; // default = 44.0
 - (void)didReceiveMemoryWarning
 {
   if ([self isViewLoaded] && [self.view window] == nil) {
-    _canvasView = nil;
     _settingsView  = nil;
     _settingsDetail = nil;
   }
@@ -88,36 +86,17 @@ static const float kCellHeight = 44.0; // default = 44.0
 
 - (void)loadView
 {
-  [super loadView];
-  CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  int statusBarHeight = [
-    UIApplication sharedApplication].statusBarFrame.size.height;
-  int navBarHeight = self.navigationController.navigationBar.frame.size.height;
-  int barHeight = statusBarHeight + navBarHeight;
-  CGRect mainFrame = CGRectMake(
-    0,
-    barHeight,
-    screenBounds.size.width,
-    CGRectGetHeight(screenBounds) - barHeight
-  );
+    self.view = [[UIView alloc] init];
 
-  self.settingsView = [[UITableView alloc]
-    initWithFrame:mainFrame
-            style:UITableViewStyleGrouped];
-  self.settingsView.delegate = self;
-  self.settingsView.dataSource = self;
-  self.settingsView.rowHeight = kCellHeight;
+    self.settingsView = [[UITableView alloc]
+                         initWithFrame:CGRectZero
+                         style:UITableViewStyleGrouped];
+    [self.view addSubview:self.settingsView];
 
-  // attach settingsView as view
-  self.canvasView = [[UIView alloc] initWithFrame:mainFrame];
-  self.canvasView.backgroundColor = [UIColor colorWithRed:239/255.0
-                                                    green:239/255.0
-                                                     blue:244/255.0
-                                                    alpha:1.0];
-  [self.canvasView addSubview:self.settingsView];
-  self.view = self.canvasView;
-
-  [self layoutTableViewSeparator:self.settingsView];
+    self.settingsView.delegate = self;
+    self.settingsView.dataSource = self;
+    self.settingsView.rowHeight = kCellHeight;
+    [self layoutTableViewSeparator:self.settingsView];
 }
 
 - (void)viewDidLayoutSubviews
@@ -142,7 +121,7 @@ static const float kCellHeight = 44.0; // default = 44.0
     [self.settingsView.trailingAnchor
      constraintEqualToAnchor:guide.trailingAnchor].active = YES;
     [self.settingsView.bottomAnchor
-     constraintEqualToAnchor:guide.bottomAnchor].active = YES;
+     constraintEqualToAnchor:self.bottomLayoutGuide.bottomAnchor].active = YES;
 
     [self.view layoutIfNeeded];
   }
