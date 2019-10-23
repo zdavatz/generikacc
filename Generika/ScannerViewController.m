@@ -157,9 +157,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             return;
         }
         if (error != nil) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self displayError:error.localizedDescription];
-            });
+            [self displayError:error.localizedDescription];
         }
         UIImage *image = [Helper sampleBufferToUIImage:sampleBuffer];
         for (VNBarcodeObservation *result in request.results) {
@@ -200,15 +198,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)displayError:(NSString *)errorMessage {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
-                                                                   message:errorMessage
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
-                                              style:UIAlertActionStyleCancel
-                                            handler:nil]];
-    [self presentViewController:alert
-                       animated:YES
-                     completion:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
+                                                                       message:errorMessage
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                  style:UIAlertActionStyleCancel
+                                                handler:nil]];
+        [self presentViewController:alert
+                           animated:YES
+                         completion:nil];
+    });
 }
 
 - (void)cancel {
