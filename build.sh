@@ -26,6 +26,7 @@ xcodebuild archive \
   -workspace Generika.xcworkspace \
     CONFIGURATION_BUILD_DIR="$(PWD)/build" \
     -scheme Generika \
+    -allowProvisioningUpdates \
     -configuration $TARGET \
     -derivedDataPath "$PWD/DerivedData" \
     -archivePath "$PWD/build/Generika.xcarchive" \
@@ -62,6 +63,7 @@ fi
 #now create the .IPA using export options specified in property list files
 xcodebuild -exportArchive \
  -verbose \
+ -allowProvisioningUpdates \
  -archivePath ./build/Generika.xcarchive \
  -exportPath ./build \
  -exportOptionsPlist ./exportOptions/"$options" \
