@@ -5,7 +5,6 @@
 //  Copyright (c) 2012-2017 ywesee GmbH. All rights reserved.
 //
 
-#import "JSONKit.h"
 #import "AFHTTPSessionManager.h"
 #import "Reachability.h"
 #import "UIColorBackport.h"

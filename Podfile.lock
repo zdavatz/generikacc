@@ -1,42 +1,38 @@
 PODS:
-  - AFNetworking (3.1.0):
-    - AFNetworking/NSURLSession (= 3.1.0)
-    - AFNetworking/Reachability (= 3.1.0)
-    - AFNetworking/Security (= 3.1.0)
-    - AFNetworking/Serialization (= 3.1.0)
-    - AFNetworking/UIKit (= 3.1.0)
-  - AFNetworking/NSURLSession (3.1.0):
+  - AFNetworking (3.2.1):
+    - AFNetworking/NSURLSession (= 3.2.1)
+    - AFNetworking/Reachability (= 3.2.1)
+    - AFNetworking/Security (= 3.2.1)
+    - AFNetworking/Serialization (= 3.2.1)
+    - AFNetworking/UIKit (= 3.2.1)
+  - AFNetworking/NSURLSession (3.2.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (3.1.0)
-  - AFNetworking/Security (3.1.0)
-  - AFNetworking/Serialization (3.1.0)
-  - AFNetworking/UIKit (3.1.0):
+  - AFNetworking/Reachability (3.2.1)
+  - AFNetworking/Security (3.2.1)
+  - AFNetworking/Serialization (3.2.1)
+  - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
-  - JSONKit-NoWarning (1.2)
   - NTMonthYearPicker (1.0.0)
   - OCMock (3.4.1)
 
 DEPENDENCIES:
-  - AFNetworking (~> 3.1.0)
-  - JSONKit-NoWarning (~> 1.2)
+  - AFNetworking (~> 3.2.1)
   - NTMonthYearPicker (~> 1.0)
   - OCMock (~> 3.4.1)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AFNetworking
-    - JSONKit-NoWarning
     - NTMonthYearPicker
     - OCMock
 
 SPEC CHECKSUMS:
-  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  JSONKit-NoWarning: 3d27e6f9e6846ecf741e8c64dcadd7d5aa7193cb
+  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   NTMonthYearPicker: 27e1739d6e29428628c8275a7c1a9e4835c352f4
   OCMock: 2cd0716969bab32a2283ff3a46fd26a8c8b4c5e3
 
-PODFILE CHECKSUM: f8deebd2d7a343987bcf9c84831277a1a288515d
+PODFILE CHECKSUM: fa0ef27d4a223ed63718b123e4ccf39788cfb3c9
 
 COCOAPODS: 1.5.3

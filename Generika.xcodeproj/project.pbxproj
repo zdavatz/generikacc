@@ -692,7 +692,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"AFNetworking\"",
-					"-l\"JSONKit-NoWarning\"",
 					"-l\"NTMonthYearPicker\"",
 					"-l\"iconv\"",
 					"-framework",
@@ -747,7 +746,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"AFNetworking\"",
-					"-l\"JSONKit-NoWarning\"",
 					"-l\"NTMonthYearPicker\"",
 					"-l\"iconv\"",
 					"-framework",
@@ -903,7 +901,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"AFNetworking\"",
-					"-l\"JSONKit-NoWarning\"",
 					"-l\"NTMonthYearPicker\"",
 					"-l\"iconv\"",
 					"-framework",
