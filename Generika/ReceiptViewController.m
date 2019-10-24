@@ -7,6 +7,7 @@
 
 #import "ReceiptViewController.h"
 #import "Product.h"
+#import "UIColorBackport.h"
 
 // default uitableview's cell height: 44.0
 static const float kInfoCellHeight = 22.0;  // fixed
@@ -86,7 +87,7 @@ static const int kSectionProduct = 0;
   self.receiptView.showsHorizontalScrollIndicator = NO;
   self.receiptView.showsVerticalScrollIndicator = YES;
   self.receiptView.contentMode = UIViewContentModeScaleAspectFit;
-  self.receiptView.backgroundColor = [UIColor systemBackgroundColor];
+  self.receiptView.backgroundColor = [UIColorBackport systemBackgroundColor];
 
   // info: meta, operator and patient (sections)
   self.infoView = [[UITableView alloc]
@@ -94,7 +95,7 @@ static const int kSectionProduct = 0;
             style:UITableViewStyleGrouped];
   self.infoView.delegate = self;
   self.infoView.dataSource = self;
-  self.infoView.backgroundColor = [UIColor systemBackgroundColor];
+  self.infoView.backgroundColor = [UIColorBackport systemBackgroundColor];
   self.infoView.separatorStyle = UITableViewCellSeparatorStyleNone;
   self.infoView.scrollEnabled = NO;
   self.infoView.rowHeight = UITableViewAutomaticDimension;
@@ -107,7 +108,7 @@ static const int kSectionProduct = 0;
             style:UITableViewStylePlain];
   self.itemView.delegate = self;
   self.itemView.dataSource = self;
-  self.itemView.backgroundColor = [UIColor systemBackgroundColor];
+  self.itemView.backgroundColor = [UIColorBackport systemBackgroundColor];
   self.itemView.scrollEnabled = NO;
   self.itemView.rowHeight = UITableViewAutomaticDimension;
   self.itemView.estimatedRowHeight = kItemCellHeight;
@@ -120,7 +121,7 @@ static const int kSectionProduct = 0;
   [self layoutTableViewSeparator:self.itemView];
 
   self.canvasView = [[UIView alloc] initWithFrame:mainFrame];
-  self.canvasView.backgroundColor = [UIColor systemBackgroundColor];
+  self.canvasView.backgroundColor = [UIColorBackport systemBackgroundColor];
   [self.canvasView addSubview:self.receiptView];
   self.view = self.canvasView;
 }
