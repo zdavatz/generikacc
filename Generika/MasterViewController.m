@@ -434,12 +434,6 @@ static const int kSegmentReceipt = 1;
   self.search.searchBar.delegate = self;
   self.search.searchBar.placeholder = @"Suchen";
   self.search.searchBar.translucent = NO;
-  // fix ugly rounded field
-  UITextField *searchField = [
-    self.search.searchBar valueForKey:@"_searchField"];
-  searchField.layer.borderColor = [[UIColor whiteColor] CGColor];
-  searchField.layer.borderWidth = 3;
-  searchField.layer.cornerRadius = 4.0;
   // fix wrong position (fixed position)
   [self.search.searchBar sizeToFit];
   self.itemsView.tableHeaderView = self.search.searchBar;
