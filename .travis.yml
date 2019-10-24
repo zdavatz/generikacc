@@ -2,39 +2,23 @@ language: objective-c
 os: osx
 sudo: enabled
 
-osx_image: xcode9.2
+osx_image: xcode11.1
 
 xcode_workspace: Generika.xcworkspace
 
 podfile: Podfile
 
-before_install:
-  - sudo gem install bundler --no-rdoc --no-ri --no-document
-  - bundle install
-
 install:
-  - bundle exec pod install
+  - pod install --repo-update
 
 matrix:
   include:
     - xcode_scheme: GenerikaTests
-      xcode_sdk: iphonesimulator11.2
-      env: OS_VERSION=11.2
-
-    - xcode_scheme: GenerikaTests
-      xcode_sdk: iphonesimulator10.3.1
-      env: OS_VERSION=10.3.1
-
-    - xcode_scheme: GenerikaTests
-      xcode_sdk: iphonesimulator9.3
-      env: OS_VERSION=9.3
+      xcode_sdk: iphonesimulator13.1
+      env: OS_VERSION=13.1
 
 script:
   - OS_VERSION=$OS_VERSION make test
-
-branches:
-  only:
-    - master
 
 notifications:
   email:

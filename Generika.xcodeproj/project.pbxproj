@@ -57,6 +57,8 @@
 		CF67853921ACE789006B786A /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF67853821ACE789006B786A /* Vision.framework */; };
 		CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF67853B21ACEDBB006B786A /* ScannerViewController.m */; };
 		CF86BDD9236198FB004FF092 /* UIColorBackport.m in Sources */ = {isa = PBXBuildFile; fileRef = CF86BDD8236198FB004FF092 /* UIColorBackport.m */; };
+		CF88E3342361C669003CF887 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
+		CF88E3352361CC4D003CF887 /* UIColorBackport.m in Sources */ = {isa = PBXBuildFile; fileRef = CF86BDD8236198FB004FF092 /* UIColorBackport.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -526,10 +528,12 @@
 				819273991535D56E0060859C /* GenerikaTests.m in Sources */,
 				81B8CEBA17D46EDE00DF463B /* Product.m in Sources */,
 				819E165A17B20E8B00B315B3 /* Constant.m in Sources */,
+				CF88E3342361C669003CF887 /* BarcodeExtractor.m in Sources */,
 				8173D3E21FDE73C300C7CFF4 /* ProductManagerTests.m in Sources */,
 				8145D9EC1FD3D959002779FD /* ProductTests.m in Sources */,
 				812B9A4E17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
 				CF6224D721B4197E00A52CAC /* BarcodeExtractorTests.m in Sources */,
+				CF88E3352361CC4D003CF887 /* UIColorBackport.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

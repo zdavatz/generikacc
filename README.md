@@ -25,7 +25,7 @@ https://github.com/zdavatz/generikacc
 
 * Xcode 9
 * XCTest (for testing)
-* Ruby 2.3 (for [Cocoapods](https://cocoapods.org/) installed via Bundler)
+* Cocoapods
 
 ### Dependencies
 
@@ -38,34 +38,21 @@ See `Podfile`.
 
 ### Build
 
-```zsh
-# use ruby which is installed macOS default
-% which ruby
-/usr/bin/ruby
-
-% ruby --version
-ruby 2.3.3p222 (2016-11-21 revision 56859) [universal.x86_64-darwin17]
-```
-
-Install Bundler via `gem`, and Cocoapods via `bundler`.
+Install Cocoapods via `brew`.
 
 ```zsh
 % cd /path/to/generikacc
 
-# install cocoapods via bundler
-% gem install bundler
-% bundle install --path .bundle/gems
-# check installation of cocoapods
-% bundle exec which pod
-/path/to/pod
+# install cocoapods via homebrew
+% brew install cocoapods
 ```
 
 As next, setup dependencies via Cocoapods.
 
 ```zsh
 # you need this only once at first (it takes for a while)
-% bundle exec pod setup
-% bundle exec pod install
+% pod setup
+% pod install
 ```
 
 Open `Generika.xcworkspace` (not `Generika.xcodeproj`) and build it.
@@ -80,7 +67,7 @@ You may want to clean before rebuild, if you face something weird problem...
 # reset pods
 % rm -fr ./Pods
 # this may change build configuration of `Pods` as default one
-% bundle exec pod install
+% pod install
 ```
 
 And then click `Product` > `Clean` from menu (Shift + Command + K)
@@ -90,7 +77,7 @@ And then click `Product` > `Clean` from menu (Shift + Command + K)
 
 #### Build Active Architecture Only
 
-It must be same values in Generika and Pods both.  
+It must be same values in Generika and Pods both.
 For `Pods`, after install, `Debug` value will be turned to `YES` (as default).
 
 ```

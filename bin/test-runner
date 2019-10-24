@@ -24,7 +24,7 @@ USG
 function run_test() {
   set -x
   platform="iOS Simulator"
-  name="iPhone 6"
+  name="iPhone 8"
   sdk="iphonesimulator"
   if [ "${OS_VERSION}" == "" ] || [ "${OS_VERSION}" == "latest" ]; then
     # set latest version
