@@ -56,6 +56,9 @@
 		CF6224D721B4197E00A52CAC /* BarcodeExtractorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CF6224D621B4197E00A52CAC /* BarcodeExtractorTests.m */; };
 		CF67853921ACE789006B786A /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF67853821ACE789006B786A /* Vision.framework */; };
 		CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF67853B21ACEDBB006B786A /* ScannerViewController.m */; };
+		CF86BDD9236198FB004FF092 /* UIColorBackport.m in Sources */ = {isa = PBXBuildFile; fileRef = CF86BDD8236198FB004FF092 /* UIColorBackport.m */; };
+		CF88E3342361C669003CF887 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
+		CF88E3352361CC4D003CF887 /* UIColorBackport.m in Sources */ = {isa = PBXBuildFile; fileRef = CF86BDD8236198FB004FF092 /* UIColorBackport.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +140,8 @@
 		CF67853821ACE789006B786A /* Vision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Vision.framework; path = System/Library/Frameworks/Vision.framework; sourceTree = SDKROOT; };
 		CF67853A21ACEDBB006B786A /* ScannerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScannerViewController.h; sourceTree = "<group>"; };
 		CF67853B21ACEDBB006B786A /* ScannerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScannerViewController.m; sourceTree = "<group>"; };
+		CF86BDD7236198FB004FF092 /* UIColorBackport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIColorBackport.h; sourceTree = "<group>"; };
+		CF86BDD8236198FB004FF092 /* UIColorBackport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIColorBackport.m; sourceTree = "<group>"; };
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
 		EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GenerikaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -324,6 +329,8 @@
 				8129BA55153D46F100CB5896 /* Reachability.m */,
 				CF4B16CB21AEEC120005C693 /* BarcodeExtractor.h */,
 				CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */,
+				CF86BDD7236198FB004FF092 /* UIColorBackport.h */,
+				CF86BDD8236198FB004FF092 /* UIColorBackport.m */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -386,7 +393,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastTestingUpgradeCheck = 0610;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 1110;
 				ORGANIZATIONNAME = "ywesee GmbH";
 				TargetAttributes = {
 					819273621535D56E0060859C = {
@@ -404,10 +411,11 @@
 			};
 			buildConfigurationList = 8192735D1535D56D0060859C /* Build configuration list for PBXProject "Generika" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 819273581535D56D0060859C;
 			productRefGroup = 819273581535D56D0060859C;
@@ -499,6 +507,7 @@
 				CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */,
 				81B8CEB917D46EDE00DF463B /* Product.m in Sources */,
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
+				CF86BDD9236198FB004FF092 /* UIColorBackport.m in Sources */,
 				81888E1C20133F2B00515D3D /* ReceiptUsageViewController.m in Sources */,
 				81B86220153704330054EA0A /* WebViewController.m in Sources */,
 				813316681FE66E62002B07D8 /* Receipt.m in Sources */,
@@ -519,10 +528,12 @@
 				819273991535D56E0060859C /* GenerikaTests.m in Sources */,
 				81B8CEBA17D46EDE00DF463B /* Product.m in Sources */,
 				819E165A17B20E8B00B315B3 /* Constant.m in Sources */,
+				CF88E3342361C669003CF887 /* BarcodeExtractor.m in Sources */,
 				8173D3E21FDE73C300C7CFF4 /* ProductManagerTests.m in Sources */,
 				8145D9EC1FD3D959002779FD /* ProductTests.m in Sources */,
 				812B9A4E17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
 				CF6224D721B4197E00A52CAC /* BarcodeExtractorTests.m in Sources */,
+				CF88E3352361CC4D003CF887 /* UIColorBackport.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -560,16 +571,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -616,16 +630,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -686,7 +703,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"AFNetworking\"",
-					"-l\"JSONKit-NoWarning\"",
 					"-l\"NTMonthYearPicker\"",
 					"-l\"iconv\"",
 					"-framework",
@@ -741,7 +757,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"AFNetworking\"",
-					"-l\"JSONKit-NoWarning\"",
 					"-l\"NTMonthYearPicker\"",
 					"-l\"iconv\"",
 					"-framework",
@@ -829,14 +844,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -897,7 +915,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-l\"AFNetworking\"",
-					"-l\"JSONKit-NoWarning\"",
 					"-l\"NTMonthYearPicker\"",
 					"-l\"iconv\"",
 					"-framework",

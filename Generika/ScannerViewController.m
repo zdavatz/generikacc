@@ -33,7 +33,7 @@
     self.view = [[UIView alloc] initWithFrame:CGRectZero];
     self.view.backgroundColor = [UIColor blackColor];
 
-    self.toolbar = [[UIToolbar alloc] init];
+    self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
     self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
     self.toolbar.barStyle = UIBarStyleBlackTranslucent;
     UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
@@ -61,7 +61,7 @@
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.toolbar
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
+                                                             toItem:self.view.safeAreaLayoutGuide
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
                                                            constant:0]];
@@ -157,9 +157,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             return;
         }
         if (error != nil) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self displayError:error.localizedDescription];
-            });
+            [self displayError:error.localizedDescription];
         }
         UIImage *image = [Helper sampleBufferToUIImage:sampleBuffer];
         for (VNBarcodeObservation *result in request.results) {
@@ -200,15 +198,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)displayError:(NSString *)errorMessage {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
-                                                                   message:errorMessage
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
-                                              style:UIAlertActionStyleCancel
-                                            handler:nil]];
-    [self presentViewController:alert
-                       animated:YES
-                     completion:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
+                                                                       message:errorMessage
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                  style:UIAlertActionStyleCancel
+                                                handler:nil]];
+        [self presentViewController:alert
+                           animated:YES
+                         completion:nil];
+    });
 }
 
 - (void)cancel {

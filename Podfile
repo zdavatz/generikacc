@@ -1,8 +1,7 @@
 platform :ios, "9.0"
 
 target "Generika" do
-  pod "AFNetworking", "~> 3.1.0"
-  pod "JSONKit-NoWarning", "~> 1.2"
+  pod "AFNetworking", "~> 3.2.1"
   pod "NTMonthYearPicker", "~> 1.0"
 
   target "GenerikaTests" do
