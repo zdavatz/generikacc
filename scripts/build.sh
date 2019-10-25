@@ -1,22 +1,20 @@
 #!/bin/bash
 
+set -e
+set -u
+
+STEP_UPLOAD_APP=true
+
 security unlock-keychain
-
-usage() {
-  echo """Target Usage:\n$0 [Debug|Staging|Release]
-  """ 1>&2;
-  exit 1;
-}
-
-if [ $# -eq 0 ]
-  then
-    usage
-    exit 1
-fi
 
 mkdir -p build/
 
-TARGET=$1
+
+echo "Installing dependencies..."
+
+pod install
+
+TARGET="Release"
 
 echo "Target is $TARGET"
 
@@ -66,4 +64,13 @@ xcodebuild -exportArchive \
  -allowProvisioningUpdates \
  -archivePath ./build/Generika.xcarchive \
  -exportPath ./build \
- -exportOptionsPlist ./exportOptions/"$options" \
+ -exportOptionsPlist ./scripts/"$options" \
+
+if [ $STEP_UPLOAD_APP ] ; then
+  ipa="$(pwd)/build/generika.ipa"
+
+  echo "Validating app..."
+  time xcrun altool --validate-app --file "$ipa" --username "$ITC_USER" --password "$ITC_PASSWORD"
+  echo "Uploading app to iTC..."
+  time xcrun altool --upload-app --file "$ipa" --username "$ITC_USER" --password "$ITC_PASSWORD"
+fi

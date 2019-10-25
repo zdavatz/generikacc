@@ -23,7 +23,7 @@ https://github.com/zdavatz/generikacc
 
 ### Requirements
 
-* Xcode 9
+* Xcode 11
 * XCTest (for testing)
 * Cocoapods
 
