@@ -800,13 +800,13 @@ static const int kSegmentReceipt = 1;
   NSString *lang = [[Constant searchLangs] objectAtIndex:selectedLangIndex];
   NSString *url;
   if ([type isEqualToString:@"Preisvergleich"]) {
-    url = [NSString stringWithFormat:@"%@/%@/mobile/compare/ean13/%@",
+    url = [NSString stringWithFormat:@"%@/%@/generika/compare/ean13/%@",
            kOddbBaseURL, lang, product.ean];
   } else if ([type isEqualToString:@"PI"]) {
-    url = [NSString stringWithFormat:@"%@/%@/mobile/patinfo/reg/%@/seq/%@",
+    url = [NSString stringWithFormat:@"%@/%@/generika/patinfo/reg/%@/seq/%@",
            kOddbBaseURL, lang, product.reg, product.seq];
   } else if ([type isEqualToString:@"FI"]) {
-    url = [NSString stringWithFormat:@"%@/%@/mobile/fachinfo/reg/%@",
+    url = [NSString stringWithFormat:@"%@/%@/generika/fachinfo/reg/%@",
            kOddbBaseURL, lang, product.reg];
   }
   [self openWebViewWithURL:[NSURL URLWithString:url]];
