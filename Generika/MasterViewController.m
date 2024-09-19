@@ -572,8 +572,20 @@ static const int kSegmentReceipt = 1;
           1, ([productEANs length] - 1))];
         NSString *url;
         url = [NSString stringWithFormat:
-          @"%@/%@/gcc/home_interactions/%@", kOddbBaseURL, lang, productEANs];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+          @"%@/%@/generika/home_interactions/%@", kOddbBaseURL, lang, productEANs];
+          NSURL *urlToOpen = [NSURL URLWithString:url];
+
+          if (urlToOpen) {
+              [[UIApplication sharedApplication] openURL:urlToOpen
+                                                 options:@{}
+                                       completionHandler:^(BOOL success) {
+                  if (success) {
+                      NSLog(@"Successfully opened the URL.");
+                  } else {
+                      NSLog(@"Failed to open the URL.");
+                  }
+              }];
+          }
       }
     }
   }

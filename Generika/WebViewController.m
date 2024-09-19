@@ -183,9 +183,20 @@
 
 - (void)actionSheet:(UIActionSheet *)sheet clickedButtonAtIndex:(NSInteger)index
 {
-  if (index == sheet.destructiveButtonIndex) {
-    [[UIApplication sharedApplication] openURL:[self.browserView.request URL]];
-  } else if (index == 1) { //back to list
+    NSURL *url = self.browserView.request.URL;
+
+    if (url) {
+        [[UIApplication sharedApplication] openURL:url
+                                           options:@{}
+                                 completionHandler:^(BOOL success) {
+            if (success) {
+                NSLog(@"Opened URL successfully.");
+            } else {
+                NSLog(@"Failed to open URL.");
+            }
+        }];
+    }
+ else if (index == 1) { //back to list
     MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
     [self.navigationController popToViewController:(UIViewController *)parent animated:YES];
   }
