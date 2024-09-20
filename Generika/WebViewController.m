@@ -185,18 +185,19 @@
 {
     NSURL *url = self.browserView.request.URL;
 
-    if (url) {
-        [[UIApplication sharedApplication] openURL:url
-                                           options:@{}
-                                 completionHandler:^(BOOL success) {
-            if (success) {
-                NSLog(@"Opened URL successfully.");
-            } else {
-                NSLog(@"Failed to open URL.");
-            }
-        }];
-    }
- else if (index == 1) { //back to list
+        // Check the index first to decide what action to take
+        if (index == 0 && url) {  // Assuming index 0 is "Open in Safari"
+            [[UIApplication sharedApplication] openURL:url
+                                               options:@{}
+                                     completionHandler:^(BOOL success) {
+                if (success) {
+                    NSLog(@"Opened URL successfully.");
+                } else {
+                    NSLog(@"Failed to open URL.");
+                }
+            }];
+        }
+        else if (index == 1) {  // Assuming index 2 is "Back to List"
     MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
     [self.navigationController popToViewController:(UIViewController *)parent animated:YES];
   }
