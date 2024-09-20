@@ -197,7 +197,7 @@
                 }
             }];
         }
-        else if (index == 1) {  // Assuming index 2 is "Back to List"
+        else if (index == 1) {  // Assuming index 1 is "Back to List"
     MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
     [self.navigationController popToViewController:(UIViewController *)parent animated:YES];
   }
