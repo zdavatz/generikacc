@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "DataMatrixResult.h"
+#import "EPrescription.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)scannerViewController:(id)sender
          didScannedDataMatrix:(DataMatrixResult *)result
+                    withImage:(UIImage *)image;
+
+- (void)scannerViewController:(id)sender
+             didEPrescription:(EPrescription *)result
                     withImage:(UIImage *)image;
 
 @end

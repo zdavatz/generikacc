@@ -667,6 +667,12 @@ static const int kSegmentReceipt = 1;
     });
 }
 
+- (void)scannerViewController:(id)sender
+             didEPrescription:(EPrescription *)result
+                    withImage:(UIImage *)image {
+    NSLog(@"result %@", result.toZurRosePrescription.toXML);
+}
+
 - (void)didScanProductWithEan:(NSString *)ean
                     expiresAt:(NSString *)expiresAt
                     lotNumber:(NSString *)lotNumber

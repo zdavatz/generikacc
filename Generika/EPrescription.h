@@ -82,6 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // TODO: HcPerson, HcOrg
 
+- (ZurRosePrescription *)toZurRosePrescription;
+
 @end
 
 NS_ASSUME_NONNULL_END

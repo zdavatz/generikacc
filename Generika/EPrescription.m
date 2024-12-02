@@ -183,4 +183,95 @@
     return date;
 }
 
+- (ZurRosePrescription *)toZurRosePrescription {
+    ZurRosePrescription *prescription = [[ZurRosePrescription alloc] init];
+
+    prescription.issueDate = self.date;
+    prescription.prescriptionNr = self.prescriptionId;
+    prescription.remark = self.rmk;
+    prescription.validity = self.valDt; // ???
+
+    prescription.user = @"";
+    prescription.password = @"";
+    prescription.deliveryType = ZurRosePrescriptionDeliveryTypePatient;
+    prescription.ignoreInteractions = NO;
+    prescription.interactionsWithOldPres = NO;
+    
+    ZurRosePrescriptorAddress *prescriptor = [[ZurRosePrescriptorAddress alloc] init];
+    prescription.prescriptorAddress = prescriptor;
+    prescriptor.zsrId = self.zsr;
+    prescriptor.lastName = self.auth; // ???
+    
+    prescriptor.langCode = 1;
+    prescriptor.clientNrClustertec = @"";
+    prescriptor.street = @"";
+    prescriptor.zipCode = @"";
+    prescriptor.city = @"";
+    
+    ZurRosePatientAddress *patient = [[ZurRosePatientAddress alloc] init];
+    prescription.patientAddress = patient;
+    patient.lastName = self.patientLastName;
+    patient.firstName = self.patientFirstName;
+    patient.street = self.patientStreet;
+    patient.city = self.patientCity;
+    patient.zipCode = self.patientZip;
+    patient.birthday = self.patientBirthdate;
+    patient.sex = [self.patientGender intValue]; // same, 1 = m, 2 = f
+    patient.phoneNrHome = self.patientPhone;
+    patient.email = self.patientEmail;
+    patient.email = self.patientEmail;
+    patient.langCode = [self.patientLang.lowercaseString hasPrefix:@"de"] ? 1
+        : [self.patientLang.lowercaseString hasPrefix:@"fr"] ? 2
+        : [self.patientLang.lowercaseString hasPrefix:@"it"] ? 3
+        : 1;
+    
+    for (EPrescriptionPatientId *pid in self.patientIds) {
+        if ([pid.type isEqual:@(1)]) {
+            patient.coverCardId = pid.value;
+            patient.patientNr = pid.value; // ???
+        }
+    }
+    
+    NSMutableArray<ZurRoseProduct*> *products = [NSMutableArray array];
+    for (EPrescriptionMedicament *medi in self.medicaments) {
+        ZurRoseProduct *product = [[ZurRoseProduct alloc] init];
+        [products addObject:product];
+        
+        switch (medi.idType.intValue) {
+            case 2:
+                // GTIN
+                product.eanId = medi.medicamentId;
+                break;
+            case 3:
+                // Pharmacode
+                product.pharmacode = medi.medicamentId;
+                break;
+        }
+        product.quantity = medi.nbPack.intValue; // ???
+        product.remark = medi.appInstr;
+        product.insuranceBillingType = 1;
+        
+        BOOL repetition = NO;
+        NSMutableArray<ZurRosePosology *> *poses = [NSMutableArray array];
+        for (EPrescriptionPosology *mediPos in medi.pos) {
+            ZurRosePosology *pos = [[ZurRosePosology alloc] init];
+            [poses addObject:pos];
+            if (mediPos.d.count) {
+                pos.qtyMorning = mediPos.d[0];
+                pos.qtyMidday = mediPos.d[1];
+                pos.qtyEvening = mediPos.d[2];
+                pos.qtyNight = mediPos.d[3];
+            }
+            if (mediPos.dtTo) {
+                repetition = YES;
+            }
+        }
+        product.repetition = repetition;
+        product.posology = poses;
+    }
+    prescription.products = products;
+    
+    return prescription;
+}
+
 @end
