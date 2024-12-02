@@ -181,6 +181,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                [self.delegate scannerViewController:self
                                     didScannedEan13:result.payloadStringValue
                                           withImage:image];
+           } else if (result.symbology == VNBarcodeSymbologyQR) {
+               EPrescription *prescription = [self parseEPrescription:result.payloadStringValue];
+               if (prescription) {
+                   [self.delegate scannerViewController:self
+                                       didEPrescription:prescription
+                                              withImage:image];
+               }
            }
             self.didSendResult = YES;
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -189,7 +196,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             break;
         }
     }];
-    barcodeRequest.symbologies = @[VNBarcodeSymbologyEAN13, VNBarcodeSymbologyDataMatrix];
+    barcodeRequest.symbologies = @[VNBarcodeSymbologyEAN13, VNBarcodeSymbologyDataMatrix, VNBarcodeSymbologyQR];
     NSError *error = nil;
     [requestHandler performRequests:@[barcodeRequest] error:&error];
     if (error != nil) {
@@ -214,6 +221,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)cancel {
     [self dismissViewControllerAnimated:YES
                              completion:nil];
+}
+
+- (EPrescription *)parseEPrescription:(NSString *)str {
+    EPrescription *prescription = [[EPrescription alloc] initWithCHMED16A1String:str];
+    return prescription;
 }
 
 - (void)dealloc {
