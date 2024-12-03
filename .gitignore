@@ -22,3 +22,5 @@ DerivedData
 *.ipa
 *.xcuserstate
 /Build
+*.p12
+/Generika/ZurRose/ZurRoseCredential.h

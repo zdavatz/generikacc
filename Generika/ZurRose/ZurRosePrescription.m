@@ -7,6 +7,11 @@
 //
 
 #import "ZurRosePrescription.h"
+#import "ZurRoseCredential.h"
+
+@interface ZurRosePrescription()<NSURLSessionTaskDelegate>
+
+@end
 
 @implementation ZurRosePrescription
 
@@ -50,6 +55,72 @@
     NSString *output = [document XMLString];
     NSLog(@"output %@", output);
     return document;
+}
+
+- (void)sendToZurRoseWithCompletion:(void (^)(NSHTTPURLResponse* res, NSError* error))callback {
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://estudio.zur-rose.ch/estudio/prescriptioncert"]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:[[self toXML] XMLData]];
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (![response isKindOfClass:[NSHTTPURLResponse class]]) return;
+        callback((NSHTTPURLResponse*)response, error);
+    }];
+    task.delegate = self;
+    [task resume];
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
+        NSString* cacertPath = [[NSBundle mainBundle] pathForResource:@"client" ofType:@"p12"];
+
+        NSData *p12data = [NSData dataWithContentsOfFile:cacertPath];
+
+        CFDataRef inP12data = (__bridge CFDataRef)p12data;
+
+        SecIdentityRef myIdentity = nil;
+        extractIdentity(inP12data, &myIdentity);
+        assert(myIdentity != nil);
+
+        NSURLCredential* credential = [NSURLCredential credentialWithIdentity:myIdentity certificates:nil persistence:NSURLCredentialPersistenceNone];
+        assert(credential != nil);
+
+        NSLog(@"User: %@, certificates %@ identity:%@", [credential user], [credential certificates], [credential identity]);
+        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+        completionHandler(NSURLSessionAuthChallengeUseCredential,credential);
+    } else {
+      completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    }
+}
+
+OSStatus extractIdentity(CFDataRef inP12data, SecIdentityRef *identity)
+{
+  OSStatus securityError = errSecSuccess;
+
+  CFStringRef password = CFSTR(ZURROSE_CERTIFICATE_PASSWORD);
+  const void *keys[] = { kSecImportExportPassphrase };
+  const void *values[] = { password };
+
+  CFDictionaryRef options = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
+
+  CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
+  securityError = SecPKCS12Import(inP12data, options, &items);
+
+  if (securityError == errSecSuccess) {
+    CFDictionaryRef myIdentityAndTrust = CFArrayGetValueAtIndex(items, 0);
+    const void *tempIdentity = NULL;
+    tempIdentity = CFDictionaryGetValue(myIdentityAndTrust, kSecImportItemIdentity);
+    *identity = (SecIdentityRef)tempIdentity;
+
+    CFIndex count = CFArrayGetCount(items);
+    NSLog(@"Certificates found: %ld",count);
+  }
+
+  if (options) {
+    CFRelease(options);
+  }
+
+  return securityError;
 }
 
 @end

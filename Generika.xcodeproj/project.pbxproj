@@ -57,6 +57,7 @@
 		CF11C57E2CFD7CA400078620 /* ZurRosePrescription.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5752CFD7CA400078620 /* ZurRosePrescription.m */; };
 		CF11C57F2CFD7CA400078620 /* ZurRosePrescriptorAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5772CFD7CA400078620 /* ZurRosePrescriptorAddress.m */; };
 		CF11C5802CFD7CA400078620 /* ZurRoseProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */; };
+		CF11C5822CFDF94600078620 /* client.p12 in Resources */ = {isa = PBXBuildFile; fileRef = CF11C5812CFDF94600078620 /* client.p12 */; };
 		CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */; };
 		CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
 		CF6224D721B4197E00A52CAC /* BarcodeExtractorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CF6224D621B4197E00A52CAC /* BarcodeExtractorTests.m */; };
@@ -151,6 +152,8 @@
 		CF11C5772CFD7CA400078620 /* ZurRosePrescriptorAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRosePrescriptorAddress.m; sourceTree = "<group>"; };
 		CF11C5782CFD7CA400078620 /* ZurRoseProduct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseProduct.h; sourceTree = "<group>"; };
 		CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRoseProduct.m; sourceTree = "<group>"; };
+		CF11C5812CFDF94600078620 /* client.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = client.p12; sourceTree = "<group>"; };
+		CF11C5832CFEA4FF00078620 /* ZurRoseCredential.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseCredential.h; sourceTree = "<group>"; };
 		CF4B16C821AEE5FE0005C693 /* DataMatrixResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataMatrixResult.h; sourceTree = "<group>"; };
 		CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataMatrixResult.m; sourceTree = "<group>"; };
 		CF4B16CB21AEEC120005C693 /* BarcodeExtractor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeExtractor.h; sourceTree = "<group>"; };
@@ -385,6 +388,8 @@
 				CF11C5772CFD7CA400078620 /* ZurRosePrescriptorAddress.m */,
 				CF11C5782CFD7CA400078620 /* ZurRoseProduct.h */,
 				CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */,
+				CF11C5832CFEA4FF00078620 /* ZurRoseCredential.h */,
+				CF11C5812CFDF94600078620 /* client.p12 */,
 			);
 			path = ZurRose;
 			sourceTree = "<group>";
@@ -478,6 +483,7 @@
 			files = (
 				812C84741FDCEB7B0020AD87 /* screen in Resources */,
 				812C846F1FDCEB660020AD87 /* images.xcassets in Resources */,
+				CF11C5822CFDF94600078620 /* client.p12 in Resources */,
 				819273721535D56E0060859C /* InfoPlist.strings in Resources */,
 				812C84751FDCEB7B0020AD87 /* icon in Resources */,
 				81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */,

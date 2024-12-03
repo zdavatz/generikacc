@@ -42,6 +42,8 @@ typedef enum : NSUInteger {
 
 - (DDXMLDocument *)toXML;
 
+- (void)sendToZurRoseWithCompletion:(void (^)(NSHTTPURLResponse* res, NSError* error))callback;
+
 @end
 
 NS_ASSUME_NONNULL_END
