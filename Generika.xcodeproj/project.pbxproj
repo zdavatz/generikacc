@@ -51,6 +51,13 @@
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */; };
 		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
+		CF11C57B2CFD7CA400078620 /* ZurRoseAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */; };
+		CF11C57C2CFD7CA400078620 /* ZurRosePatientAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5712CFD7CA400078620 /* ZurRosePatientAddress.m */; };
+		CF11C57D2CFD7CA400078620 /* ZurRosePosology.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5732CFD7CA400078620 /* ZurRosePosology.m */; };
+		CF11C57E2CFD7CA400078620 /* ZurRosePrescription.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5752CFD7CA400078620 /* ZurRosePrescription.m */; };
+		CF11C57F2CFD7CA400078620 /* ZurRosePrescriptorAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5772CFD7CA400078620 /* ZurRosePrescriptorAddress.m */; };
+		CF11C5802CFD7CA400078620 /* ZurRoseProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */; };
+		CF11C5822CFDF94600078620 /* client.p12 in Resources */ = {isa = PBXBuildFile; fileRef = CF11C5812CFDF94600078620 /* client.p12 */; };
 		CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */; };
 		CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
 		CF6224D721B4197E00A52CAC /* BarcodeExtractorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CF6224D621B4197E00A52CAC /* BarcodeExtractorTests.m */; };
@@ -59,6 +66,7 @@
 		CF86BDD9236198FB004FF092 /* UIColorBackport.m in Sources */ = {isa = PBXBuildFile; fileRef = CF86BDD8236198FB004FF092 /* UIColorBackport.m */; };
 		CF88E3342361C669003CF887 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
 		CF88E3352361CC4D003CF887 /* UIColorBackport.m in Sources */ = {isa = PBXBuildFile; fileRef = CF86BDD8236198FB004FF092 /* UIColorBackport.m */; };
+		CFA37CF82CEEFF8600187BE6 /* EPrescription.m in Sources */ = {isa = PBXBuildFile; fileRef = CFA37CF72CEEFF8600187BE6 /* EPrescription.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,6 +140,20 @@
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
 		9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.release.xcconfig"; sourceTree = "<group>"; };
 		B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
+		CF11C56E2CFD7CA400078620 /* ZurRoseAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseAddress.h; sourceTree = "<group>"; };
+		CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRoseAddress.m; sourceTree = "<group>"; };
+		CF11C5702CFD7CA400078620 /* ZurRosePatientAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRosePatientAddress.h; sourceTree = "<group>"; };
+		CF11C5712CFD7CA400078620 /* ZurRosePatientAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRosePatientAddress.m; sourceTree = "<group>"; };
+		CF11C5722CFD7CA400078620 /* ZurRosePosology.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRosePosology.h; sourceTree = "<group>"; };
+		CF11C5732CFD7CA400078620 /* ZurRosePosology.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRosePosology.m; sourceTree = "<group>"; };
+		CF11C5742CFD7CA400078620 /* ZurRosePrescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRosePrescription.h; sourceTree = "<group>"; };
+		CF11C5752CFD7CA400078620 /* ZurRosePrescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRosePrescription.m; sourceTree = "<group>"; };
+		CF11C5762CFD7CA400078620 /* ZurRosePrescriptorAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRosePrescriptorAddress.h; sourceTree = "<group>"; };
+		CF11C5772CFD7CA400078620 /* ZurRosePrescriptorAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRosePrescriptorAddress.m; sourceTree = "<group>"; };
+		CF11C5782CFD7CA400078620 /* ZurRoseProduct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseProduct.h; sourceTree = "<group>"; };
+		CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRoseProduct.m; sourceTree = "<group>"; };
+		CF11C5812CFDF94600078620 /* client.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = client.p12; sourceTree = "<group>"; };
+		CF11C5832CFEA4FF00078620 /* ZurRoseCredential.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseCredential.h; sourceTree = "<group>"; };
 		CF4B16C821AEE5FE0005C693 /* DataMatrixResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataMatrixResult.h; sourceTree = "<group>"; };
 		CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataMatrixResult.m; sourceTree = "<group>"; };
 		CF4B16CB21AEEC120005C693 /* BarcodeExtractor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeExtractor.h; sourceTree = "<group>"; };
@@ -142,6 +164,8 @@
 		CF67853B21ACEDBB006B786A /* ScannerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScannerViewController.m; sourceTree = "<group>"; };
 		CF86BDD7236198FB004FF092 /* UIColorBackport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIColorBackport.h; sourceTree = "<group>"; };
 		CF86BDD8236198FB004FF092 /* UIColorBackport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIColorBackport.m; sourceTree = "<group>"; };
+		CFA37CF62CEEFF8600187BE6 /* EPrescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EPrescription.h; sourceTree = "<group>"; };
+		CFA37CF72CEEFF8600187BE6 /* EPrescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EPrescription.m; sourceTree = "<group>"; };
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
 		EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GenerikaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -289,6 +313,9 @@
 				81B8CEBF17D4767500DF463B /* ProductManager.m */,
 				CF4B16C821AEE5FE0005C693 /* DataMatrixResult.h */,
 				CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */,
+				CFA37CF62CEEFF8600187BE6 /* EPrescription.h */,
+				CFA37CF72CEEFF8600187BE6 /* EPrescription.m */,
+				CF11C57A2CFD7CA400078620 /* ZurRose */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -344,6 +371,27 @@
 				81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		CF11C57A2CFD7CA400078620 /* ZurRose */ = {
+			isa = PBXGroup;
+			children = (
+				CF11C56E2CFD7CA400078620 /* ZurRoseAddress.h */,
+				CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */,
+				CF11C5702CFD7CA400078620 /* ZurRosePatientAddress.h */,
+				CF11C5712CFD7CA400078620 /* ZurRosePatientAddress.m */,
+				CF11C5722CFD7CA400078620 /* ZurRosePosology.h */,
+				CF11C5732CFD7CA400078620 /* ZurRosePosology.m */,
+				CF11C5742CFD7CA400078620 /* ZurRosePrescription.h */,
+				CF11C5752CFD7CA400078620 /* ZurRosePrescription.m */,
+				CF11C5762CFD7CA400078620 /* ZurRosePrescriptorAddress.h */,
+				CF11C5772CFD7CA400078620 /* ZurRosePrescriptorAddress.m */,
+				CF11C5782CFD7CA400078620 /* ZurRoseProduct.h */,
+				CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */,
+				CF11C5832CFEA4FF00078620 /* ZurRoseCredential.h */,
+				CF11C5812CFDF94600078620 /* client.p12 */,
+			);
+			path = ZurRose;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -435,6 +483,7 @@
 			files = (
 				812C84741FDCEB7B0020AD87 /* screen in Resources */,
 				812C846F1FDCEB660020AD87 /* images.xcassets in Resources */,
+				CF11C5822CFDF94600078620 /* client.p12 in Resources */,
 				819273721535D56E0060859C /* InfoPlist.strings in Resources */,
 				812C84751FDCEB7B0020AD87 /* icon in Resources */,
 				81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */,
@@ -497,6 +546,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8133166A1FE66E70002B07D8 /* ReceiptManager.m in Sources */,
+				CFA37CF82CEEFF8600187BE6 /* EPrescription.m in Sources */,
 				8127F280201CBEEA0029F080 /* ReceiptViewController.m in Sources */,
 				CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */,
 				819273741535D56E0060859C /* main.m in Sources */,
@@ -510,6 +560,12 @@
 				CF86BDD9236198FB004FF092 /* UIColorBackport.m in Sources */,
 				81888E1C20133F2B00515D3D /* ReceiptUsageViewController.m in Sources */,
 				81B86220153704330054EA0A /* WebViewController.m in Sources */,
+				CF11C57B2CFD7CA400078620 /* ZurRoseAddress.m in Sources */,
+				CF11C57C2CFD7CA400078620 /* ZurRosePatientAddress.m in Sources */,
+				CF11C57D2CFD7CA400078620 /* ZurRosePosology.m in Sources */,
+				CF11C57E2CFD7CA400078620 /* ZurRosePrescription.m in Sources */,
+				CF11C57F2CFD7CA400078620 /* ZurRosePrescriptorAddress.m in Sources */,
+				CF11C5802CFD7CA400078620 /* ZurRoseProduct.m in Sources */,
 				813316681FE66E62002B07D8 /* Receipt.m in Sources */,
 				8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */,
 				8129BA56153D46F100CB5896 /* Reachability.m in Sources */,

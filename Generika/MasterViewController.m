@@ -667,6 +667,50 @@ static const int kSegmentReceipt = 1;
     });
 }
 
+- (void)scannerViewController:(id)sender
+             didEPrescription:(EPrescription *)result
+                    withImage:(UIImage *)image {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ZurRosePrescription *p = result.toZurRosePrescription;
+        NSLog(@"result %@", p);
+        UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Submit to ZurRose?", @"")
+                                                                            message:nil
+                                                                     preferredStyle:UIAlertControllerStyleAlert];
+        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"")
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction * _Nonnull action) {
+            [sender dismissViewControllerAnimated:YES completion:nil];
+            [p sendToZurRoseWithCompletion:^(NSHTTPURLResponse * _Nonnull res, NSError * _Nonnull error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (error) {
+                        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
+                                                                                       message:[error localizedDescription]
+                                                                                preferredStyle:UIAlertActionStyleDefault];
+                        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:nil]];
+                        [self presentViewController:alert animated:YES completion:nil];
+                    } else {
+                        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Done", @"")
+                                                                                       message:[NSString stringWithFormat:@"Response: %d", [res statusCode]]
+                                                                                preferredStyle:UIAlertControllerStyleAlert];
+                        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:nil]];
+                        [self presentViewController:alert animated:YES completion:nil];
+                    }
+                });
+            }];
+        }]];
+        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"")
+                                                       style:UIAlertActionStyleCancel
+                                                     handler:nil]];
+        [sender dismissViewControllerAnimated:YES completion:^{
+            [self presentViewController:controller animated:YES completion:nil];
+        }];
+    });
+}
+
 - (void)didScanProductWithEan:(NSString *)ean
                     expiresAt:(NSString *)expiresAt
                     lotNumber:(NSString *)lotNumber

@@ -55,7 +55,11 @@ As next, setup dependencies via Cocoapods.
 % pod install
 ```
 
-Open `Generika.xcworkspace` (not `Generika.xcodeproj`) and build it.
+### Set ZurRose certificate and password
+
+- Copy the ZurRose certificate to /Generika/ZurRose/client.p12.
+- Rename `/Generika/ZurRose/ZurRoseCredential.h.sample` to `/Generika/ZurRose/ZurRoseCredential.h`, and set the password in the file.
+- Open `Generika.xcworkspace` (not `Generika.xcodeproj`) and build it.
 
 ### Debug
 
