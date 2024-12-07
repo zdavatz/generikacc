@@ -123,98 +123,98 @@ static ReceiptManager *_sharedInstance = nil;
   return [self.receipts objectAtIndex:index];
 }
 
-- (id)importReceiptFromURL:(NSURL *)url
+- (id)importReceiptFromURL:(NSURL *)url{
+    // import .amk receipt file.
+    NSString *fileName = [[url absoluteString] lastPathComponent];
+
+    NSData *encryptedData = [NSData dataWithContentsOfURL:url];
+    NSData *decryptedData = [[NSData alloc]
+      initWithBase64EncodedData:encryptedData
+                        options:NSDataBase64DecodingIgnoreUnknownCharacters];
+
+    NSError *error;
+    NSDictionary *receiptData = [NSJSONSerialization
+      JSONObjectWithData:decryptedData
+                 options:NSJSONReadingAllowFragments
+                   error:&error];
+    if (error) {
+      return nil;
+    }
+    return [self importReceiptFromAMKDict:receiptData fileName:fileName];
+}
+- (id)importReceiptFromAMKDict:(NSDictionary *)receiptData fileName:(NSString *)fileName
 {
-  // import .amk receipt file.
-  NSData *now = [NSDate date];
-  NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-  [dateFormat setDateFormat:@"HH:mm:ss dd.MM.YYYY"];
-  NSString *datetime = [dateFormat stringFromDate:now];
-  NSString *fileName = [[url absoluteString] lastPathComponent];
-
-  NSData *encryptedData = [NSData dataWithContentsOfURL:url];
-  NSData *decryptedData = [encryptedData
-    initWithBase64EncodedData:encryptedData
-                      options:NSDataBase64DecodingIgnoreUnknownCharacters];
-
-  NSError *error;
-  NSDictionary *receiptData = [NSJSONSerialization
-    JSONObjectWithData:decryptedData
-               options:NSJSONReadingAllowFragments
-                 error:&error];
-  if (error) {
-    return nil;
-  }
-
-  // hashedKey (prescription_hash) is required
-  NSString *hash;
-  hash = [receiptData valueForKey:@"prescription_hash"];
-  if (hash == nil ||
-      [hash isEqual:[NSNull null]] ||
-      [hash isEqualToString:@""]) {
-    return nil;
-  }
-  NSPredicate *predicate = [NSPredicate
-    predicateWithFormat:@"hashedKey == %@", hash];
-  NSArray *matched = [self.receipts filteredArrayUsingPredicate:predicate];
-  if ([matched count] > 0) {
-    // already imported
-    return [NSNull null];
-  }
-
-  Operator *operator;
-  Patient *patient;
-  NSMutableArray *medications = [[NSMutableArray alloc] init];
-  if (error == nil) {
+    // hashedKey (prescription_hash) is required
+    NSString *hash;
+    hash = [receiptData valueForKey:@"prescription_hash"];
+    if (hash == nil ||
+        [hash isEqual:[NSNull null]] ||
+        [hash isEqualToString:@""]) {
+        return nil;
+    }
+    NSPredicate *predicate = [NSPredicate
+                              predicateWithFormat:@"hashedKey == %@", hash];
+    NSArray *matched = [self.receipts filteredArrayUsingPredicate:predicate];
+    if ([matched count] > 0) {
+        // already imported
+        return [NSNull null];
+    }
+    
+    Operator *operator;
+    Patient *patient;
+    NSMutableArray *medications = [[NSMutableArray alloc] init];
+    
     // operator
     NSDictionary *operatorDict = [
-      receiptData valueForKey:@"operator"] ?: [NSNull null];
+        receiptData valueForKey:@"operator"] ?: [NSNull null];
     if (operatorDict) {
-      operator = [Operator importFromDict:operatorDict];
+        operator = [Operator importFromDict:operatorDict];
     }
     // patient
     NSDictionary *patientDict = [
-      receiptData valueForKey:@"patient"] ?: [NSNull null];
+        receiptData valueForKey:@"patient"] ?: [NSNull null];
     if (patientDict) {
-      patient = [Patient importFromDict:patientDict];
+        patient = [Patient importFromDict:patientDict];
     }
     // medications (products)
     NSArray *medicationArray = [
-      receiptData valueForKey:@"medications"] ?: [NSNull null];
+        receiptData valueForKey:@"medications"] ?: [NSNull null];
     if (medicationArray) {
-      for (NSDictionary *medicationDict in medicationArray) {
-        [medications addObject:[Product importFromDict:medicationDict]];
-      }
+        for (NSDictionary *medicationDict in medicationArray) {
+            [medications addObject:[Product importFromDict:medicationDict]];
+        }
     }
-  }
-  if (operator == nil || patient == nil || medications == nil) {
-    return nil;
-  }
-  Receipt *receipt;
-
-  ReceiptManager *manager = [[self class] sharedManager];
-  NSString *amkfile = [manager storeAmkData:encryptedData
-                                     ofFile:fileName
-                                         to:@"both"];
-  if (amkfile == nil) {
-    return nil;
-  }
-  NSDictionary *receiptDict = @{
-    @"prescription_hash" : [
-      receiptData valueForKey:@"prescription_hash"] ?: [NSNull null],
-    @"place_date"        : [
-      receiptData valueForKey:@"place_date"] ?: [NSNull null],
-    @"operator"          : operator,
-    @"patient"           : patient,
-    @"medications"       : medications
-  };
-  receipt = [Receipt importFromDict:receiptDict];
-  // additional values
-  [receipt setValue:amkfile forKey:@"amkfile"];
-  [receipt setValue:fileName forKey:@"filename"];
-  [receipt setValue:datetime forKey:@"datetime"];
-
-  return receipt;
+    if (operator == nil || patient == nil || medications == nil) {
+        return nil;
+    }
+    Receipt *receipt;
+    
+    ReceiptManager *manager = [[self class] sharedManager];
+    NSString *amkfile = [manager storeAmkData:[[NSJSONSerialization dataWithJSONObject:receiptData options:0 error:nil] base64EncodedDataWithOptions:0]
+                                       ofFile:fileName
+                                           to:@"both"];
+    if (amkfile == nil) {
+        return nil;
+    }
+    NSDictionary *receiptDict = @{
+        @"prescription_hash" : [
+            receiptData valueForKey:@"prescription_hash"] ?: [NSNull null],
+        @"place_date"        : [
+            receiptData valueForKey:@"place_date"] ?: [NSNull null],
+        @"operator"          : operator,
+        @"patient"           : patient,
+        @"medications"       : medications
+    };
+    receipt = [Receipt importFromDict:receiptDict];
+    // additional values
+    [receipt setValue:amkfile forKey:@"amkfile"];
+    [receipt setValue:fileName forKey:@"filename"];
+    NSData *now = [NSDate date];
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"HH:mm:ss dd.MM.YYYY"];
+    [receipt setValue:[dateFormat stringFromDate:now] forKey:@"datetime"];
+    
+    return receipt;
 }
 
 #pragma mark - Saving and Loading methods
