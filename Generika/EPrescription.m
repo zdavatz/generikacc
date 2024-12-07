@@ -140,7 +140,7 @@
 }
 
 + (NSDate *)parseDateString:(NSString *)str {
-    if (!str) return nil;
+    if (!str || ![str isKindOfClass:[NSString class]]) return nil;
     static dispatch_once_t onceToken;
     static NSDateFormatter *isoFormatter = nil;
     static NSDateFormatter *isoDateFormatter = nil;
