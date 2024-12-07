@@ -673,6 +673,13 @@ static const int kSegmentReceipt = 1;
     dispatch_async(dispatch_get_main_queue(), ^{
         ZurRosePrescription *p = result.toZurRosePrescription;
         NSLog(@"result %@", p);
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH.mm.ss";
+        [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+        NSString *amkFilename = [NSString stringWithFormat:@"RZ_%@.amk", [dateFormatter stringFromDate:[NSDate date]]];
+        
+        Receipt *r = [[ReceiptManager sharedManager] importReceiptFromAMKDict:[result amkDict] fileName:amkFilename];
+        BOOL saved = [[ReceiptManager sharedManager] insertReceipt:r atIndex:0];
         UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Submit to ZurRose?", @"")
                                                                             message:nil
                                                                      preferredStyle:UIAlertControllerStyleAlert];

@@ -22,6 +22,8 @@
     @"city"       : @"city",
     @"zipcode"    : @"zip_code",
     @"country"    : @"country",
+    @"gln"        : @"gln",
+    @"zsrNumber"  : @"zsr_number",
   };
 }
 
@@ -157,6 +159,7 @@
     @"city"       : @"city",
     @"zipcode"    : @"zip_code",
     @"country"    : @"country",
+    @"gln"        : @"insurance_gln",
   };
 }
 

@@ -20,6 +20,8 @@
 @property (nonatomic, strong, readwrite) NSString *city;
 @property (nonatomic, strong, readwrite) NSString *zipcode;
 @property (nonatomic, strong, readwrite) NSString *country;
+@property (nonatomic, strong, readwrite) NSString *gln;
+@property (nonatomic, strong, readwrite) NSString *zsrNumber;
 
 + (NSDictionary *)operatorKeyMaps;
 + (id)importFromDict:(NSDictionary *)dict;
@@ -39,6 +41,7 @@
 @property (nonatomic, strong, readwrite) NSString *height;
 @property (nonatomic, strong, readwrite) NSString *birthDate;
 @property (nonatomic, strong, readwrite) NSString *gender;
+@property (nonatomic, strong, readwrite) NSString *gln;
 
 @property (nonatomic, strong, readwrite) NSString *email;
 @property (nonatomic, strong, readwrite) NSString *phone;

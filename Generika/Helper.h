@@ -15,5 +15,6 @@
                                 from:(NSString *)fromString;
 + (BOOL)isStringNumber:(NSString *)string;
 + (UIImage*)sampleBufferToUIImage:(CMSampleBufferRef)sampleBuffer;
++ (NSString *)sha256:(NSString *)input;
 
 @end

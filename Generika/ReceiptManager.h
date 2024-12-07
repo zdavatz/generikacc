@@ -25,6 +25,7 @@
 - (Receipt *)receiptAtIndex:(unsigned int)index;
 
 - (id)importReceiptFromURL:(NSURL *)url;
+- (id)importReceiptFromAMKDict:(NSDictionary *)receiptData fileName:(NSString *)fileName;
 
 - (BOOL)save;
 - (void)load;

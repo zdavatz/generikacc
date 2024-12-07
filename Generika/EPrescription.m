@@ -140,7 +140,7 @@
 }
 
 + (NSDate *)parseDateString:(NSString *)str {
-    if (!str) return nil;
+    if (!str || ![str isKindOfClass:[NSString class]]) return nil;
     static dispatch_once_t onceToken;
     static NSDateFormatter *isoFormatter = nil;
     static NSDateFormatter *isoDateFormatter = nil;
@@ -203,7 +203,7 @@
     prescriptor.lastName = self.auth; // ???
     
     prescriptor.langCode = 1;
-    prescriptor.clientNrClustertec = @"";
+    prescriptor.clientNrClustertec = @"888870";
     prescriptor.street = @"";
     prescriptor.zipCode = @"";
     prescriptor.city = @"";
@@ -272,6 +272,62 @@
     prescription.products = products;
     
     return prescription;
+}
+
+- (NSString *)generatePatientUniqueID
+{
+    NSString *birthDateString = @"";
+    
+    if (self.patientBirthdate) {
+        NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:self.patientBirthdate];
+        birthDateString = [NSString stringWithFormat:@"%d.%d.%d", components.day, components.month, components.year];
+    }
+
+    // The UUID should be unique and should be based on familyname, givenname, and birthday
+    NSString *str = [NSString stringWithFormat:@"%@.%@.%@", [self.patientLastName lowercaseString] , [self.patientFirstName lowercaseString], birthDateString];
+    NSString *hashed = [Helper sha256:str];
+    return hashed;
+}
+
+- (NSDictionary *)amkDict {
+    NSDateFormatter *birthDateDateFormatter = [[NSDateFormatter alloc] init];
+    birthDateDateFormatter.dateFormat = @"yyyy.MM.dd";
+    
+    NSDateFormatter *placeDateFormatter = [[NSDateFormatter alloc] init];
+    placeDateFormatter.dateFormat = @"dd.MM.yyyy (HH:mm:ss)";
+    [placeDateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+    
+    NSMutableArray<NSDictionary*> *mediDicts = [NSMutableArray array];
+    
+    for (EPrescriptionMedicament *medi in self.medicaments) {
+        [mediDicts addObject:@{
+            @"eancode": medi.medicamentId,
+        }];
+    }
+    
+    NSDictionary *amkDict = @{
+        @"prescription_hash": [[NSUUID UUID] UUIDString],
+        @"place_date": [NSString stringWithFormat:@",%@", [placeDateFormatter stringFromDate:self.date ?: [NSDate date]]],
+        @"operator": @{
+            @"gln": self.auth ?: @"",
+            @"zsr_number": self.zsr ?: @"",
+        },
+        @"patient": @{
+            @"patient_id": [self generatePatientUniqueID],
+            @"given_name": self.patientLastName ?: @"",
+            @"family_name": self.patientFirstName ?: @"",
+            @"birth_date": self.patientBirthdate ? [birthDateDateFormatter stringFromDate:self.patientBirthdate] : @"",
+            @"gender": self.patientGender.intValue == 1 ? @"M" : @"F",
+            @"email_address": self.patientEmail ?: @"",
+            @"phone_number": self.patientPhone ?: @"",
+            @"postal_address": self.patientStreet ?: @"",
+            @"city": self.patientCity ?: @"",
+            @"zip_code": self.patientZip ?: @"",
+            @"insurance_gln": self.patientReceiverGLN ?: @"",
+        },
+        @"medications": mediDicts,
+    };
+    return amkDict;
 }
 
 @end
