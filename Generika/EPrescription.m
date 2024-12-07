@@ -203,7 +203,7 @@
     prescriptor.lastName = self.auth; // ???
     
     prescriptor.langCode = 1;
-    prescriptor.clientNrClustertec = @"";
+    prescriptor.clientNrClustertec = @"888870";
     prescriptor.street = @"";
     prescriptor.zipCode = @"";
     prescriptor.city = @"";
