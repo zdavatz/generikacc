@@ -680,10 +680,10 @@ static const int kSegmentReceipt = 1;
         
         Receipt *r = [[ReceiptManager sharedManager] importReceiptFromAMKDict:[result amkDict] fileName:amkFilename];
         BOOL saved = [[ReceiptManager sharedManager] insertReceipt:r atIndex:0];
-        UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Submit to ZurRose?", @"")
+        UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Senden an ZurRose?", @"")
                                                                             message:nil
                                                                      preferredStyle:UIAlertControllerStyleAlert];
-        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"")
+        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Senden", @"")
                                                        style:UIAlertActionStyleDefault
                                                      handler:^(UIAlertAction * _Nonnull action) {
             [sender dismissViewControllerAnimated:YES completion:nil];
@@ -698,8 +698,8 @@ static const int kSegmentReceipt = 1;
                                                                 handler:nil]];
                         [self presentViewController:alert animated:YES completion:nil];
                     } else {
-                        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Done", @"")
-                                                                                       message:[NSString stringWithFormat:@"Response: %d", [res statusCode]]
+                        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                                       message:[NSString stringWithFormat:@"Rezept wurde an ZurRose übermittelt.", [res statusCode]]
                                                                                 preferredStyle:UIAlertControllerStyleAlert];
                         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
                                                                   style:UIAlertActionStyleDefault
@@ -709,7 +709,7 @@ static const int kSegmentReceipt = 1;
                 });
             }];
         }]];
-        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"")
+        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Abbrechen", @"")
                                                        style:UIAlertActionStyleCancel
                                                      handler:nil]];
         [sender dismissViewControllerAnimated:YES completion:^{
