@@ -134,7 +134,7 @@
     "geöffnet werden."];
   noteLabel.font = [UIFont systemFontOfSize:13.5];
   noteLabel.textAlignment = kTextAlignmentLeft;
-  noteLabel.textColor = [UIColor blackColor];
+  noteLabel.textColor = [UIColor labelColor];
   noteLabel.backgroundColor = [UIColor clearColor];
   noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
   noteLabel.numberOfLines = 0;
