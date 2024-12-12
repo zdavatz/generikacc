@@ -67,6 +67,7 @@
 		CF88E3342361C669003CF887 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
 		CF88E3352361CC4D003CF887 /* UIColorBackport.m in Sources */ = {isa = PBXBuildFile; fileRef = CF86BDD8236198FB004FF092 /* UIColorBackport.m */; };
 		CFA37CF82CEEFF8600187BE6 /* EPrescription.m in Sources */ = {isa = PBXBuildFile; fileRef = CFA37CF72CEEFF8600187BE6 /* EPrescription.m */; };
+		CFB2A3EF2D0AB28D00014AFA /* swiss-zip-to-kanton.json in Resources */ = {isa = PBXBuildFile; fileRef = CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,6 +167,7 @@
 		CF86BDD8236198FB004FF092 /* UIColorBackport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIColorBackport.m; sourceTree = "<group>"; };
 		CFA37CF62CEEFF8600187BE6 /* EPrescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EPrescription.h; sourceTree = "<group>"; };
 		CFA37CF72CEEFF8600187BE6 /* EPrescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EPrescription.m; sourceTree = "<group>"; };
+		CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "swiss-zip-to-kanton.json"; sourceTree = "<group>"; };
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
 		EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GenerikaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -369,6 +371,7 @@
 				812C84711FDCEB7B0020AD87 /* screen */,
 				812C846E1FDCEB650020AD87 /* images.xcassets */,
 				81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */,
+				CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -486,6 +489,7 @@
 				CF11C5822CFDF94600078620 /* client.p12 in Resources */,
 				819273721535D56E0060859C /* InfoPlist.strings in Resources */,
 				812C84751FDCEB7B0020AD87 /* icon in Resources */,
+				CFB2A3EF2D0AB28D00014AFA /* swiss-zip-to-kanton.json in Resources */,
 				81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

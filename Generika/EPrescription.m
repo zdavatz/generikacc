@@ -214,6 +214,7 @@
     patient.firstName = self.patientFirstName;
     patient.street = self.patientStreet;
     patient.city = self.patientCity;
+    patient.kanton = [self swissKantonFromZip:self.patientZip];
     patient.zipCode = self.patientZip;
     patient.birthday = self.patientBirthdate;
     patient.sex = [self.patientGender intValue]; // same, 1 = m, 2 = f
@@ -272,6 +273,15 @@
     prescription.products = products;
     
     return prescription;
+}
+
+- (NSString *)swissKantonFromZip:(NSString *)zip {
+    if (!zip.length) return nil;
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"swiss-zip-to-kanton" withExtension:@"json"];
+    NSData *data = [NSData dataWithContentsOfURL:url];
+    NSError *error = nil;
+    NSDictionary *parsed = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    return parsed[zip];
 }
 
 - (NSString *)generatePatientUniqueID
