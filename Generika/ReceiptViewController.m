@@ -398,7 +398,7 @@ viewForHeaderInSection:(NSInteger)section
   CGRect labelFrame = CGRectMake(12, 2, 200, 25);
   UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
   label.font = [UIFont systemFontOfSize:13 weight:UIFontWeightLight];
-  label.textColor = [UIColor darkGrayColor];
+  label.textColor = [UIColor secondaryLabelColor];
   frame.size.height = 25;
 
   if (tableView == self.infoView) {
@@ -517,11 +517,11 @@ viewForHeaderInSection:(NSInteger)section
     if (indexPath.section == kSectionMeta) {
       // place_date
       label = [self makeInfoLabel:self.receipt.placeDate
-                        textColor:[UIColor blackColor]
+                        textColor:[UIColor labelColor]
                        fontOfSize:13.8];
     } else {  // operator or patient
       label = [self makeInfoLabel:@""
-                        textColor:[UIColor blackColor]
+                        textColor:[UIColor labelColor]
                        fontOfSize:13.0];
       if (indexPath.section == kSectionOperator) {
         Operator *operator = self.receipt.operator;
@@ -616,13 +616,13 @@ viewForHeaderInSection:(NSInteger)section
     product = [self.receipt.products objectAtIndex:indexPath.row];
     if (product) {
       UILabel *packLabel = [self makeItemLabel:product.pack
-                                     textColor:[UIColor blackColor]
+                                     textColor:[UIColor labelColor]
                                     fontOfSize:12.2];
       UILabel *eanLabel = [self makeItemLabel:product.ean
-                                    textColor:[UIColor darkGrayColor]
+                                    textColor:[UIColor secondaryLabelColor]
                                    fontOfSize:12.2];
       UILabel *commentLabel = [self makeItemLabel:product.comment
-                                        textColor:[UIColor darkGrayColor]
+                                        textColor:[UIColor secondaryLabelColor]
                                        fontOfSize:12.2];
       // layout (fix origin.y)
       CGRect eanFrame = CGRectMake(
