@@ -32,12 +32,10 @@
     };
 
     [e addAttribute:[DDXMLNode attributeWithName:@"street" stringValue:self.street]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"zipCode" stringValue:self.zipCode]];
+    [e addAttribute:[DDXMLNode attributeWithName:@"zipCode" stringValue:self.zipCode ?: @""]];
     [e addAttribute:[DDXMLNode attributeWithName:@"city" stringValue:self.city]];
 
-    if (self.kanton) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"kanton" stringValue:self.kanton]];
-    };
+    [e addAttribute:[DDXMLNode attributeWithName:@"kanton" stringValue:self.kanton ?: @""]];
     if (self.country) {
         [e addAttribute:[DDXMLNode attributeWithName:@"country" stringValue:self.country]];
     };
