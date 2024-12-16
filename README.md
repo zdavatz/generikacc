@@ -51,6 +51,7 @@ As next, setup dependencies via Cocoapods.
 
 ```zsh
 # you need this only once at first (it takes for a while)
+% export RUBYOPT="-E utf-8"
 % pod setup
 % pod install
 ```
