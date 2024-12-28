@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString *pharmacode; // optional
 @property (nonatomic, strong) NSString *eanId; // optional
-@property (nonatomic, strong) NSString *description; // optional
+@property (nonatomic, strong) NSString *description_; // optional
 @property (nonatomic, assign) BOOL repetition;
 @property (nonatomic, assign) int nrOfRepetitions; // optional, 0 - 99
 @property (nonatomic, assign) int quantity; // 0 - 999
