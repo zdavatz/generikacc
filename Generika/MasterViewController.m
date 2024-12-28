@@ -689,17 +689,17 @@ static const int kSegmentReceipt = 1;
             [sender dismissViewControllerAnimated:YES completion:nil];
             [p sendToZurRoseWithCompletion:^(NSHTTPURLResponse * _Nonnull res, NSError * _Nonnull error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if (error) {
+                    if (error || res.statusCode != 200) {
                         UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
-                                                                                       message:[error localizedDescription]
-                                                                                preferredStyle:UIAlertActionStyleDefault];
+                                                                                       message:[error localizedDescription] ?: [NSString stringWithFormat:NSLocalizedString(@"Error Code: %ld", @""), res.statusCode]
+                                                                                preferredStyle:UIAlertControllerStyleAlert];
                         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
                                                                   style:UIAlertActionStyleDefault
                                                                 handler:nil]];
                         [self presentViewController:alert animated:YES completion:nil];
                     } else {
                         UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                                       message:[NSString stringWithFormat:@"Rezept wurde an ZurRose übermittelt.", [res statusCode]]
+                                                                                       message:NSLocalizedString(@"Rezept wurde an ZurRose übermittelt.", @"")
                                                                                 preferredStyle:UIAlertControllerStyleAlert];
                         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
                                                                   style:UIAlertActionStyleDefault
