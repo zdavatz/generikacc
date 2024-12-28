@@ -34,8 +34,8 @@
     if (self.eanId) {
         [e addAttribute:[DDXMLNode attributeWithName:@"eanId" stringValue:self.eanId]];
     }
-    if (self.description) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"description" stringValue:self.description]];
+    if (self.description_) {
+        [e addAttribute:[DDXMLNode attributeWithName:@"description" stringValue:self.description_]];
     }
     [e addAttribute:[DDXMLNode attributeWithName:@"repetition" stringValue:self.repetition ? @"true" : @"false"]];
     if (self.nrOfRepetitions >= 0) {
