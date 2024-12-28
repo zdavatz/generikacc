@@ -40,7 +40,6 @@
         NSData *compressed = [[NSData alloc] initWithBase64EncodedString:str options:0];
         NSError *error = nil;
         NSData *decompressed1 = [compressed gunzippedData];
-        NSString *ds1 = [[NSString alloc] initWithData:decompressed1 encoding:NSUTF8StringEncoding];
         NSDictionary *jsonObj = [NSJSONSerialization JSONObjectWithData:decompressed1 options:0 error:&error];
         if (![jsonObj isKindOfClass:[NSDictionary class]]) {
             return nil;
@@ -187,7 +186,7 @@
     ZurRosePrescription *prescription = [[ZurRosePrescription alloc] init];
 
     prescription.issueDate = self.date;
-    prescription.prescriptionNr = self.prescriptionId;
+    prescription.prescriptionNr =  [NSString stringWithFormat:@"%09d", arc4random_uniform(1000000000)];
     prescription.remark = self.rmk;
     prescription.validity = self.valDt; // ???
 
@@ -220,16 +219,17 @@
     patient.sex = [self.patientGender intValue]; // same, 1 = m, 2 = f
     patient.phoneNrHome = self.patientPhone;
     patient.email = self.patientEmail;
-    patient.email = self.patientEmail;
     patient.langCode = [self.patientLang.lowercaseString hasPrefix:@"de"] ? 1
         : [self.patientLang.lowercaseString hasPrefix:@"fr"] ? 2
         : [self.patientLang.lowercaseString hasPrefix:@"it"] ? 3
         : 1;
+    patient.patientNr = @"";
+    patient.coverCardId = @"";
     
+    NSString *insuranceEan = nil;
     for (EPrescriptionPatientId *pid in self.patientIds) {
         if ([pid.type isEqual:@(1)]) {
-            patient.coverCardId = pid.value;
-            patient.patientNr = pid.value; // ???
+            insuranceEan = pid.value;
         }
     }
     
@@ -251,6 +251,7 @@
         product.quantity = medi.nbPack.intValue; // ???
         product.remark = medi.appInstr;
         product.insuranceBillingType = 1;
+        product.insuranceEanId = insuranceEan;
         
         BOOL repetition = NO;
         NSMutableArray<ZurRosePosology *> *poses = [NSMutableArray array];
@@ -258,10 +259,10 @@
             ZurRosePosology *pos = [[ZurRosePosology alloc] init];
             [poses addObject:pos];
             if (mediPos.d.count) {
-                pos.qtyMorning = mediPos.d[0];
-                pos.qtyMidday = mediPos.d[1];
-                pos.qtyEvening = mediPos.d[2];
-                pos.qtyNight = mediPos.d[3];
+                pos.qtyMorning = mediPos.d[0].intValue;
+                pos.qtyMidday = mediPos.d[1].intValue;
+                pos.qtyEvening = mediPos.d[2].intValue;
+                pos.qtyNight = mediPos.d[3].intValue;
             }
             if (mediPos.dtTo) {
                 repetition = YES;
