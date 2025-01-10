@@ -53,7 +53,6 @@
     }
     
     NSString *output = [document XMLString];
-    NSLog(@"output %@", output);
     return document;
 }
 
@@ -61,7 +60,9 @@
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://estudio.zur-rose.ch/estudio/prescriptioncert"]];
     [request setHTTPMethod:@"POST"];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
-    [request setHTTPBody:[[self toXML] XMLData]];
+    NSData *xmlData = [[self toXML] XMLData];
+    NSLog(@"xml: %@", [[NSString alloc] initWithData:xmlData encoding:NSUTF8StringEncoding]);
+    [request setHTTPBody:xmlData];
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (![response isKindOfClass:[NSHTTPURLResponse class]]) return;
         callback((NSHTTPURLResponse*)response, error);
