@@ -672,7 +672,6 @@ static const int kSegmentReceipt = 1;
                     withImage:(UIImage *)image {
     dispatch_async(dispatch_get_main_queue(), ^{
         ZurRosePrescription *p = result.toZurRosePrescription;
-        NSLog(@"result %@", p);
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH.mm.ss";
         [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
