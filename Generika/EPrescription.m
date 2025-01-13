@@ -100,7 +100,7 @@
             m.idType = medicament[@"IdType"];
             m.unit = medicament[@"Unit"];
             m.rep = medicament[@"rep"];
-            m.nbPack = medicament[@"NbPack"];
+            m.nbPack = medicament[@"NbPack"] ?: @1;
             m.subs = medicament[@"Subs"];
             
             NSMutableArray<EPrescriptionPosology*> *pos = [NSMutableArray array];
@@ -249,7 +249,7 @@
                 product.pharmacode = medi.medicamentId;
                 break;
         }
-        product.quantity = medi.nbPack.intValue; // ???
+        product.quantity = medi.nbPack.intValue;
         product.remark = @"";
         product.insuranceBillingType = 1;
         product.insuranceEanId = insuranceEan;
