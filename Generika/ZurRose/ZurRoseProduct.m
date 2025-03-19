@@ -41,7 +41,7 @@
     if (self.nrOfRepetitions >= 0) {
         [e addAttribute:[DDXMLNode attributeWithName:@"nrOfRepetitions" stringValue:[@(self.nrOfRepetitions) stringValue]]];
     }
-    [e addAttribute:[DDXMLNode attributeWithName:@"quantity" stringValue:[@(self.quantity) stringValue]]];
+    [e addAttribute:[DDXMLNode attributeWithName:@"quantity" stringValue:[@(self.quantity ?: 1) stringValue]]];
     if (self.validityRepetition) {
         [e addAttribute:[DDXMLNode attributeWithName:@"validityRepetition" stringValue:self.validityRepetition]];
     }

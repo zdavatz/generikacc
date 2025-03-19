@@ -31,16 +31,24 @@
         if (range.location == NSNotFound) return nil;
         str = [str substringToIndex:range.location];
     }
+    NSData *jsonData = nil;
     NSString *prefix = @"CHMED16A1";
-    if (![str hasPrefix:prefix]) {
+    if ([str hasPrefix:prefix]) {
+        str = [str substringFromIndex:[prefix length]];
+        NSData *compressed = [[NSData alloc] initWithBase64EncodedString:str options:0];
+        jsonData = [compressed gunzippedData];
+    }
+    prefix = @"CHMED16A0";
+    if ([str hasPrefix:prefix]) {
+        str = [str substringFromIndex:[prefix length]];
+        jsonData = [str dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    if (!jsonData) {
         return nil;
     }
     if (self = [super init]) {
-        str = [str substringFromIndex:[prefix length]];
-        NSData *compressed = [[NSData alloc] initWithBase64EncodedString:str options:0];
         NSError *error = nil;
-        NSData *decompressed1 = [compressed gunzippedData];
-        NSDictionary *jsonObj = [NSJSONSerialization JSONObjectWithData:decompressed1 options:0 error:&error];
+        NSDictionary *jsonObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
         if (![jsonObj isKindOfClass:[NSDictionary class]]) {
             return nil;
         }
@@ -50,7 +58,7 @@
         self.prescriptionId = jsonObj[@"Id"];
         self.medType = jsonObj[@"MedType"];
         self.zsr = jsonObj[@"Zsr"];
-        self.rmk = jsonObj[@"rmk"];
+        self.rmk = jsonObj[@"Rmk"];
 
         NSMutableArray<EPrescriptionPField *> *pfields = [NSMutableArray array];
         for (NSDictionary *pfield in jsonObj[@"PFields"]) {
@@ -208,6 +216,19 @@
     prescriptor.zipCode = @"";
     prescriptor.city = @"";
     
+    
+    NSString *insuranceEan = nil;
+    NSString *coverCardId = nil;
+    for (EPrescriptionPatientId *pid in self.patientIds) {
+        if ([pid.type isEqual:@(1)]) {
+            if (pid.value.length == 13) {
+                insuranceEan = pid.value;
+            } else if (pid.value.length == 20 || [pid.value containsString:@"."]) {
+                coverCardId = pid.value;
+            }
+        }
+    }
+    
     ZurRosePatientAddress *patient = [[ZurRosePatientAddress alloc] init];
     prescription.patientAddress = patient;
     patient.lastName = self.patientLastName;
@@ -225,14 +246,7 @@
         : [self.patientLang.lowercaseString hasPrefix:@"it"] ? 3
         : 1;
     patient.patientNr = @"";
-    patient.coverCardId = @"";
-    
-    NSString *insuranceEan = nil;
-    for (EPrescriptionPatientId *pid in self.patientIds) {
-        if ([pid.type isEqual:@(1)]) {
-            insuranceEan = pid.value;
-        }
-    }
+    patient.coverCardId = coverCardId ?: @"";
     
     NSMutableArray<ZurRoseProduct*> *products = [NSMutableArray array];
     for (EPrescriptionMedicament *medi in self.medicaments) {
@@ -321,6 +335,15 @@
         }];
     }
     
+    NSString *firstPatientId = self.patientIds.firstObject.value ?: self.patientReceiverGLN;
+    NSString *coverCardId = nil;
+    NSString *insuranceGLN = nil;
+    if (firstPatientId.length == 13) {
+        insuranceGLN = firstPatientId;
+    } else if (firstPatientId.length == 20 || [firstPatientId containsString:@"."]) {
+        coverCardId = firstPatientId;
+    }
+    
     NSDictionary *amkDict = @{
         @"prescription_hash": [[NSUUID UUID] UUIDString],
         // Normally place_date is composed with doctor's name or city,
@@ -341,7 +364,8 @@
             @"postal_address": self.patientStreet ?: @"",
             @"city": self.patientCity ?: @"",
             @"zip_code": self.patientZip ?: @"",
-            @"insurance_gln": self.patientReceiverGLN ?: @"",
+            @"insurance_gln": insuranceGLN ?: @"",
+            @"health_card_number": coverCardId ?: @"",
         },
         @"medications": mediDicts,
     };
