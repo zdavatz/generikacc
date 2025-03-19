@@ -25,7 +25,9 @@
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyy-MM-dd";
     [e addAttribute:[DDXMLNode attributeWithName:@"issueDate" stringValue:[formatter stringFromDate:self.issueDate]]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"validity" stringValue:[formatter stringFromDate:self.validity]]];
+    [e addAttribute:[DDXMLNode attributeWithName:@"validity" stringValue:
+                    self.validity ? [formatter stringFromDate:self.validity] :
+                     self.issueDate ? [formatter stringFromDate:self.issueDate] : @""]];
     [e addAttribute:[DDXMLNode attributeWithName:@"user" stringValue:self.user]];
     [e addAttribute:[DDXMLNode attributeWithName:@"password" stringValue:self.password]];
     if (self.prescriptionNr) {
