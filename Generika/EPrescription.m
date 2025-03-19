@@ -216,6 +216,19 @@
     prescriptor.zipCode = @"";
     prescriptor.city = @"";
     
+    
+    NSString *insuranceEan = nil;
+    NSString *coverCardId = nil;
+    for (EPrescriptionPatientId *pid in self.patientIds) {
+        if ([pid.type isEqual:@(1)]) {
+            if (pid.value.length == 13) {
+                insuranceEan = pid.value;
+            } else if (pid.value.length == 20 || [pid.value containsString:@"."]) {
+                coverCardId = pid.value;
+            }
+        }
+    }
+    
     ZurRosePatientAddress *patient = [[ZurRosePatientAddress alloc] init];
     prescription.patientAddress = patient;
     patient.lastName = self.patientLastName;
@@ -233,14 +246,7 @@
         : [self.patientLang.lowercaseString hasPrefix:@"it"] ? 3
         : 1;
     patient.patientNr = @"";
-    patient.coverCardId = @"";
-    
-    NSString *insuranceEan = nil;
-    for (EPrescriptionPatientId *pid in self.patientIds) {
-        if ([pid.type isEqual:@(1)]) {
-            insuranceEan = pid.value;
-        }
-    }
+    patient.coverCardId = coverCardId ?: @"";
     
     NSMutableArray<ZurRoseProduct*> *products = [NSMutableArray array];
     for (EPrescriptionMedicament *medi in self.medicaments) {
@@ -329,6 +335,15 @@
         }];
     }
     
+    NSString *firstPatientId = self.patientIds.firstObject.value ?: self.patientReceiverGLN;
+    NSString *coverCardId = nil;
+    NSString *insuranceGLN = nil;
+    if (firstPatientId.length == 13) {
+        insuranceGLN = firstPatientId;
+    } else if (firstPatientId.length == 20 || [firstPatientId containsString:@"."]) {
+        coverCardId = firstPatientId;
+    }
+    
     NSDictionary *amkDict = @{
         @"prescription_hash": [[NSUUID UUID] UUIDString],
         // Normally place_date is composed with doctor's name or city,
@@ -349,7 +364,8 @@
             @"postal_address": self.patientStreet ?: @"",
             @"city": self.patientCity ?: @"",
             @"zip_code": self.patientZip ?: @"",
-            @"insurance_gln": self.patientReceiverGLN ?: @"",
+            @"insurance_gln": insuranceGLN ?: @"",
+            @"health_card_number": coverCardId ?: @"",
         },
         @"medications": mediDicts,
     };
