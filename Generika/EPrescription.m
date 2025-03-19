@@ -31,16 +31,24 @@
         if (range.location == NSNotFound) return nil;
         str = [str substringToIndex:range.location];
     }
+    NSData *jsonData = nil;
     NSString *prefix = @"CHMED16A1";
-    if (![str hasPrefix:prefix]) {
+    if ([str hasPrefix:prefix]) {
+        str = [str substringFromIndex:[prefix length]];
+        NSData *compressed = [[NSData alloc] initWithBase64EncodedString:str options:0];
+        jsonData = [compressed gunzippedData];
+    }
+    prefix = @"CHMED16A0";
+    if ([str hasPrefix:prefix]) {
+        str = [str substringFromIndex:[prefix length]];
+        jsonData = [str dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    if (!jsonData) {
         return nil;
     }
     if (self = [super init]) {
-        str = [str substringFromIndex:[prefix length]];
-        NSData *compressed = [[NSData alloc] initWithBase64EncodedString:str options:0];
         NSError *error = nil;
-        NSData *decompressed1 = [compressed gunzippedData];
-        NSDictionary *jsonObj = [NSJSONSerialization JSONObjectWithData:decompressed1 options:0 error:&error];
+        NSDictionary *jsonObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
         if (![jsonObj isKindOfClass:[NSDictionary class]]) {
             return nil;
         }
@@ -50,7 +58,7 @@
         self.prescriptionId = jsonObj[@"Id"];
         self.medType = jsonObj[@"MedType"];
         self.zsr = jsonObj[@"Zsr"];
-        self.rmk = jsonObj[@"rmk"];
+        self.rmk = jsonObj[@"Rmk"];
 
         NSMutableArray<EPrescriptionPField *> *pfields = [NSMutableArray array];
         for (NSDictionary *pfield in jsonObj[@"PFields"]) {
