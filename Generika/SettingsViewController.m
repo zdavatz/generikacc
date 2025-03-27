@@ -9,8 +9,11 @@
 #import "SettingsDetailViewController.h"
 #import "UIColorBackport.h"
 
-
-static const float kCellHeight = 44.0; // default = 44.0
+typedef enum : NSUInteger {
+    SettingsViewControllerRowSearch = 0,
+    SettingsViewControllerRowLanguage = 1,
+    SettingsViewControllerRowICloudSync = 2,
+} SettingsViewControllerRow;
 
 @interface SettingsViewController ()
 
@@ -34,6 +37,8 @@ static const float kCellHeight = 44.0; // default = 44.0
   _userDefaults = [NSUserDefaults standardUserDefaults];
   _entries = [NSArray arrayWithObjects:
     @"Search", @"Language", @"iCloud Sync", nil];
+
+  self.title = @"Settings";
   return self;
 }
 
@@ -59,32 +64,6 @@ static const float kCellHeight = 44.0; // default = 44.0
   [super viewWillAppear:animated];
 }
 
-- (void)layoutTableViewSeparator:(UITableView *)tableView
-{
-  if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-    [tableView setSeparatorInset:UIEdgeInsetsZero];
-  }
-  if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
-    [tableView setLayoutMargins:UIEdgeInsetsZero];
-  }
-  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
-    tableView.cellLayoutMarginsFollowReadableWidth = NO;
-  }
-}
-
-- (void)layoutCellSeparator:(UITableViewCell *)cell
-{
-  if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-    cell.separatorInset = UIEdgeInsetsZero;
-  }
-  if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
-    cell.preservesSuperviewLayoutMargins = NO;
-  }
-  if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-    cell.layoutMargins = UIEdgeInsetsZero;
-  }
-}
-
 - (void)loadView
 {
     self.view = [[UIView alloc] init];
@@ -96,15 +75,6 @@ static const float kCellHeight = 44.0; // default = 44.0
 
     self.settingsView.delegate = self;
     self.settingsView.dataSource = self;
-    self.settingsView.rowHeight = kCellHeight;
-    [self layoutTableViewSeparator:self.settingsView];
-}
-
-- (void)viewDidLayoutSubviews
-{
-  [super viewDidLayoutSubviews];
-
-  [self layoutTableViewSeparator:self.settingsView];
 }
 
 - (void)viewDidLoad
@@ -133,6 +103,7 @@ static const float kCellHeight = 44.0; // default = 44.0
            target:self
            action:@selector(closeSettings)];
   self.navigationItem.leftBarButtonItem = closeButton;
+  self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
 }
 
 
@@ -158,126 +129,24 @@ static const float kCellHeight = 44.0; // default = 44.0
   return 3;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView
-  heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-  return kCellHeight;
-}
-
-- (void)tableView:(UITableView *)tableView
-  willDisplayCell:(UITableViewCell *)cell
-{
-  [self layoutCellSeparator:cell];
-}
-
-- (UIView *)tableView:(UITableView *)tableView
-  viewForHeaderInSection:(NSInteger)section
-{
-  CGFloat width  = tableView.frame.size.width;
-  CGFloat height = [self tableView:tableView heightForHeaderInSection:section];
-  CGRect headerRect = CGRectMake(0, 0, width, height);
-  UIView *headerView = [[UIView alloc] initWithFrame:headerRect];
-  headerView.backgroundColor = [UIColor clearColor];
-  float leftMargin = (tableView.frame.size.width -
-                      CGSizeMake(
-                        tableView.frame.size.width - 40.0, MAXFLOAT
-                      ).width) / 2;
-  UIFont  *sectionFont;
-  UIColor *sectionColor;
-  if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
-    sectionFont = [UIFont boldSystemFontOfSize:17.0];
-      sectionColor = [UIColorBackport labelColor];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { // iPad
-      leftMargin += 30.0;
-    }
-  } else { // iOS 7 or later
-    sectionFont = [UIFont systemFontOfSize:15.0];
-    sectionColor = [UIColor grayColor];
-    leftMargin -= 5.0;
-  }
-  UILabel *sectionLabel = [[UILabel alloc]
-    initWithFrame:CGRectMake(leftMargin, 0, 300.0, height)];
-  sectionLabel.font = sectionFont;
-  sectionLabel.textColor = sectionColor;
-  sectionLabel.textAlignment = kTextAlignmentLeft;
-  sectionLabel.backgroundColor = [UIColor clearColor];
-  switch (section) {
-    case 0:
-      sectionLabel.text = @"Settings";
-      break;
-    default:
-      sectionLabel.text = @"";
-      break;
-  }
-  [headerView addSubview:sectionLabel];
-  return headerView;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView
-  heightForHeaderInSection:(NSInteger)section
-{
-  return 50.0;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   static NSString *cellIdentifier = @"Cell";
-  UITableViewCell *cell = [[UITableViewCell alloc]
-    initWithStyle:UITableViewCellStyleDefault
-  reuseIdentifier:cellIdentifier];
-  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  CGRect frame = cell.frame;
-  // name
-  CGRect nameFrame;
-  UIFont *nameFont;
-  if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
-    nameFrame = CGRectMake(frame.origin.x + 10.0, frame.origin.x + 8.0,
-                           frame.size.width - 20.0, 25.0);
-    nameFont =[UIFont boldSystemFontOfSize:16.0];
-  } else { // iOS 7 or later
-    nameFrame = CGRectMake(frame.origin.x + 15.0, frame.origin.x + 10.0,
-                           frame.size.width - 20.0, 25.0);
-    nameFont = [UIFont systemFontOfSize:15.0];
-  }
-  UILabel *nameLabel = [[UILabel alloc] initWithFrame:nameFrame];
-  nameLabel.font = nameFont;
-  nameLabel.textAlignment = kTextAlignmentLeft;
-  nameLabel.textColor = [UIColorBackport labelColor];
-  [nameLabel setAutoresizingMask:
-   UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
-  nameLabel.backgroundColor = [UIColor clearColor];
-  nameLabel.text = [self.entries objectAtIndex:indexPath.row];
-  [cell.contentView addSubview:nameLabel];
-  // option
-  CGRect optionFrame;
-  UIFont *optionFont;
-  UIColor *optionColor;
-  if (floor(NSFoundationVersionNumber) <= kVersionNumber_iOS_6_1) {
-    optionFrame = CGRectMake(frame.origin.x + 10.0, frame.origin.y + 8.0,
-                             frame.size.width - 25.0, 25.0);
-    optionFont = [UIFont systemFontOfSize:16.0];
-    optionColor = [UIColor colorWithRed:0.2 green:0.33 blue:0.5 alpha:1.0];
-  } else { // iOS 7 or later
-    optionFrame = CGRectMake(frame.origin.x + 25.0, frame.origin.y + 10.0,
-                             frame.size.width - 25.0, 25.0);
-    optionFont = [UIFont systemFontOfSize:15.0];
-    optionColor = [UIColorBackport secondaryLabelColor];
-  }
-  UILabel *optionLabel = [[UILabel alloc] initWithFrame:optionFrame];
-  optionLabel.font = optionFont;
-  optionLabel.textAlignment = kTextAlignmentRight;
-  optionLabel.textColor = optionColor;
-  optionLabel.backgroundColor = [UIColor clearColor];
-  [optionLabel setAutoresizingMask:
-   UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
-  NSDictionary *context = [self contextFor:indexPath];
-  NSInteger selectedRow = [self.userDefaults
-                           integerForKey:[context objectForKey:@"key"]];
-  optionLabel.text = [[context objectForKey:@"options"]
-                      objectAtIndex:selectedRow];
-  [cell.contentView addSubview:optionLabel];
-  return cell;
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }
+    
+    NSDictionary *context = [self contextFor:indexPath];
+    NSInteger selectedRow = [self.userDefaults
+                             integerForKey:[context objectForKey:@"key"]];
+    
+    cell.textLabel.text = [self.entries objectAtIndex:indexPath.row];
+    cell.detailTextLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
+    
+    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView
@@ -301,24 +170,25 @@ static const float kCellHeight = 44.0; // default = 44.0
 - (NSDictionary *)contextFor:(NSIndexPath *)indexPath
 {
   switch (indexPath.row) {
-    case 0:
-      return [NSDictionary dictionaryWithObjectsAndKeys:
-                              [Constant searchTypes], @"options",
-                              @"search.result.type",  @"key",
-                              nil];
+    case SettingsViewControllerRowSearch:
+          return @{
+              @"options": [Constant searchTypes],
+              @"key": @"search.result.type",
+          };
+
       break;
-    case 1:
-      return [NSDictionary dictionaryWithObjectsAndKeys:
-                              [Constant searchLanguages], @"options",
-                              @"search.result.lang",      @"key",
-                              nil];
+      case SettingsViewControllerRowLanguage:
+          return @{
+              @"options": [Constant searchLanguages],
+              @"key": @"search.result.lang",
+          };
       break;
-    case 2:
-      return [NSDictionary dictionaryWithObjectsAndKeys: // switch
-                              @[@"Off", @"On"], @"options",
-                              @"sync.icloud",   @"key",
-                              @"iCloud Sync",   @"label",
-                              nil];
+      case SettingsViewControllerRowICloudSync:
+          return @{
+              @"options": @[@"Off", @"On"],
+              @"key": @"sync.icloud",
+              @"label": @"iCloud Sync",
+          };
       break;
     default:
       return @{}; // unexpected
