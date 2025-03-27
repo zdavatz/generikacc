@@ -7,12 +7,14 @@
 
 #import "SettingsViewController.h"
 #import "SettingsDetailViewController.h"
+#import "SettingsProfileTableViewController.h"
 #import "UIColorBackport.h"
 
 typedef enum : NSUInteger {
     SettingsViewControllerRowSearch = 0,
     SettingsViewControllerRowLanguage = 1,
     SettingsViewControllerRowICloudSync = 2,
+    SettingsViewControllerRowProfile = 3,
 } SettingsViewControllerRow;
 
 @interface SettingsViewController ()
@@ -35,8 +37,7 @@ typedef enum : NSUInteger {
   self = [super initWithNibName:nil
                          bundle:nil];
   _userDefaults = [NSUserDefaults standardUserDefaults];
-  _entries = [NSArray arrayWithObjects:
-    @"Search", @"Language", @"iCloud Sync", nil];
+  _entries = @[@"Search", @"Language", @"iCloud Sync", @"Profile"];
 
   self.title = @"Settings";
   return self;
@@ -126,7 +127,7 @@ typedef enum : NSUInteger {
 - (NSInteger)tableView:(UITableView *)tableView
   numberOfRowsInSection:(NSInteger)section
 {
-  return 3;
+  return 4;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -140,11 +141,20 @@ typedef enum : NSUInteger {
     }
     
     NSDictionary *context = [self contextFor:indexPath];
-    NSInteger selectedRow = [self.userDefaults
-                             integerForKey:[context objectForKey:@"key"]];
-    
     cell.textLabel.text = [self.entries objectAtIndex:indexPath.row];
-    cell.detailTextLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
+    
+    switch (indexPath.row) {
+        case SettingsViewControllerRowProfile:
+            cell.detailTextLabel.text = @"";
+            break;
+            
+        default: {
+            NSInteger selectedRow = [self.userDefaults
+                                     integerForKey:[context objectForKey:@"key"]];
+            cell.detailTextLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
+        }
+            break;
+    }
     
     return cell;
 }
@@ -153,7 +163,11 @@ typedef enum : NSUInteger {
   didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
-  // next
+    if (indexPath.row == SettingsViewControllerRowProfile) {
+        SettingsProfileTableViewController *controller = [[SettingsProfileTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        [self.navigationController pushViewController:controller animated:YES];
+        return;
+    }
   self.settingsDetail = [[SettingsDetailViewController alloc] init];
   self.settingsDetail.title = [self.entries objectAtIndex:indexPath.row];
   NSDictionary *context = [self contextFor:indexPath];
@@ -190,6 +204,10 @@ typedef enum : NSUInteger {
               @"label": @"iCloud Sync",
           };
       break;
+      case SettingsViewControllerRowProfile:
+          return @{
+              // No context for profile
+          };
     default:
       return @{}; // unexpected
       break;

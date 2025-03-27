@@ -58,6 +58,7 @@
 		CF11C57F2CFD7CA400078620 /* ZurRosePrescriptorAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5772CFD7CA400078620 /* ZurRosePrescriptorAddress.m */; };
 		CF11C5802CFD7CA400078620 /* ZurRoseProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */; };
 		CF11C5822CFDF94600078620 /* client.p12 in Resources */ = {isa = PBXBuildFile; fileRef = CF11C5812CFDF94600078620 /* client.p12 */; };
+		CF30D4682D953BA000164F52 /* SettingsProfileTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF30D4672D953BA000164F52 /* SettingsProfileTableViewController.m */; };
 		CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */; };
 		CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
 		CF6224D721B4197E00A52CAC /* BarcodeExtractorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CF6224D621B4197E00A52CAC /* BarcodeExtractorTests.m */; };
@@ -155,6 +156,8 @@
 		CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRoseProduct.m; sourceTree = "<group>"; };
 		CF11C5812CFDF94600078620 /* client.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = client.p12; sourceTree = "<group>"; };
 		CF11C5832CFEA4FF00078620 /* ZurRoseCredential.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseCredential.h; sourceTree = "<group>"; };
+		CF30D4662D953BA000164F52 /* SettingsProfileTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsProfileTableViewController.h; sourceTree = "<group>"; };
+		CF30D4672D953BA000164F52 /* SettingsProfileTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsProfileTableViewController.m; sourceTree = "<group>"; };
 		CF4B16C821AEE5FE0005C693 /* DataMatrixResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataMatrixResult.h; sourceTree = "<group>"; };
 		CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataMatrixResult.m; sourceTree = "<group>"; };
 		CF4B16CB21AEEC120005C693 /* BarcodeExtractor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeExtractor.h; sourceTree = "<group>"; };
@@ -337,6 +340,8 @@
 				812B9A4C17AF7DF50001A5A8 /* SettingsViewController.m */,
 				8148C65917B0B9530037EE81 /* SettingsDetailViewController.h */,
 				8148C65A17B0B9530037EE81 /* SettingsDetailViewController.m */,
+				CF30D4662D953BA000164F52 /* SettingsProfileTableViewController.h */,
+				CF30D4672D953BA000164F52 /* SettingsProfileTableViewController.m */,
 				8127F27F201CBEE90029F080 /* ReceiptViewController.h */,
 				8127F27E201CBEE90029F080 /* ReceiptViewController.m */,
 				81888E1B20133F2B00515D3D /* ReceiptUsageViewController.h */,
@@ -553,6 +558,7 @@
 				CFA37CF82CEEFF8600187BE6 /* EPrescription.m in Sources */,
 				8127F280201CBEEA0029F080 /* ReceiptViewController.m in Sources */,
 				CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */,
+				CF30D4682D953BA000164F52 /* SettingsProfileTableViewController.m in Sources */,
 				819273741535D56E0060859C /* main.m in Sources */,
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
 				CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */,
