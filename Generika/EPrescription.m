@@ -57,7 +57,8 @@
         self.date = [EPrescription parseDateString:jsonObj[@"Dt"]];
         self.prescriptionId = jsonObj[@"Id"];
         self.medType = jsonObj[@"MedType"];
-        self.zsr = jsonObj[@"Zsr"];
+        NSString *savedZsr = [[NSUserDefaults standardUserDefaults] stringForKey:@"profile.zsr"];
+        self.zsr = savedZsr.length ? savedZsr : jsonObj[@"Zsr"];
         self.rmk = jsonObj[@"Rmk"];
 
         NSMutableArray<EPrescriptionPField *> *pfields = [NSMutableArray array];
@@ -211,10 +212,13 @@
     prescriptor.lastName = self.auth; // ???
     
     prescriptor.langCode = 1;
-    prescriptor.clientNrClustertec = @"888870";
+    NSString *savedZrCustomerNumber = [[NSUserDefaults standardUserDefaults] stringForKey:@"profile.zrCustomerNumber"];
+    prescriptor.clientNrClustertec = savedZrCustomerNumber.length ? savedZrCustomerNumber : @"888870";
     prescriptor.street = @"";
     prescriptor.zipCode = @"";
     prescriptor.city = @"";
+    NSString *savedGLN = [[NSUserDefaults standardUserDefaults] stringForKey:@"profile.gln"];
+    prescriptor.eanId = savedGLN ?: @"";
     
     
     NSString *insuranceEan = nil;
