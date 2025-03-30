@@ -17,7 +17,7 @@
     [e addAttribute:[DDXMLNode attributeWithName:@"langCode" stringValue:[@(self.langCode) stringValue]]];
     [e addAttribute:[DDXMLNode attributeWithName:@"clientNrClustertec" stringValue:self.clientNrClustertec]];
     [e addAttribute:[DDXMLNode attributeWithName:@"zsrId" stringValue:self.zsrId]];
-    if (!self.eanId) {
+    if (self.eanId) {
         [e addAttribute:[DDXMLNode attributeWithName:@"eanId" stringValue:self.eanId]];
     }
     return e;
