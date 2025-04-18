@@ -79,9 +79,8 @@
     DDXMLElement *insurance = [DDXMLElement elementWithName:@"insurance"];
     [e addChild:insurance];
     
-    if (self.insuranceEanId) {
-        [insurance addAttribute:[DDXMLNode attributeWithName:@"eanId" stringValue:self.insuranceEanId]];
-    }
+    [insurance addAttribute:[DDXMLNode attributeWithName:@"eanId" stringValue:self.insuranceEanId.length ? self.insuranceEanId : @"1"]];
+    
     if (self.insuranceBsvNr) {
         [insurance addAttribute:[DDXMLNode attributeWithName:@"bsvNr" stringValue:self.insuranceBsvNr]];
     }

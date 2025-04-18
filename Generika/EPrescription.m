@@ -151,17 +151,23 @@
     if (!str || ![str isKindOfClass:[NSString class]]) return nil;
     static dispatch_once_t onceToken;
     static NSDateFormatter *isoFormatter = nil;
+    static NSDateFormatter *isoWithMillisecondFormatter = nil;
     static NSDateFormatter *isoDateFormatter = nil;
     // The specification says it's ISO8601, but I got a non-standard date as the sample input
     static NSDateFormatter *ePrescriptionFormatter = nil;
     dispatch_once(&onceToken, ^{
         isoFormatter = [[NSISO8601DateFormatter alloc] init];
+        isoWithMillisecondFormatter = [[NSDateFormatter alloc] init];
+        isoWithMillisecondFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSZ";
         isoDateFormatter = [[NSDateFormatter alloc] init];
         isoDateFormatter.dateFormat = @"yyyy-MM-dd";
         ePrescriptionFormatter = [[NSDateFormatter alloc] init];
         ePrescriptionFormatter.dateFormat = @"yyyy-MM-ddHH:mm:ssZ";
     });
     NSDate *date = [isoFormatter dateFromString:str];
+    if (date) return date;
+    
+    date = [isoWithMillisecondFormatter dateFromString:str];
     if (date) return date;
     
     date = [isoDateFormatter dateFromString:str];
@@ -249,7 +255,7 @@
         : [self.patientLang.lowercaseString hasPrefix:@"fr"] ? 2
         : [self.patientLang.lowercaseString hasPrefix:@"it"] ? 3
         : 1;
-    patient.patientNr = @"";
+    patient.patientNr = @"0";
     patient.coverCardId = coverCardId ?: @"";
     
     NSMutableArray<ZurRoseProduct*> *products = [NSMutableArray array];
