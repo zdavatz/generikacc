@@ -9,6 +9,7 @@
 #import "SettingsDetailViewController.h"
 #import "SettingsProfileTableViewController.h"
 #import "UIColorBackport.h"
+#import "SettingsManager.h"
 
 typedef enum : NSUInteger {
     SettingsViewControllerRowSearch = 0,
@@ -164,8 +165,11 @@ typedef enum : NSUInteger {
 {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.row == SettingsViewControllerRowProfile) {
-        SettingsProfileTableViewController *controller = [[SettingsProfileTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
-        [self.navigationController pushViewController:controller animated:YES];
+        NSDictionary *dict = [[SettingsManager shared] getDictFromKeychain];
+        if (dict) {
+            SettingsProfileTableViewController *controller = [[SettingsProfileTableViewController alloc] initWithKeychainDict:dict];
+            [self.navigationController pushViewController:controller animated:YES];
+        }
         return;
     }
   self.settingsDetail = [[SettingsDetailViewController alloc] init];
