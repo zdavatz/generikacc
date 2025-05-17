@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SettingsProfileTableViewController : UITableViewController
 
+- (instancetype)initWithKeychainDict:(NSDictionary *)dict;
+
 @end
 
 NS_ASSUME_NONNULL_END

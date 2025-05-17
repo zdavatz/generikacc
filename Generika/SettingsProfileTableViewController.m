@@ -7,6 +7,8 @@
 //
 
 #import "SettingsProfileTableViewController.h"
+#import <LocalAuthentication/LocalAuthentication.h>
+#import "SettingsManager.h"
 
 typedef enum : NSUInteger {
     SettingsProfileTableViewControllerRowGLN = 0,
@@ -16,9 +18,18 @@ typedef enum : NSUInteger {
 
 @interface SettingsProfileTableViewController () <UITextFieldDelegate>
 
+@property (nonatomic, strong) NSMutableDictionary *keychainDict;
+
 @end
 
 @implementation SettingsProfileTableViewController
+
+- (instancetype)initWithKeychainDict:(NSDictionary *)dict {
+    if ([super initWithStyle:UITableViewStyleGrouped]) {
+        self.keychainDict = [dict mutableCopy];
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -49,7 +60,6 @@ typedef enum : NSUInteger {
         [textField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
         textField.delegate = self;
         textField.returnKeyType = UIReturnKeyDone;
-//        textField.tag = 3;
         [textField setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UIAxisHorizontal];
         textField.textAlignment = NSTextAlignmentRight;
         textField.translatesAutoresizingMaskIntoConstraints = NO;
@@ -103,11 +113,11 @@ typedef enum : NSUInteger {
             break;
         case SettingsProfileTableViewControllerRowZSR:
             cell.textLabel.text = @"ZSR";
-            textField.text = [userDefaults stringForKey:@"profile.zsr"] ?: @"";
+            textField.text = self.keychainDict[KEYCHAIN_KEY_ZSR] ?: @"";
             break;
         case SettingsProfileTableViewControllerRowZRCustomerNumber:
             cell.textLabel.text = @"ZR Kundennummer";
-            textField.text = [userDefaults stringForKey:@"profile.zrCustomerNumber"] ?: @"";
+            textField.text = self.keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER] ?: @"";
             break;
     }
     
@@ -133,11 +143,7 @@ typedef enum : NSUInteger {
         case SettingsProfileTableViewControllerRowGLN:
             [userDefaults setObject:sender.text forKey:@"profile.gln"];
             break;
-        case SettingsProfileTableViewControllerRowZSR:
-            [userDefaults setObject:sender.text forKey:@"profile.zsr"];
-            break;
-        case SettingsProfileTableViewControllerRowZRCustomerNumber:
-            [userDefaults setObject:sender.text forKey:@"profile.zrCustomerNumber"];
+        default:
             break;
     }
     [userDefaults synchronize];
@@ -172,6 +178,21 @@ typedef enum : NSUInteger {
     }
     self.navigationItem.hidesBackButton = NO;
     self.modalInPresentation = NO;
+    
+    switch (textField.tag) {
+        case SettingsProfileTableViewControllerRowZSR:
+            if (![textField.text isEqual:self.keychainDict[KEYCHAIN_KEY_ZSR]]) {
+                self.keychainDict[KEYCHAIN_KEY_ZSR] = [SettingsManager shared].zsrNumber = textField.text;
+            }
+            break;
+        case SettingsProfileTableViewControllerRowZRCustomerNumber:
+            if (![textField.text isEqual:self.keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER]]) {
+                self.keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER] = [SettingsManager shared].zrCustomerNumber = textField.text;
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 @end

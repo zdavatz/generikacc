@@ -65,6 +65,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to scan barcodes.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Store Customer ID for ZurRose</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Save an Icon of the Foto for the User to recognize.</string>
 	<key>UIAppFonts</key>

@@ -51,6 +51,9 @@
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */; };
 		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
+		CF04B1902DD72F8B00B78973 /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */; };
+		CF04B1932DD825AB00B78973 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CF04B1922DD825AB00B78973 /* SettingsManager.m */; };
+		CF04B1942DD825AB00B78973 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CF04B1922DD825AB00B78973 /* SettingsManager.m */; };
 		CF11C57B2CFD7CA400078620 /* ZurRoseAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */; };
 		CF11C57C2CFD7CA400078620 /* ZurRosePatientAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5712CFD7CA400078620 /* ZurRosePatientAddress.m */; };
 		CF11C57D2CFD7CA400078620 /* ZurRosePosology.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5732CFD7CA400078620 /* ZurRosePosology.m */; };
@@ -142,6 +145,9 @@
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
 		9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.release.xcconfig"; sourceTree = "<group>"; };
 		B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
+		CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
+		CF04B1912DD825AB00B78973 /* SettingsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsManager.h; sourceTree = "<group>"; };
+		CF04B1922DD825AB00B78973 /* SettingsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsManager.m; sourceTree = "<group>"; };
 		CF11C56E2CFD7CA400078620 /* ZurRoseAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseAddress.h; sourceTree = "<group>"; };
 		CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRoseAddress.m; sourceTree = "<group>"; };
 		CF11C5702CFD7CA400078620 /* ZurRosePatientAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRosePatientAddress.h; sourceTree = "<group>"; };
@@ -185,6 +191,7 @@
 				810A928D179CD50A00DAA963 /* Security.framework in Frameworks */,
 				8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */,
 				819273A91535D6990060859C /* QuartzCore.framework in Frameworks */,
+				CF04B1902DD72F8B00B78973 /* LocalAuthentication.framework in Frameworks */,
 				819273A71535D6870060859C /* CoreVideo.framework in Frameworks */,
 				819273A51535D6780060859C /* CoreMedia.framework in Frameworks */,
 				819273A31535D5D90060859C /* AVFoundation.framework in Frameworks */,
@@ -244,6 +251,7 @@
 		819273661535D56E0060859C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */,
 				CF67853821ACE789006B786A /* Vision.framework */,
 				810A928C179CD50A00DAA963 /* Security.framework */,
 				8129BA58153D480100CB5896 /* SystemConfiguration.framework */,
@@ -365,6 +373,8 @@
 				CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */,
 				CF86BDD7236198FB004FF092 /* UIColorBackport.h */,
 				CF86BDD8236198FB004FF092 /* UIColorBackport.m */,
+				CF04B1912DD825AB00B78973 /* SettingsManager.h */,
+				CF04B1922DD825AB00B78973 /* SettingsManager.m */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -563,6 +573,7 @@
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
 				CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */,
 				8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */,
+				CF04B1932DD825AB00B78973 /* SettingsManager.m in Sources */,
 				8127F27D201C4BA30029F080 /* Helper.m in Sources */,
 				CF67853C21ACEDBB006B786A /* ScannerViewController.m in Sources */,
 				81B8CEB917D46EDE00DF463B /* Product.m in Sources */,
@@ -593,6 +604,7 @@
 				81B8CEC117D4767500DF463B /* ProductManager.m in Sources */,
 				819273991535D56E0060859C /* GenerikaTests.m in Sources */,
 				81B8CEBA17D46EDE00DF463B /* Product.m in Sources */,
+				CF04B1942DD825AB00B78973 /* SettingsManager.m in Sources */,
 				819E165A17B20E8B00B315B3 /* Constant.m in Sources */,
 				CF88E3342361C669003CF887 /* BarcodeExtractor.m in Sources */,
 				8173D3E21FDE73C300C7CFF4 /* ProductManagerTests.m in Sources */,
