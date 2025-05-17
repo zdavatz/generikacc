@@ -671,12 +671,10 @@ static const int kSegmentReceipt = 1;
              didEPrescription:(EPrescription *)result
                     withImage:(UIImage *)image {
     dispatch_async(dispatch_get_main_queue(), ^{
-        ZurRosePrescription *p = result.toZurRosePrescription;
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH.mm.ss";
         [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
         NSString *amkFilename = [NSString stringWithFormat:@"RZ_%@.amk", [dateFormatter stringFromDate:[NSDate date]]];
-        
         Receipt *r = [[ReceiptManager sharedManager] importReceiptFromAMKDict:[result amkDict] fileName:amkFilename];
         BOOL saved = [[ReceiptManager sharedManager] insertReceipt:r atIndex:0];
         UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Senden an ZurRose?", @"")
@@ -686,6 +684,18 @@ static const int kSegmentReceipt = 1;
                                                        style:UIAlertActionStyleDefault
                                                      handler:^(UIAlertAction * _Nonnull action) {
             [sender dismissViewControllerAnimated:YES completion:nil];
+            NSDictionary *keychainDict = [[SettingsManager shared] getDictFromKeychainCached:false];
+            if (!keychainDict) {
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
+                                                                               message:@"ZSR und ZR-Kundennummer nicht abrufbar"
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                          style:UIAlertActionStyleCancel
+                                                        handler:nil]];
+                [self presentViewController:alert animated:YES completion:nil];
+                return;
+            }
+            ZurRosePrescription *p = [result toZurRosePrescriptionWithKeychainDict:keychainDict];
             [p sendToZurRoseWithCompletion:^(NSHTTPURLResponse * _Nonnull res, NSError * _Nonnull error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (error || res.statusCode != 200) {

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ZurRosePrescription.h"
 #import "Receipt.h"
+#import "SettingsManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -83,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // TODO: HcPerson, HcOrg
 
-- (ZurRosePrescription *)toZurRosePrescription;
+- (ZurRosePrescription *)toZurRosePrescriptionWithKeychainDict:(NSDictionary *)keychainDict;
 - (NSDictionary *)amkDict;
 
 @end

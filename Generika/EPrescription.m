@@ -57,8 +57,7 @@
         self.date = [EPrescription parseDateString:jsonObj[@"Dt"]];
         self.prescriptionId = jsonObj[@"Id"];
         self.medType = jsonObj[@"MedType"];
-        NSString *savedZsr = [[NSUserDefaults standardUserDefaults] stringForKey:@"profile.zsr"];
-        self.zsr = savedZsr.length ? savedZsr : jsonObj[@"Zsr"];
+        self.zsr = jsonObj[@"Zsr"];
         self.rmk = jsonObj[@"Rmk"];
 
         NSMutableArray<EPrescriptionPField *> *pfields = [NSMutableArray array];
@@ -196,7 +195,7 @@
     return date;
 }
 
-- (ZurRosePrescription *)toZurRosePrescription {
+- (ZurRosePrescription *)toZurRosePrescriptionWithKeychainDict:(NSDictionary *)keychainDict {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = @"yyyy-MM-dd";
     ZurRosePrescription *prescription = [[ZurRosePrescription alloc] init];
@@ -214,11 +213,12 @@
     
     ZurRosePrescriptorAddress *prescriptor = [[ZurRosePrescriptorAddress alloc] init];
     prescription.prescriptorAddress = prescriptor;
-    prescriptor.zsrId = self.zsr;
+    NSString *savedZsr = keychainDict[KEYCHAIN_KEY_ZSR];
+    prescriptor.zsrId = savedZsr.length ? savedZsr : self.zsr;
     prescriptor.lastName = self.auth; // ???
     
     prescriptor.langCode = 1;
-    NSString *savedZrCustomerNumber = [[NSUserDefaults standardUserDefaults] stringForKey:@"profile.zrCustomerNumber"];
+    NSString *savedZrCustomerNumber = keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER];
     prescriptor.clientNrClustertec = savedZrCustomerNumber.length ? savedZrCustomerNumber : @"888870";
     prescriptor.street = @"";
     prescriptor.zipCode = @"";
