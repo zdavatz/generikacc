@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDictionary*)getDictFromKeychain;
 - (NSDictionary*)getDictFromKeychainCached:(BOOL)cached;
 - (void)setDictToKeychain:(NSDictionary *)dict;
+- (void)migrateFromUserDefaultsToKeychain;
 
 @end
 

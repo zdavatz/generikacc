@@ -116,4 +116,25 @@
     }
 }
 
+- (void)migrateFromUserDefaultsToKeychain {
+    // We used to save ZSR and zrCustomerNumber in UserDefaults,
+    // Moving them to keychain
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSString *zsr = [userDefaults stringForKey:@"profile.zsr"];
+    if (zsr) {
+        [userDefaults removeObjectForKey:@"profile.zsr"];
+    }
+    NSString *zrCustomerNumber = [userDefaults stringForKey:@"profile.zrCustomerNumber"];
+    if (zrCustomerNumber) {
+        [userDefaults removeObjectForKey:@"profile.zrCustomerNumber"];
+    }
+    if (zsr || zrCustomerNumber) {
+        [userDefaults synchronize];
+        NSMutableDictionary *keychain = [[[SettingsManager shared] getDictFromKeychain] mutableCopy];
+        if (zsr) keychain[KEYCHAIN_KEY_ZSR] = zsr;
+        if (zrCustomerNumber) keychain[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER] = zrCustomerNumber;
+        [[SettingsManager shared] setDictToKeychain:keychain];
+    }
+}
+
 @end

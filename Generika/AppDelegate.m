@@ -9,6 +9,7 @@
 #import "MasterViewController.h"
 #import "ProductManager.h"
 #import "ReceiptManager.h"
+#import "EPrescription.h"
 
 
 @interface AppDelegate ()
@@ -30,6 +31,7 @@
       nil];
   [[NSUserDefaults standardUserDefaults]
     registerDefaults:userDefaultsDefaults];
+  [[SettingsManager shared] migrateFromUserDefaultsToKeychain];
 
   // load products & receipts
   [[ProductManager sharedManager] load];
