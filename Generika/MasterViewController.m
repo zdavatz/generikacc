@@ -671,19 +671,13 @@ static const int kSegmentReceipt = 1;
              didEPrescription:(EPrescription *)result
                     withImage:(UIImage *)image {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH.mm.ss";
-        [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
-        NSString *amkFilename = [NSString stringWithFormat:@"RZ_%@.amk", [dateFormatter stringFromDate:[NSDate date]]];
-        Receipt *r = [[ReceiptManager sharedManager] importReceiptFromAMKDict:[result amkDict] fileName:amkFilename];
-        BOOL saved = [[ReceiptManager sharedManager] insertReceipt:r atIndex:0];
-        UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Senden an ZurRose?", @"")
-                                                                            message:nil
-                                                                     preferredStyle:UIAlertControllerStyleAlert];
-        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Senden", @"")
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction * _Nonnull action) {
-            [sender dismissViewControllerAnimated:YES completion:nil];
+        [sender dismissViewControllerAnimated:YES completion:^{
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH.mm.ss";
+            [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+            NSString *amkFilename = [NSString stringWithFormat:@"RZ_%@.amk", [dateFormatter stringFromDate:[NSDate date]]];
+            Receipt *r = [[ReceiptManager sharedManager] importReceiptFromAMKDict:[result amkDict] fileName:amkFilename];
+            BOOL saved = [[ReceiptManager sharedManager] insertReceipt:r atIndex:0];
             NSDictionary *keychainDict = [[SettingsManager shared] getDictFromKeychainCached:false];
             if (!keychainDict) {
                 UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
@@ -695,33 +689,47 @@ static const int kSegmentReceipt = 1;
                 [self presentViewController:alert animated:YES completion:nil];
                 return;
             }
-            ZurRosePrescription *p = [result toZurRosePrescriptionWithKeychainDict:keychainDict];
-            [p sendToZurRoseWithCompletion:^(NSHTTPURLResponse * _Nonnull res, NSError * _Nonnull error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (error || res.statusCode != 200) {
-                        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
-                                                                                       message:[error localizedDescription] ?: [NSString stringWithFormat:NSLocalizedString(@"Error Code: %ld", @""), res.statusCode]
-                                                                                preferredStyle:UIAlertControllerStyleAlert];
-                        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
-                                                                  style:UIAlertActionStyleDefault
-                                                                handler:nil]];
-                        [self presentViewController:alert animated:YES completion:nil];
-                    } else {
-                        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                                       message:NSLocalizedString(@"Rezept wurde an ZurRose übermittelt.", @"")
-                                                                                preferredStyle:UIAlertControllerStyleAlert];
-                        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
-                                                                  style:UIAlertActionStyleDefault
-                                                                handler:nil]];
-                        [self presentViewController:alert animated:YES completion:nil];
-                    }
-                });
-            }];
-        }]];
-        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Abbrechen", @"")
-                                                       style:UIAlertActionStyleCancel
-                                                     handler:nil]];
-        [sender dismissViewControllerAnimated:YES completion:^{
+            if (![(NSString*)keychainDict[KEYCHAIN_KEY_ZSR] length] || ![(NSString*)keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER] length]) {
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
+                                                                               message:NSLocalizedString(@"Bitte in den Einstellungen die ZR Kundennummer ausfüllen", @"") preferredStyle:UIAlertControllerStyleAlert];
+                [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                          style:UIAlertActionStyleCancel
+                                                        handler:nil]];
+                [self presentViewController:alert animated:YES completion:nil];
+                return;
+            }
+            UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Senden an ZurRose?", @"")
+                                                                                message:nil
+                                                                         preferredStyle:UIAlertControllerStyleAlert];
+            [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Senden", @"")
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * _Nonnull action) {
+                ZurRosePrescription *p = [result toZurRosePrescriptionWithKeychainDict:keychainDict];
+                [p sendToZurRoseWithCompletion:^(NSHTTPURLResponse * _Nonnull res, NSError * _Nonnull error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (error || res.statusCode != 200) {
+                            UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
+                                                                                           message:[error localizedDescription] ?: [NSString stringWithFormat:NSLocalizedString(@"Error Code: %ld", @""), res.statusCode]
+                                                                                    preferredStyle:UIAlertControllerStyleAlert];
+                            [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                                      style:UIAlertActionStyleDefault
+                                                                    handler:nil]];
+                            [self presentViewController:alert animated:YES completion:nil];
+                        } else {
+                            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                                           message:NSLocalizedString(@"Rezept wurde an ZurRose übermittelt.", @"")
+                                                                                    preferredStyle:UIAlertControllerStyleAlert];
+                            [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                                      style:UIAlertActionStyleDefault
+                                                                    handler:nil]];
+                            [self presentViewController:alert animated:YES completion:nil];
+                        }
+                    });
+                }];
+            }]];
+            [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Abbrechen", @"")
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:nil]];
             [self presentViewController:controller animated:YES completion:nil];
         }];
     });
