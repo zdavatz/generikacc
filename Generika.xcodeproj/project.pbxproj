@@ -70,6 +70,8 @@
 		CF86BDD9236198FB004FF092 /* UIColorBackport.m in Sources */ = {isa = PBXBuildFile; fileRef = CF86BDD8236198FB004FF092 /* UIColorBackport.m */; };
 		CF88E3342361C669003CF887 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
 		CF88E3352361CC4D003CF887 /* UIColorBackport.m in Sources */ = {isa = PBXBuildFile; fileRef = CF86BDD8236198FB004FF092 /* UIColorBackport.m */; };
+		CF9027F52E11738D00EC7BD4 /* VisionKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF9027F42E11738D00EC7BD4 /* VisionKit.framework */; };
+		CF9027F72E11839A00EC7BD4 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF9027F62E11839A00EC7BD4 /* MessageUI.framework */; };
 		CFA37CF82CEEFF8600187BE6 /* EPrescription.m in Sources */ = {isa = PBXBuildFile; fileRef = CFA37CF72CEEFF8600187BE6 /* EPrescription.m */; };
 		CFB2A3EF2D0AB28D00014AFA /* swiss-zip-to-kanton.json in Resources */ = {isa = PBXBuildFile; fileRef = CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */; };
 /* End PBXBuildFile section */
@@ -174,6 +176,8 @@
 		CF67853B21ACEDBB006B786A /* ScannerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScannerViewController.m; sourceTree = "<group>"; };
 		CF86BDD7236198FB004FF092 /* UIColorBackport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIColorBackport.h; sourceTree = "<group>"; };
 		CF86BDD8236198FB004FF092 /* UIColorBackport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIColorBackport.m; sourceTree = "<group>"; };
+		CF9027F42E11738D00EC7BD4 /* VisionKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VisionKit.framework; path = System/Library/Frameworks/VisionKit.framework; sourceTree = SDKROOT; };
+		CF9027F62E11839A00EC7BD4 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		CFA37CF62CEEFF8600187BE6 /* EPrescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EPrescription.h; sourceTree = "<group>"; };
 		CFA37CF72CEEFF8600187BE6 /* EPrescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EPrescription.m; sourceTree = "<group>"; };
 		CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "swiss-zip-to-kanton.json"; sourceTree = "<group>"; };
@@ -187,6 +191,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF9027F72E11839A00EC7BD4 /* MessageUI.framework in Frameworks */,
 				CF67853921ACE789006B786A /* Vision.framework in Frameworks */,
 				810A928D179CD50A00DAA963 /* Security.framework in Frameworks */,
 				8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */,
@@ -198,6 +203,7 @@
 				819273681535D56E0060859C /* UIKit.framework in Frameworks */,
 				8192736A1535D56E0060859C /* Foundation.framework in Frameworks */,
 				8192736C1535D56E0060859C /* CoreGraphics.framework in Frameworks */,
+				CF9027F52E11738D00EC7BD4 /* VisionKit.framework in Frameworks */,
 				C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -251,6 +257,8 @@
 		819273661535D56E0060859C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CF9027F62E11839A00EC7BD4 /* MessageUI.framework */,
+				CF9027F42E11738D00EC7BD4 /* VisionKit.framework */,
 				CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */,
 				CF67853821ACE789006B786A /* Vision.framework */,
 				810A928C179CD50A00DAA963 /* Security.framework */,
