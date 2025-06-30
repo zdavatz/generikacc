@@ -922,7 +922,7 @@ static const int kSegmentReceipt = 1;
                         [[NSUserDefaults standardUserDefaults] stringForKey:@"profile.gln"],
                         keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER]
                        ]];
-    [mailVC setToRecipients:@[@"servicecare@zurrose.ch"]];
+    [mailVC setToRecipients:@[@"rezepteingang@zurrose.ch"]];
     [mailVC addAttachmentData:pdfData mimeType:@"application/pdf" fileName:@"file.pdf"];
     [mailVC setMailComposeDelegate:self];
     [self presentViewController:mailVC animated:YES completion:nil];
