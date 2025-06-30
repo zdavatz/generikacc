@@ -923,7 +923,11 @@ static const int kSegmentReceipt = 1;
                         keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER]
                        ]];
     [mailVC setToRecipients:@[@"rezepteingang@zurrose.ch"]];
-    [mailVC addAttachmentData:pdfData mimeType:@"application/pdf" fileName:@"file.pdf"];
+    NSString *timestamp = [NSISO8601DateFormatter stringFromDate:[NSDate date]
+                                                        timeZone:[NSTimeZone systemTimeZone]
+                                                   formatOptions:NSISO8601DateFormatWithYear | NSISO8601DateFormatWithMonth | NSISO8601DateFormatWithDay | NSISO8601DateFormatWithTime];
+    NSString *filename = [NSString stringWithFormat:@"%@_%@.pdf", keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER], timestamp];
+    [mailVC addAttachmentData:pdfData mimeType:@"application/pdf" fileName:filename];
     [mailVC setMailComposeDelegate:self];
     [self presentViewController:mailVC animated:YES completion:nil];
 }
