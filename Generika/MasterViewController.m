@@ -24,14 +24,17 @@
 #import "ReceiptUsageViewController.h"
 #import "ScannerViewController.h"
 #import "MasterViewController.h"
-
+#import "VisionKit/VisionKit.h"
+#import "MessageUI/MessageUI.h"
 
 static const float kCellHeight = 83.0;
 static const int kSegmentedControlTag = 100;
 static const int kSegmentProduct = 0;
 static const int kSegmentReceipt = 1;
 
-@interface MasterViewController () <ScannerViewControllerDelegate>
+#define kPaperSizeA4 CGSizeMake(595.2,841.8)
+
+@interface MasterViewController () <ScannerViewControllerDelegate, VNDocumentCameraViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong, readwrite) Reachability *reachability;
 @property (nonatomic, strong, readwrite) NSMutableArray *filtered;
@@ -174,8 +177,7 @@ static const int kSegmentReceipt = 1;
   [segmentView addSubview:segmentedControl];
   self.navigationItem.titleView = segmentView;
   // camera
-  UIBarButtonItem *scanButtonItem = [self buildScanButtonItem];
-  self.navigationItem.rightBarButtonItem = scanButtonItem;
+    self.navigationItem.rightBarButtonItems = [self buildScanButtonItems];
   // toolbar
   [self layoutToolbar];
 
@@ -295,7 +297,7 @@ static const int kSegmentReceipt = 1;
 
 #pragma mark - Components
 
-- (UIBarButtonItem *)buildScanButtonItem
+- (NSArray<UIBarButtonItem *> *)buildScanButtonItems
 {
     UIButton *scanButton = [UIButton buttonWithType:UIButtonTypeCustom];
     scanButton.frame = CGRectMake(0, 0, 20, 20);
@@ -311,7 +313,14 @@ static const int kSegmentReceipt = 1;
     UIBarButtonItem *scanButtonItem = [[UIBarButtonItem alloc]
       initWithCustomView:scanButton];
     scanButtonItem.width = 26;
-    return scanButtonItem;
+    
+    UIBarButtonItem *scanDocumentItem = [[UIBarButtonItem alloc] init];
+    [scanDocumentItem setImage:[UIImage systemImageNamed:@"doc.text.magnifyingglass"]];
+    [scanDocumentItem setTitle:@"Scan Doc"];
+    [scanDocumentItem setTarget:self];
+    [scanDocumentItem setAction:@selector(scanDocumentButtonTapped:)];
+    
+    return @[scanButtonItem, scanDocumentItem];
 }
 
 - (UIBarButtonItem *)buildPlusButtonItem
@@ -516,7 +525,7 @@ static const int kSegmentReceipt = 1;
     // navigationbar
     // change button camera -> plus
     UIBarButtonItem *plusButtonItem = [self buildPlusButtonItem];
-    self.navigationItem.rightBarButtonItem = plusButtonItem;
+    self.navigationItem.rightBarButtonItems = @[plusButtonItem];
     // toolbar
     // info icon
     [utilButton setTitle:@"\uF129" forState:UIControlStateNormal];
@@ -524,8 +533,8 @@ static const int kSegmentReceipt = 1;
   } else { // product (default)
     // navigationbar
     // change button plus -> camera
-    UIBarButtonItem *scanButtonItem = [self buildScanButtonItem];
-    self.navigationItem.rightBarButtonItem = scanButtonItem;
+
+      self.navigationItem.rightBarButtonItems = [self buildScanButtonItems];
     // toolbar
     // balance-scale icon (default)
     [utilButton setTitle:@"\uF24e" forState:UIControlStateNormal];
@@ -865,6 +874,62 @@ static const int kSegmentReceipt = 1;
     [self presentViewController:scannerViewController
                        animated:YES
                      completion:nil];
+}
+
+- (void)scanDocumentButtonTapped:(id)sender
+{
+    VNDocumentCameraViewController* documentCameraViewController = [[VNDocumentCameraViewController alloc] init];
+    documentCameraViewController.delegate = self;
+    [self presentViewController:documentCameraViewController animated:YES completion:nil];
+}
+
+- (void)documentCameraViewController:(VNDocumentCameraViewController *)controller didFinishWithScan:(VNDocumentCameraScan *)scan {
+    if (![scan pageCount]) return;
+    
+    NSMutableData *pdfData = [NSMutableData data];
+    UIGraphicsBeginPDFContextToData(pdfData, CGRectMake(0, 0, kPaperSizeA4.width, kPaperSizeA4.height), nil);
+
+    for (int i = 0; i < [scan pageCount]; i++) {
+        UIImage *image = [scan imageOfPageAtIndex:i];
+        CGFloat scale = MIN(kPaperSizeA4.width/image.size.width, kPaperSizeA4.height / image.size.height);
+        CGRect rect = CGRectMake((kPaperSizeA4.width - image.size.width * scale)/2,
+                                 (kPaperSizeA4.height - image.size.height * scale)/2,
+                                 image.size.width * scale,
+                                 image.size.height * scale);
+        
+        UIGraphicsBeginPDFPageWithInfo(CGRectMake(0, 0, kPaperSizeA4.width, kPaperSizeA4.height), nil);
+        [image drawInRect:rect];
+    }
+    UIGraphicsEndPDFContext();
+
+    [controller dismissModalViewControllerAnimated:YES];
+    
+    NSDictionary *keychainDict = [[SettingsManager shared] getDictFromKeychainCached:false];
+    if (!keychainDict) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
+                                                                       message:@"ZSR und ZR-Kundennummer nicht abrufbar"
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                  style:UIAlertActionStyleCancel
+                                                handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
+        return;
+    }
+    
+    MFMailComposeViewController *mailVC = [[MFMailComposeViewController alloc] init];
+    [mailVC setSubject:[NSString stringWithFormat:@"ZSR: %@, GLN: %@, ZR-Kundennummer: %@",
+                        keychainDict[KEYCHAIN_KEY_ZSR],
+                        [[NSUserDefaults standardUserDefaults] stringForKey:@"profile.gln"],
+                        keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER]
+                       ]];
+    [mailVC setToRecipients:@[@"servicecare@zurrose.ch"]];
+    [mailVC addAttachmentData:pdfData mimeType:@"application/pdf" fileName:@"file.pdf"];
+    [mailVC setMailComposeDelegate:self];
+    [self presentViewController:mailVC animated:YES completion:nil];
+}
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(nullable NSError *)error {
+    [controller dismissModalViewControllerAnimated:YES];
 }
 
 
