@@ -525,7 +525,7 @@ static const int kSegmentReceipt = 1;
     // navigationbar
     // change button camera -> plus
     UIBarButtonItem *plusButtonItem = [self buildPlusButtonItem];
-    self.navigationItem.rightBarButtonItem = plusButtonItem;
+    self.navigationItem.rightBarButtonItems = @[plusButtonItem];
     // toolbar
     // info icon
     [utilButton setTitle:@"\uF129" forState:UIControlStateNormal];
@@ -904,8 +904,24 @@ static const int kSegmentReceipt = 1;
 
     [controller dismissModalViewControllerAnimated:YES];
     
+    NSDictionary *keychainDict = [[SettingsManager shared] getDictFromKeychainCached:false];
+    if (!keychainDict) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
+                                                                       message:@"ZSR und ZR-Kundennummer nicht abrufbar"
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                  style:UIAlertActionStyleCancel
+                                                handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
+        return;
+    }
+    
     MFMailComposeViewController *mailVC = [[MFMailComposeViewController alloc] init];
-    [mailVC setSubject:@"TODO: ZSR, GLN and Debitoren Number"];
+    [mailVC setSubject:[NSString stringWithFormat:@"ZSR: %@, GLN: %@, ZR-Kundennummer: %@",
+                        keychainDict[KEYCHAIN_KEY_ZSR],
+                        [[NSUserDefaults standardUserDefaults] stringForKey:@"profile.gln"],
+                        keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER]
+                       ]];
     [mailVC setToRecipients:@[@"servicecare@zurrose.ch"]];
     [mailVC addAttachmentData:pdfData mimeType:@"application/pdf" fileName:@"file.pdf"];
     [mailVC setMailComposeDelegate:self];
