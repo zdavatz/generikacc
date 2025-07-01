@@ -70,7 +70,7 @@ if [ $STEP_UPLOAD_APP ] ; then
   ipa="$(pwd)/build/generika.ipa"
 
   echo "Validating app..."
-  time xcrun altool --validate-app --file "$ipa" --username "$ITC_USER" --password "$ITC_PASSWORD"
-  echo "Uploading app to iTC..."
-  time xcrun altool --upload-app --file "$ipa" --username "$ITC_USER" --password "$ITC_PASSWORD"
+  # Submit the app for notarization
+echo "Submitting app for notarization..."
+  time xcrun notarytool submit "$ipa" --apple-id "$ITC_USER" --password "$ITC_PASSWORD" --team-id "$TEAM_ID"
 fi
