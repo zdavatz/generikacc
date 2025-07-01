@@ -70,7 +70,7 @@ if [ $STEP_UPLOAD_APP ] ; then
   ipa="$(pwd)/build/generika.ipa"
 
   echo "Validating app..."
-  time xcrun altool --validate-app --file "$ipa" --username "$ITC_USER" --password "$ITC_PASSWORD"
+  time xcrun altool --validate-app --file "$ipa" --username "$ITC_USER" --password "$ITC_PASSWORD" --type ios
   echo "Uploading app to iTC..."
-  time xcrun altool --upload-app --file "$ipa" --username "$ITC_USER" --password "$ITC_PASSWORD"
+  time xcrun altool --upload-app --file "$ipa" --username "$ITC_USER" --password "$ITC_PASSWORD" --type ios
 fi
