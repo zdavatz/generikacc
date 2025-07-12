@@ -49,6 +49,7 @@ typedef enum : NSUInteger {
     
     self.title = NSLocalizedString(@"Profile", @"");
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    [self loadAccount];
 }
 
 #pragma mark - Table view data source
@@ -62,8 +63,8 @@ typedef enum : NSUInteger {
         case 0:
             return 3;
         case 1: {
-            BOOL loggedIn = self.account;
-            if (loggedIn && self.account) {
+            BOOL isLoggedIn = [[SessionManager shared] isLoggedIn];
+            if (isLoggedIn && self.account) {
                 return 4;
             } else  {
                 return 0;
@@ -75,8 +76,19 @@ typedef enum : NSUInteger {
     return 0;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        BOOL isLoggedIn = [[SessionManager shared] isLoggedIn];
+        if (isLoggedIn && !self.account) {
+            return @"Loading Account...";
+        }
+        return @"Account";
+    }
+    return nil;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    BOOL isLoggedIn = !!self.account;
+    BOOL isLoggedIn = [[SessionManager shared] isLoggedIn];
     
     if (indexPath.section == 2) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"login"];
@@ -184,11 +196,12 @@ typedef enum : NSUInteger {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    BOOL isLoggedIn = !!self.account;
+    BOOL isLoggedIn = [[SessionManager shared] isLoggedIn];
     
     if (indexPath.section == 2) {
         if (isLoggedIn) {
-            // Logout
+            [[SessionManager shared] logout];
+            [self.tableView reloadData];
         } else {
             [self login];
         }
@@ -266,12 +279,24 @@ typedef enum : NSUInteger {
 - (void)login {
     __weak typeof(self) _self = self;
     [[SessionManager shared] loginWithViewController:self callback:^(SessionToken * _Nullable token, NSError * _Nullable error) {
-        [[SessionManager shared] fetchAccountWithToken:token callback:^(SessionAccount * _Nullable userInfo, NSError * _Nullable error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                _self.account = userInfo;
-                [_self.tableView reloadData];
-            });
-        }];
+        [_self.tableView reloadData];
+        [_self loadAccount];
+    }];
+}
+
+- (void)loadAccount {
+    SessionToken *token = [[SessionManager shared] savedToken];
+    if (!token) {
+        self.account = nil;
+        [self.tableView reloadData];
+        return;
+    }
+    __weak typeof(self) _self = self;
+    [[SessionManager shared] fetchAccountWithToken:token callback:^(SessionAccount * _Nullable userInfo, NSError * _Nullable error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _self.account = userInfo;
+            [_self.tableView reloadData];
+        });
     }];
 }
 

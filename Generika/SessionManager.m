@@ -54,6 +54,7 @@ static SessionManager *sharedManager = nil;
         }
         if (code) {
             [_self exchangeTokenWithCode:code callback:^(SessionToken *token, NSError *error) {
+                [_self saveToken:token];
                 completionHandler(token, error);
             }];
         }
@@ -74,6 +75,8 @@ static SessionManager *sharedManager = nil;
     ]];
     
     [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:[[components query] dataUsingEncoding:NSUTF8StringEncoding]];
 
     
@@ -109,7 +112,11 @@ static SessionManager *sharedManager = nil;
     ]];
     
     [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:[[components query] dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    __weak typeof(self) _self = self;
 
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error != nil) {
@@ -123,6 +130,7 @@ static SessionManager *sharedManager = nil;
             return;
         }
         SessionToken *token = [[SessionToken alloc] initWithJson:jsonObj];
+        [_self saveToken:token];
         callback(token, nil);
     }];
     [task resume];
@@ -153,6 +161,51 @@ static SessionManager *sharedManager = nil;
         }];
         [task resume];
     }];
+}
+
+- (void)saveToken:(SessionToken *)token {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setObject:[token dictionaryRepresentation] forKey:@"loginSession"];
+    [userDefaults synchronize];
+}
+
+- (SessionToken *)savedToken {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"loginSession"];
+    if (!dict) return nil;
+    return [[SessionToken alloc] initWithDictionary:dict];
+}
+
+- (void)logout {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"loginSession"];
+    SessionToken *token = [self savedToken];
+    [self useToken:token refreshIfNeeded:YES callback:^(SessionToken *newToken, NSError *error) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"loginSession"];
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://kc.ywesee.ch/realms/%@/protocol/openid-connect/revoke", YWESEE_KEYCLOAK_REALM]]];
+        
+        NSURLComponents *components = [[NSURLComponents alloc] init];
+        [components setQueryItems:@[
+            [NSURLQueryItem queryItemWithName:@"token" value:newToken.refreshToken],
+            [NSURLQueryItem queryItemWithName:@"token_type_hint" value:@"refresh_token"],
+            [NSURLQueryItem queryItemWithName:@"client_id" value:YWESEE_KEYCLOAK_CLIENT_ID]
+        ]];
+        
+        [request setValue:[NSString stringWithFormat:@"Bearer %@", newToken.accessToken] forHTTPHeaderField:@"Authorization"];
+        [request setHTTPMethod:@"POST"];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPBody:[[components query] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        __weak typeof(self) _self = self;
+
+        NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            id jsonObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            NSLog(@"Revoke json obj %@", jsonObj);
+        }];
+        [task resume];
+    }];
+}
+
+- (BOOL)isLoggedIn {
+    return [self savedToken] != nil;
 }
 
 @end

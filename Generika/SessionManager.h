@@ -19,6 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loginWithViewController:(UIViewController *)vc callback:(void (^)(SessionToken * _Nullable token, NSError * _Nullable error))completionHandler;
 - (void)fetchAccountWithToken:(SessionToken *)token callback:(void (^)(SessionAccount * _Nullable userInfo, NSError * _Nullable error))callback;
 
+- (void)saveToken:(SessionToken *)token;
+- (SessionToken *)savedToken;
+- (void)logout;
+- (BOOL)isLoggedIn;
 @end
 
 NS_ASSUME_NONNULL_END
