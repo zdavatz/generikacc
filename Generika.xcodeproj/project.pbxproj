@@ -61,6 +61,10 @@
 		CF11C57F2CFD7CA400078620 /* ZurRosePrescriptorAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5772CFD7CA400078620 /* ZurRosePrescriptorAddress.m */; };
 		CF11C5802CFD7CA400078620 /* ZurRoseProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */; };
 		CF11C5822CFDF94600078620 /* client.p12 in Resources */ = {isa = PBXBuildFile; fileRef = CF11C5812CFDF94600078620 /* client.p12 */; };
+		CF1E95EE2E1F5BAC00454816 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF1E95ED2E1F5BAC00454816 /* AuthenticationServices.framework */; };
+		CF1E95F12E1FFE5400454816 /* SessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CF1E95F02E1FFE5400454816 /* SessionManager.m */; };
+		CF1E95F42E20EC1200454816 /* SessionToken.m in Sources */ = {isa = PBXBuildFile; fileRef = CF1E95F32E20EC1200454816 /* SessionToken.m */; };
+		CF1E95F72E20F68C00454816 /* SessionAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = CF1E95F62E20F68C00454816 /* SessionAccount.m */; };
 		CF30D4682D953BA000164F52 /* SettingsProfileTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF30D4672D953BA000164F52 /* SettingsProfileTableViewController.m */; };
 		CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */; };
 		CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = CF4B16CC21AEEC120005C693 /* BarcodeExtractor.m */; };
@@ -164,6 +168,13 @@
 		CF11C5792CFD7CA400078620 /* ZurRoseProduct.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRoseProduct.m; sourceTree = "<group>"; };
 		CF11C5812CFDF94600078620 /* client.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = client.p12; sourceTree = "<group>"; };
 		CF11C5832CFEA4FF00078620 /* ZurRoseCredential.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseCredential.h; sourceTree = "<group>"; };
+		CF1E95ED2E1F5BAC00454816 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
+		CF1E95EF2E1FFE5400454816 /* SessionManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionManager.h; sourceTree = "<group>"; };
+		CF1E95F02E1FFE5400454816 /* SessionManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SessionManager.m; sourceTree = "<group>"; };
+		CF1E95F22E20EC1200454816 /* SessionToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionToken.h; sourceTree = "<group>"; };
+		CF1E95F32E20EC1200454816 /* SessionToken.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SessionToken.m; sourceTree = "<group>"; };
+		CF1E95F52E20F68C00454816 /* SessionAccount.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionAccount.h; sourceTree = "<group>"; };
+		CF1E95F62E20F68C00454816 /* SessionAccount.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SessionAccount.m; sourceTree = "<group>"; };
 		CF30D4662D953BA000164F52 /* SettingsProfileTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsProfileTableViewController.h; sourceTree = "<group>"; };
 		CF30D4672D953BA000164F52 /* SettingsProfileTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsProfileTableViewController.m; sourceTree = "<group>"; };
 		CF4B16C821AEE5FE0005C693 /* DataMatrixResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataMatrixResult.h; sourceTree = "<group>"; };
@@ -197,6 +208,7 @@
 				8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */,
 				819273A91535D6990060859C /* QuartzCore.framework in Frameworks */,
 				CF04B1902DD72F8B00B78973 /* LocalAuthentication.framework in Frameworks */,
+				CF1E95EE2E1F5BAC00454816 /* AuthenticationServices.framework in Frameworks */,
 				819273A71535D6870060859C /* CoreVideo.framework in Frameworks */,
 				819273A51535D6780060859C /* CoreMedia.framework in Frameworks */,
 				819273A31535D5D90060859C /* AVFoundation.framework in Frameworks */,
@@ -257,6 +269,7 @@
 		819273661535D56E0060859C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CF1E95ED2E1F5BAC00454816 /* AuthenticationServices.framework */,
 				CF9027F62E11839A00EC7BD4 /* MessageUI.framework */,
 				CF9027F42E11738D00EC7BD4 /* VisionKit.framework */,
 				CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */,
@@ -336,6 +349,12 @@
 				CF4B16C921AEE5FE0005C693 /* DataMatrixResult.m */,
 				CFA37CF62CEEFF8600187BE6 /* EPrescription.h */,
 				CFA37CF72CEEFF8600187BE6 /* EPrescription.m */,
+				CF1E95EF2E1FFE5400454816 /* SessionManager.h */,
+				CF1E95F02E1FFE5400454816 /* SessionManager.m */,
+				CF1E95F22E20EC1200454816 /* SessionToken.h */,
+				CF1E95F32E20EC1200454816 /* SessionToken.m */,
+				CF1E95F52E20F68C00454816 /* SessionAccount.h */,
+				CF1E95F62E20F68C00454816 /* SessionAccount.m */,
 				CF11C57A2CFD7CA400078620 /* ZurRose */,
 			);
 			name = Model;
@@ -572,6 +591,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF1E95F12E1FFE5400454816 /* SessionManager.m in Sources */,
+				CF1E95F42E20EC1200454816 /* SessionToken.m in Sources */,
 				8133166A1FE66E70002B07D8 /* ReceiptManager.m in Sources */,
 				CFA37CF82CEEFF8600187BE6 /* EPrescription.m in Sources */,
 				8127F280201CBEEA0029F080 /* ReceiptViewController.m in Sources */,
@@ -597,6 +618,7 @@
 				CF11C5802CFD7CA400078620 /* ZurRoseProduct.m in Sources */,
 				813316681FE66E62002B07D8 /* Receipt.m in Sources */,
 				8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */,
+				CF1E95F72E20F68C00454816 /* SessionAccount.m in Sources */,
 				8129BA56153D46F100CB5896 /* Reachability.m in Sources */,
 				81B8CEC017D4767500DF463B /* ProductManager.m in Sources */,
 				812B9A4D17AF7DF50001A5A8 /* SettingsViewController.m in Sources */,
