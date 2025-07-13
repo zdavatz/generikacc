@@ -12,8 +12,10 @@
 #define YWESEE_KEYCLOAK_CLIENT_ID @"generikacc-ios"
 #ifdef DEBUG
 #define YWESEE_KEYCLOAK_REALM @"test"
+#define LOGIN_SESSION_KEY @"loginSession-test"
 #else
 #define YWESEE_KEYCLOAK_REALM @"master"
+#define LOGIN_SESSION_KEY @"loginSession-master"
 #endif
 
 @interface SessionManager ()
@@ -165,21 +167,21 @@ static SessionManager *sharedManager = nil;
 
 - (void)saveToken:(SessionToken *)token {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults setObject:[token dictionaryRepresentation] forKey:@"loginSession"];
+    [userDefaults setObject:[token dictionaryRepresentation] forKey:LOGIN_SESSION_KEY];
     [userDefaults synchronize];
 }
 
 - (SessionToken *)savedToken {
-    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:@"loginSession"];
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:LOGIN_SESSION_KEY];
     if (!dict) return nil;
     return [[SessionToken alloc] initWithDictionary:dict];
 }
 
 - (void)logout {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"loginSession"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:LOGIN_SESSION_KEY];
     SessionToken *token = [self savedToken];
     [self useToken:token refreshIfNeeded:YES callback:^(SessionToken *newToken, NSError *error) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"loginSession"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:LOGIN_SESSION_KEY];
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://kc.ywesee.ch/realms/%@/protocol/openid-connect/revoke", YWESEE_KEYCLOAK_REALM]]];
         
         NSURLComponents *components = [[NSURLComponents alloc] init];

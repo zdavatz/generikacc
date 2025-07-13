@@ -279,7 +279,9 @@ typedef enum : NSUInteger {
 - (void)login {
     __weak typeof(self) _self = self;
     [[SessionManager shared] loginWithViewController:self callback:^(SessionToken * _Nullable token, NSError * _Nullable error) {
-        [_self.tableView reloadData];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_self.tableView reloadData];
+        });
         [_self loadAccount];
     }];
 }
