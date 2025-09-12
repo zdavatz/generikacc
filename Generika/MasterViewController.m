@@ -922,7 +922,7 @@ static const int kSegmentReceipt = 1;
                         [[NSUserDefaults standardUserDefaults] stringForKey:@"profile.gln"],
                         keychainDict[KEYCHAIN_KEY_ZR_CUSTOMER_NUMBER]
                        ]];
-    [mailVC setToRecipients:@[@"rezepteingang@zurrose.ch"]];
+    [mailVC setToRecipients:@[@"servicecare@zurrose.ch"]];
     NSString *timestamp = [NSISO8601DateFormatter stringFromDate:[NSDate date]
                                                         timeZone:[NSTimeZone systemTimeZone]
                                                    formatOptions:NSISO8601DateFormatWithYear | NSISO8601DateFormatWithMonth | NSISO8601DateFormatWithDay | NSISO8601DateFormatWithTime];
