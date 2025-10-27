@@ -122,7 +122,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)setComparisons:(NSArray<AmikoDBPriceComparison *> *)comparisons {
-    _comparisons = comparisons;
+    _comparisons = [self sortedComparisons:comparisons];
     [self.tableView reloadData];
 }
 
@@ -174,7 +174,7 @@ typedef enum : NSUInteger {
             case PriceComparisonSortingSize:
                 return [obj1.package.dosage compare:obj2.package.dosage];
             case PriceComparisonSortingPrice:
-                return [@([obj1.package.pp doubleValue]) compare:@([obj2.package.pp doubleValue])];
+                return [@([[obj1.package.pp stringByReplacingOccurrencesOfString:@"CHF " withString:@""] doubleValue]) compare:@([[obj2.package.pp stringByReplacingOccurrencesOfString:@"CHF " withString:@""] doubleValue])];
             case PriceComparisonSortingPercentage:
                 return [@(obj1.priceDifferenceInPercentage) compare:@(obj2.priceDifferenceInPercentage)];
             case PriceComparisonSortingSB:
@@ -237,6 +237,14 @@ typedef enum : NSUInteger {
         cell.priceLabel.text = c.package.pp;
         cell.percentageLabel.text = [NSString stringWithFormat:@"%.0f%%", floor(c.priceDifferenceInPercentage)];
         cell.sbLabell.text = c.package.selbstbehalt;
+        
+        if (c.package.isOriginal) {
+            cell.nameLabel.textColor = [UIColor systemRedColor];
+        } else if (c.package.isGeneric) {
+            cell.nameLabel.textColor = [UIColor systemGreenColor];
+        } else {
+            cell.nameLabel.textColor = [UIColor labelColor];
+        }
         return cell;
     } else {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
@@ -270,9 +278,19 @@ typedef enum : NSUInteger {
                 cell.textLabel.text = @"SB";
                 cell.detailTextLabel.text = c.package.selbstbehalt;
                 break;
-                
             default:
                 break;
+        }
+        if (indexPath.row == 0) {
+            if (c.package.isOriginal) {
+                cell.detailTextLabel.textColor = [UIColor systemRedColor];
+            } else if (c.package.isGeneric) {
+                cell.detailTextLabel.textColor = [UIColor systemGreenColor];
+            } else {
+                cell.detailTextLabel.textColor = [UIColor secondaryLabelColor];
+            }
+        } else {
+            cell.detailTextLabel.textColor = [UIColor secondaryLabelColor];
         }
         return cell;
     }

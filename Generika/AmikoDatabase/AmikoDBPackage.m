@@ -43,6 +43,24 @@
     return nil;
 }
 
+- (BOOL)isGeneric {
+    for (NSString *flag in [self parsedFlags]) {
+        if ([flag isEqual:@"G"]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (BOOL)isOriginal {
+    for (NSString *flag in [self parsedFlags]) {
+        if ([flag isEqual:@"O"]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (NSString *)priceDifferenceInPercent {
 //    % (Preisunterschied in Prozent)
 //    AmikoDBPackage *smallestPackage = nil;

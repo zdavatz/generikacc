@@ -33,6 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString*>*)parsedFlags;
 - (NSString *)selbstbehalt;
 
+- (BOOL)isGeneric;
+- (BOOL)isOriginal;
+
 @end
 
 NS_ASSUME_NONNULL_END
