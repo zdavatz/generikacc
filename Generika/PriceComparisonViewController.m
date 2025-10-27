@@ -188,7 +188,7 @@ typedef enum : NSUInteger {
 - (void)setShowAsTable:(BOOL)showAsTable {
     _showAsTable = showAsTable;
     if (showAsTable) {
-        self.headerHeightConstraint.constant = 32;
+        self.headerHeightConstraint.constant = 36;
         self.headerView.hidden = NO;
     } else {
         self.headerView.hidden = YES;
