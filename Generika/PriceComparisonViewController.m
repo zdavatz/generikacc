@@ -10,11 +10,31 @@
 #import "AmikoDatabase/AmikoDBRow.h"
 #import "PriceComparisonTableViewCell.h"
 
+typedef enum : NSUInteger {
+    PriceComparisonSortingName,
+    PriceComparisonSortingAuth,
+    PriceComparisonSortingSize,
+    PriceComparisonSortingPrice,
+    PriceComparisonSortingPercentage,
+    PriceComparisonSortingSB
+} PriceComparisonSorting;
+
 @interface PriceComparisonViewController ()
 
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *headerHeightConstraint;
+
+@property (nonatomic, assign) PriceComparisonSorting sorting;
+@property (nonatomic, assign) BOOL isAsc;
+
+@property (nonatomic, strong) UIBarButtonItem *sortBarButtonItem;
+@property (nonatomic, strong) UIAction *nameAction;
+@property (nonatomic, strong) UIAction *authAction;
+@property (nonatomic, strong) UIAction *sizeAction;
+@property (nonatomic, strong) UIAction *priceAction;
+@property (nonatomic, strong) UIAction *percentageAction;
+@property (nonatomic, strong) UIAction *sbAction;
 
 @end
 
@@ -22,6 +42,8 @@
 
 - (instancetype)init {
     if (self = [super init]) {
+        _sorting = PriceComparisonSortingPercentage;
+        _isAsc = YES;
         self.hidesBottomBarWhenPushed = YES;
         self.tableView.rowHeight = UITableViewAutomaticDimension;
     }
@@ -31,6 +53,66 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.tableView registerNib:[UINib nibWithNibName:@"PriceComparisonTableViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"tableCell"];
+    
+    self.nameAction = [UIAction actionWithTitle:@"Präparat" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        if (self.sorting == PriceComparisonSortingName) {
+            self.isAsc = !self.isAsc;
+        } else {
+            self.sorting = PriceComparisonSortingName;
+        }
+    }];
+
+    self.authAction = [UIAction actionWithTitle:@"Zulassungs­inhaber" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        if (self.sorting == PriceComparisonSortingAuth) {
+            self.isAsc = !self.isAsc;
+        } else {
+            self.sorting = PriceComparisonSortingAuth;
+        }
+    }];
+    
+    self.sizeAction = [UIAction actionWithTitle:@"Packungs­grösse" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        if (self.sorting == PriceComparisonSortingSize) {
+            self.isAsc = !self.isAsc;
+        } else {
+            self.sorting = PriceComparisonSortingSize;
+        }
+    }];
+    
+    self.priceAction = [UIAction actionWithTitle:@"PP" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        if (self.sorting == PriceComparisonSortingPrice) {
+            self.isAsc = !self.isAsc;
+        } else {
+            self.sorting = PriceComparisonSortingPrice;
+        }
+    }];
+    
+    self.percentageAction = [UIAction actionWithTitle:@"Preisunterschied" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        if (self.sorting == PriceComparisonSortingPercentage) {
+            self.isAsc = !self.isAsc;
+        } else {
+            self.sorting = PriceComparisonSortingPercentage;
+        }
+    }];
+    self.percentageAction.state = UIMenuElementStateOn;
+    
+    self.sbAction = [UIAction actionWithTitle:@"Selbstbehalt" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        if (self.sorting == PriceComparisonSortingSB) {
+            self.isAsc = !self.isAsc;
+        } else {
+            self.sorting = PriceComparisonSortingSB;
+        }
+    }];
+    
+    UIMenu *sortMenu = [UIMenu menuWithTitle:@"Sortierung" children:self.sortMenuActions];
+    self.sortBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"arrow.up.and.down.text.horizontal"] menu:sortMenu];
+
+    self.navigationItem.rightBarButtonItem = self.sortBarButtonItem;
+}
+
+- (NSArray<UIAction *> *)sortMenuActions {
+    return @[
+        self.nameAction, self.authAction, self.sizeAction, self.priceAction, self.percentageAction, self.sbAction
+    ];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -44,10 +126,69 @@
     [self.tableView reloadData];
 }
 
+- (void)setSorting:(PriceComparisonSorting)sorting {
+    _sorting = sorting;
+    self.comparisons = [self sortedComparisons:self.comparisons];
+    
+    for (UIAction *a in self.sortMenuActions) {
+        a.state = UIMenuElementStateOff;
+    }
+    switch (sorting) {
+        case PriceComparisonSortingName:
+            self.nameAction.state = UIMenuElementStateOn;
+            break;
+        case PriceComparisonSortingAuth:
+            self.authAction.state = UIMenuElementStateOn;
+            break;
+        case PriceComparisonSortingSize:
+            self.sizeAction.state = UIMenuElementStateOn;
+            break;
+        case PriceComparisonSortingPrice:
+            self.priceAction.state = UIMenuElementStateOn;
+            break;
+        case PriceComparisonSortingPercentage:
+            self.percentageAction.state = UIMenuElementStateOn;
+            break;
+        case PriceComparisonSortingSB:
+            self.sbAction.state = UIMenuElementStateOn;
+            break;
+    }
+    UIMenu *sortMenu = [UIMenu menuWithTitle:@"Sortierung" children:self.sortMenuActions];
+    self.sortBarButtonItem.menu = sortMenu;
+}
+
+- (void)setIsAsc:(BOOL)isAsc {
+    _isAsc = isAsc;
+    self.comparisons = [self sortedComparisons:self.comparisons];
+}
+
+- (NSArray<AmikoDBPriceComparison *> *)sortedComparisons:(NSArray<AmikoDBPriceComparison *> *)comparisons {
+    NSSortDescriptor *sortDesc = [NSSortDescriptor sortDescriptorWithKey:@"self"
+                                                               ascending:self.isAsc
+                                                              comparator:^NSComparisonResult(AmikoDBPriceComparison *obj1, AmikoDBPriceComparison *obj2) {
+        switch (self.sorting) {
+            case PriceComparisonSortingName:
+                return [obj1.package.name compare:obj2.package.name];
+            case PriceComparisonSortingAuth:
+                return [obj1.package.parent.auth compare:obj2.package.parent.auth];
+            case PriceComparisonSortingSize:
+                return [obj1.package.dosage compare:obj2.package.dosage];
+            case PriceComparisonSortingPrice:
+                return [@([obj1.package.pp doubleValue]) compare:@([obj2.package.pp doubleValue])];
+            case PriceComparisonSortingPercentage:
+                return [@(obj1.priceDifferenceInPercentage) compare:@(obj2.priceDifferenceInPercentage)];
+            case PriceComparisonSortingSB:
+                return [@([[obj1.package.selbstbehalt stringByReplacingOccurrencesOfString:@"%" withString:@""] doubleValue])
+                        compare:@([[obj2.package.selbstbehalt stringByReplacingOccurrencesOfString:@"%" withString:@""] doubleValue])];
+        }
+    }];
+    return [comparisons sortedArrayUsingDescriptors:@[sortDesc]];
+}
+
 - (void)setShowAsTable:(BOOL)showAsTable {
     _showAsTable = showAsTable;
     if (showAsTable) {
-        self.headerHeightConstraint.constant = 50;
+        self.headerHeightConstraint.constant = 32;
         self.headerView.hidden = NO;
     } else {
         self.headerView.hidden = YES;
