@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -54,6 +54,16 @@
 		CF04B1902DD72F8B00B78973 /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */; };
 		CF04B1932DD825AB00B78973 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CF04B1922DD825AB00B78973 /* SettingsManager.m */; };
 		CF04B1942DD825AB00B78973 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CF04B1922DD825AB00B78973 /* SettingsManager.m */; };
+		CF0E574E2EAE592800D4313B /* PriceComparisonTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CF0E574C2EAE592800D4313B /* PriceComparisonTableViewCell.m */; };
+		CF0E574F2EAE592800D4313B /* PriceComparisonTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF0E574D2EAE592800D4313B /* PriceComparisonTableViewCell.xib */; };
+		CF0E57562EAE6C3F00D4313B /* PriceComparisonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF0E57542EAE6C3F00D4313B /* PriceComparisonViewController.m */; };
+		CF0E57572EAE6C3F00D4313B /* PriceComparisonViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF0E57552EAE6C3F00D4313B /* PriceComparisonViewController.xib */; };
+		CF0E575B2EB097EE00D4313B /* PatinfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF0E57592EB097EE00D4313B /* PatinfoViewController.m */; };
+		CF0E575C2EB097EE00D4313B /* PatinfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF0E575A2EB097EE00D4313B /* PatinfoViewController.xib */; };
+		CF0E575E2EB0F76900D4313B /* amiko_stylesheet.css in Resources */ = {isa = PBXBuildFile; fileRef = CF0E575D2EB0F76900D4313B /* amiko_stylesheet.css */; };
+		CF0E57612EB0F77800D4313B /* color-scheme-dark.css in Resources */ = {isa = PBXBuildFile; fileRef = CF0E575F2EB0F77800D4313B /* color-scheme-dark.css */; };
+		CF0E57622EB0F77800D4313B /* color-scheme-light.css in Resources */ = {isa = PBXBuildFile; fileRef = CF0E57602EB0F77800D4313B /* color-scheme-light.css */; };
+		CF0E57652EB0FA9500D4313B /* PatinfoChapterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF0E57642EB0FA9500D4313B /* PatinfoChapterTableViewController.m */; };
 		CF11C57B2CFD7CA400078620 /* ZurRoseAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */; };
 		CF11C57C2CFD7CA400078620 /* ZurRosePatientAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5712CFD7CA400078620 /* ZurRosePatientAddress.m */; };
 		CF11C57D2CFD7CA400078620 /* ZurRosePosology.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5732CFD7CA400078620 /* ZurRosePosology.m */; };
@@ -77,6 +87,7 @@
 		CF9027F52E11738D00EC7BD4 /* VisionKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF9027F42E11738D00EC7BD4 /* VisionKit.framework */; };
 		CF9027F72E11839A00EC7BD4 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF9027F62E11839A00EC7BD4 /* MessageUI.framework */; };
 		CFA37CF82CEEFF8600187BE6 /* EPrescription.m in Sources */ = {isa = PBXBuildFile; fileRef = CFA37CF72CEEFF8600187BE6 /* EPrescription.m */; };
+		CFA77AFC2EA66C7A0015E084 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CFFC02D62EA3DB1C00FFF3F9 /* libsqlite3.tbd */; };
 		CFB2A3EF2D0AB28D00014AFA /* swiss-zip-to-kanton.json in Resources */ = {isa = PBXBuildFile; fileRef = CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */; };
 /* End PBXBuildFile section */
 
@@ -154,6 +165,20 @@
 		CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
 		CF04B1912DD825AB00B78973 /* SettingsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsManager.h; sourceTree = "<group>"; };
 		CF04B1922DD825AB00B78973 /* SettingsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsManager.m; sourceTree = "<group>"; };
+		CF0E574B2EAE592800D4313B /* PriceComparisonTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PriceComparisonTableViewCell.h; sourceTree = "<group>"; };
+		CF0E574C2EAE592800D4313B /* PriceComparisonTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PriceComparisonTableViewCell.m; sourceTree = "<group>"; };
+		CF0E574D2EAE592800D4313B /* PriceComparisonTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PriceComparisonTableViewCell.xib; sourceTree = "<group>"; };
+		CF0E57532EAE6C3F00D4313B /* PriceComparisonViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PriceComparisonViewController.h; sourceTree = "<group>"; };
+		CF0E57542EAE6C3F00D4313B /* PriceComparisonViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PriceComparisonViewController.m; sourceTree = "<group>"; };
+		CF0E57552EAE6C3F00D4313B /* PriceComparisonViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PriceComparisonViewController.xib; sourceTree = "<group>"; };
+		CF0E57582EB097EE00D4313B /* PatinfoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PatinfoViewController.h; sourceTree = "<group>"; };
+		CF0E57592EB097EE00D4313B /* PatinfoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PatinfoViewController.m; sourceTree = "<group>"; };
+		CF0E575A2EB097EE00D4313B /* PatinfoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PatinfoViewController.xib; sourceTree = "<group>"; };
+		CF0E575D2EB0F76900D4313B /* amiko_stylesheet.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = amiko_stylesheet.css; sourceTree = "<group>"; };
+		CF0E575F2EB0F77800D4313B /* color-scheme-dark.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "color-scheme-dark.css"; sourceTree = "<group>"; };
+		CF0E57602EB0F77800D4313B /* color-scheme-light.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "color-scheme-light.css"; sourceTree = "<group>"; };
+		CF0E57632EB0FA9500D4313B /* PatinfoChapterTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PatinfoChapterTableViewController.h; sourceTree = "<group>"; };
+		CF0E57642EB0FA9500D4313B /* PatinfoChapterTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PatinfoChapterTableViewController.m; sourceTree = "<group>"; };
 		CF11C56E2CFD7CA400078620 /* ZurRoseAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseAddress.h; sourceTree = "<group>"; };
 		CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRoseAddress.m; sourceTree = "<group>"; };
 		CF11C5702CFD7CA400078620 /* ZurRosePatientAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRosePatientAddress.h; sourceTree = "<group>"; };
@@ -191,11 +216,18 @@
 		CF9027F62E11839A00EC7BD4 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		CFA37CF62CEEFF8600187BE6 /* EPrescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EPrescription.h; sourceTree = "<group>"; };
 		CFA37CF72CEEFF8600187BE6 /* EPrescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EPrescription.m; sourceTree = "<group>"; };
+		CFA77AFB2EA66C750015E084 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "swiss-zip-to-kanton.json"; sourceTree = "<group>"; };
+		CFFC02D62EA3DB1C00FFF3F9 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
 		EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GenerikaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		CFFC02D02EA3D24800FFF3F9 /* Databases */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Databases; sourceTree = "<group>"; };
+		CFFC02D72EA6673600FFF3F9 /* AmikoDatabase */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AmikoDatabase; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		819273601535D56E0060859C /* Frameworks */ = {
@@ -204,6 +236,7 @@
 			files = (
 				CF9027F72E11839A00EC7BD4 /* MessageUI.framework in Frameworks */,
 				CF67853921ACE789006B786A /* Vision.framework in Frameworks */,
+				CFA77AFC2EA66C7A0015E084 /* libsqlite3.tbd in Frameworks */,
 				810A928D179CD50A00DAA963 /* Security.framework in Frameworks */,
 				8129BA59153D480100CB5896 /* SystemConfiguration.framework in Frameworks */,
 				819273A91535D6990060859C /* QuartzCore.framework in Frameworks */,
@@ -269,6 +302,8 @@
 		819273661535D56E0060859C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CFA77AFB2EA66C750015E084 /* libsqlite3.0.tbd */,
+				CFFC02D62EA3DB1C00FFF3F9 /* libsqlite3.tbd */,
 				CF1E95ED2E1F5BAC00454816 /* AuthenticationServices.framework */,
 				CF9027F62E11839A00EC7BD4 /* MessageUI.framework */,
 				CF9027F42E11738D00EC7BD4 /* VisionKit.framework */,
@@ -296,6 +331,7 @@
 				81B8CEBB17D4724E00DF463B /* Model */,
 				81B8CEBC17D473C300DF463B /* UI */,
 				81B8CEBD17D4762600DF463B /* Utility */,
+				CFFC02D02EA3D24800FFF3F9 /* Databases */,
 				81FEDA1F1538962900756CAE /* Resources */,
 				8192736E1535D56E0060859C /* Supporting Files */,
 			);
@@ -356,6 +392,7 @@
 				CF1E95F52E20F68C00454816 /* SessionAccount.h */,
 				CF1E95F62E20F68C00454816 /* SessionAccount.m */,
 				CF11C57A2CFD7CA400078620 /* ZurRose */,
+				CFFC02D72EA6673600FFF3F9 /* AmikoDatabase */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -383,6 +420,17 @@
 				81888E1A20133F2B00515D3D /* ReceiptUsageViewController.m */,
 				81B8621E153704330054EA0A /* WebViewController.h */,
 				81B8621F153704330054EA0A /* WebViewController.m */,
+				CF0E57532EAE6C3F00D4313B /* PriceComparisonViewController.h */,
+				CF0E57542EAE6C3F00D4313B /* PriceComparisonViewController.m */,
+				CF0E57552EAE6C3F00D4313B /* PriceComparisonViewController.xib */,
+				CF0E574B2EAE592800D4313B /* PriceComparisonTableViewCell.h */,
+				CF0E574C2EAE592800D4313B /* PriceComparisonTableViewCell.m */,
+				CF0E574D2EAE592800D4313B /* PriceComparisonTableViewCell.xib */,
+				CF0E57582EB097EE00D4313B /* PatinfoViewController.h */,
+				CF0E57592EB097EE00D4313B /* PatinfoViewController.m */,
+				CF0E575A2EB097EE00D4313B /* PatinfoViewController.xib */,
+				CF0E57632EB0FA9500D4313B /* PatinfoChapterTableViewController.h */,
+				CF0E57642EB0FA9500D4313B /* PatinfoChapterTableViewController.m */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -414,6 +462,9 @@
 				812C846E1FDCEB650020AD87 /* images.xcassets */,
 				81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */,
 				CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */,
+				CF0E575D2EB0F76900D4313B /* amiko_stylesheet.css */,
+				CF0E575F2EB0F77800D4313B /* color-scheme-dark.css */,
+				CF0E57602EB0F77800D4313B /* color-scheme-light.css */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -454,6 +505,10 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CFFC02D02EA3D24800FFF3F9 /* Databases */,
+				CFFC02D72EA6673600FFF3F9 /* AmikoDatabase */,
 			);
 			name = Generika;
 			productName = Generika;
@@ -526,13 +581,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF0E574F2EAE592800D4313B /* PriceComparisonTableViewCell.xib in Resources */,
 				812C84741FDCEB7B0020AD87 /* screen in Resources */,
 				812C846F1FDCEB660020AD87 /* images.xcassets in Resources */,
 				CF11C5822CFDF94600078620 /* client.p12 in Resources */,
+				CF0E57572EAE6C3F00D4313B /* PriceComparisonViewController.xib in Resources */,
 				819273721535D56E0060859C /* InfoPlist.strings in Resources */,
 				812C84751FDCEB7B0020AD87 /* icon in Resources */,
+				CF0E575C2EB097EE00D4313B /* PatinfoViewController.xib in Resources */,
+				CF0E575E2EB0F76900D4313B /* amiko_stylesheet.css in Resources */,
 				CFB2A3EF2D0AB28D00014AFA /* swiss-zip-to-kanton.json in Resources */,
 				81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */,
+				CF0E57612EB0F77800D4313B /* color-scheme-dark.css in Resources */,
+				CF0E57622EB0F77800D4313B /* color-scheme-light.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,8 +658,10 @@
 				CFA37CF82CEEFF8600187BE6 /* EPrescription.m in Sources */,
 				8127F280201CBEEA0029F080 /* ReceiptViewController.m in Sources */,
 				CF4B16CA21AEE5FE0005C693 /* DataMatrixResult.m in Sources */,
+				CF0E57562EAE6C3F00D4313B /* PriceComparisonViewController.m in Sources */,
 				CF30D4682D953BA000164F52 /* SettingsProfileTableViewController.m in Sources */,
 				819273741535D56E0060859C /* main.m in Sources */,
+				CF0E57652EB0FA9500D4313B /* PatinfoChapterTableViewController.m in Sources */,
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
 				CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */,
 				8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */,
@@ -609,6 +672,7 @@
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
 				CF86BDD9236198FB004FF092 /* UIColorBackport.m in Sources */,
 				81888E1C20133F2B00515D3D /* ReceiptUsageViewController.m in Sources */,
+				CF0E575B2EB097EE00D4313B /* PatinfoViewController.m in Sources */,
 				81B86220153704330054EA0A /* WebViewController.m in Sources */,
 				CF11C57B2CFD7CA400078620 /* ZurRoseAddress.m in Sources */,
 				CF11C57C2CFD7CA400078620 /* ZurRosePatientAddress.m in Sources */,
@@ -618,6 +682,7 @@
 				CF11C5802CFD7CA400078620 /* ZurRoseProduct.m in Sources */,
 				813316681FE66E62002B07D8 /* Receipt.m in Sources */,
 				8148C65B17B0B9530037EE81 /* SettingsDetailViewController.m in Sources */,
+				CF0E574E2EAE592800D4313B /* PriceComparisonTableViewCell.m in Sources */,
 				CF1E95F72E20F68C00454816 /* SessionAccount.m in Sources */,
 				8129BA56153D46F100CB5896 /* Reachability.m in Sources */,
 				81B8CEC017D4767500DF463B /* ProductManager.m in Sources */,
@@ -806,7 +871,7 @@
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 2.1.39;
 				ONLY_ACTIVE_ARCH = YES;
@@ -862,7 +927,7 @@
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 2.1.39;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1022,7 +1087,7 @@
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 2.1.39;
 				ONLY_ACTIVE_ARCH = NO;
