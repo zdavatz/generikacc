@@ -62,6 +62,12 @@ As next, setup dependencies via Cocoapods.
 - Rename `/Generika/ZurRose/ZurRoseCredential.h.sample` to `/Generika/ZurRose/ZurRoseCredential.h`, and set the password in the file.
 - Open `Generika.xcworkspace` (not `Generika.xcodeproj`) and build it.
 
+### Add local database
+
+- Generate `amiko_db_full_idx_pinfo_de.db` with cpp2sqlite
+  - `./cpp2sqlite --lang=de  --pinfo`
+- Put it in Generika/Databases/
+
 ### Debug
 
 You may want to clean before rebuild, if you face something weird problem...

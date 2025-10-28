@@ -27,6 +27,11 @@
 #import "VisionKit/VisionKit.h"
 #import "MessageUI/MessageUI.h"
 
+#import "AmikoDatabase/AmikoDBManager.h"
+#import "AmikoDatabase/AmikoDBPriceComparison.h"
+#import "PriceComparisonViewController.h"
+#import "PatinfoViewController.h"
+
 static const float kCellHeight = 83.0;
 static const int kSegmentedControlTag = 100;
 static const int kSegmentProduct = 0;
@@ -364,7 +369,9 @@ static const int kSegmentReceipt = 1;
 
 - (void)layoutToolbar
 {
-  [self.navigationController setToolbarHidden:NO animated:NO];
+    if (self == self.navigationController.topViewController) {
+        [self.navigationController setToolbarHidden:NO animated:NO];
+    }
 
   UIButton *settingsButton;
   if ([self currentSegmentedType] == kSegmentReceipt) {
@@ -947,18 +954,35 @@ static const int kSegmentReceipt = 1;
   NSInteger selectedLangIndex = [self.userDefaults integerForKey:
     @"search.result.lang"];
   NSString *lang = [[Constant searchLangs] objectAtIndex:selectedLangIndex];
-  NSString *url;
+    NSString *url = nil;
   if ([type isEqualToString:@"Preisvergleich"]) {
-    url = [NSString stringWithFormat:@"%@/%@/generika/compare/ean13/%@",
-           kOddbBaseURL, lang, product.ean];
+      NSArray<AmikoDBPriceComparison*> *comparisons = [AmikoDBPriceComparison comparePrice:product.ean];
+      if (![comparisons count]) {
+          url = [NSString stringWithFormat:@"%@/%@/generika/compare/ean13/%@",
+                 kOddbBaseURL, lang, product.ean];
+      } else {
+          PriceComparisonViewController *comparisonController = [[PriceComparisonViewController alloc] init];
+          comparisonController.comparisons = comparisons;
+          
+          [self.navigationController pushViewController:comparisonController
+                                               animated:YES];
+      }
   } else if ([type isEqualToString:@"PI"]) {
-    url = [NSString stringWithFormat:@"%@/%@/generika/patinfo/reg/%@/seq/%@",
-           kOddbBaseURL, lang, product.reg, product.seq];
+      NSArray<AmikoDBRow *> *rows = [[AmikoDBManager shared] findWithGtin:product.ean];
+      if ([rows count]) {
+          PatinfoViewController *controller = [[PatinfoViewController alloc] initWithRow:rows.firstObject];
+          [self.navigationController pushViewController:controller animated:YES];
+      } else {
+          url = [NSString stringWithFormat:@"%@/%@/generika/patinfo/reg/%@/seq/%@",
+                 kOddbBaseURL, lang, product.reg, product.seq];
+      }
   } else if ([type isEqualToString:@"FI"]) {
     url = [NSString stringWithFormat:@"%@/%@/generika/fachinfo/reg/%@",
            kOddbBaseURL, lang, product.reg];
   }
-  [self openWebViewWithURL:[NSURL URLWithString:url]];
+    if (url) {
+        [self openWebViewWithURL:[NSURL URLWithString:url]];
+    }
 }
 
 - (void)openWebViewWithURL:(NSURL *)url
