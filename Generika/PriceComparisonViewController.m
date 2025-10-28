@@ -46,6 +46,7 @@ typedef enum : NSUInteger {
         _isAsc = YES;
         self.hidesBottomBarWhenPushed = YES;
         self.tableView.rowHeight = UITableViewAutomaticDimension;
+        self.title = @"Preisvergleich";
     }
     return self;
 }

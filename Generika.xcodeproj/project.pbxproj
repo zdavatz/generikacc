@@ -58,6 +58,11 @@
 		CF0E574F2EAE592800D4313B /* PriceComparisonTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF0E574D2EAE592800D4313B /* PriceComparisonTableViewCell.xib */; };
 		CF0E57562EAE6C3F00D4313B /* PriceComparisonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF0E57542EAE6C3F00D4313B /* PriceComparisonViewController.m */; };
 		CF0E57572EAE6C3F00D4313B /* PriceComparisonViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF0E57552EAE6C3F00D4313B /* PriceComparisonViewController.xib */; };
+		CF0E575B2EB097EE00D4313B /* PatinfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF0E57592EB097EE00D4313B /* PatinfoViewController.m */; };
+		CF0E575C2EB097EE00D4313B /* PatinfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF0E575A2EB097EE00D4313B /* PatinfoViewController.xib */; };
+		CF0E575E2EB0F76900D4313B /* amiko_stylesheet.css in Resources */ = {isa = PBXBuildFile; fileRef = CF0E575D2EB0F76900D4313B /* amiko_stylesheet.css */; };
+		CF0E57612EB0F77800D4313B /* color-scheme-dark.css in Resources */ = {isa = PBXBuildFile; fileRef = CF0E575F2EB0F77800D4313B /* color-scheme-dark.css */; };
+		CF0E57622EB0F77800D4313B /* color-scheme-light.css in Resources */ = {isa = PBXBuildFile; fileRef = CF0E57602EB0F77800D4313B /* color-scheme-light.css */; };
 		CF11C57B2CFD7CA400078620 /* ZurRoseAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */; };
 		CF11C57C2CFD7CA400078620 /* ZurRosePatientAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5712CFD7CA400078620 /* ZurRosePatientAddress.m */; };
 		CF11C57D2CFD7CA400078620 /* ZurRosePosology.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5732CFD7CA400078620 /* ZurRosePosology.m */; };
@@ -165,6 +170,12 @@
 		CF0E57532EAE6C3F00D4313B /* PriceComparisonViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PriceComparisonViewController.h; sourceTree = "<group>"; };
 		CF0E57542EAE6C3F00D4313B /* PriceComparisonViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PriceComparisonViewController.m; sourceTree = "<group>"; };
 		CF0E57552EAE6C3F00D4313B /* PriceComparisonViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PriceComparisonViewController.xib; sourceTree = "<group>"; };
+		CF0E57582EB097EE00D4313B /* PatinfoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PatinfoViewController.h; sourceTree = "<group>"; };
+		CF0E57592EB097EE00D4313B /* PatinfoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PatinfoViewController.m; sourceTree = "<group>"; };
+		CF0E575A2EB097EE00D4313B /* PatinfoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PatinfoViewController.xib; sourceTree = "<group>"; };
+		CF0E575D2EB0F76900D4313B /* amiko_stylesheet.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = amiko_stylesheet.css; sourceTree = "<group>"; };
+		CF0E575F2EB0F77800D4313B /* color-scheme-dark.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "color-scheme-dark.css"; sourceTree = "<group>"; };
+		CF0E57602EB0F77800D4313B /* color-scheme-light.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "color-scheme-light.css"; sourceTree = "<group>"; };
 		CF11C56E2CFD7CA400078620 /* ZurRoseAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseAddress.h; sourceTree = "<group>"; };
 		CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRoseAddress.m; sourceTree = "<group>"; };
 		CF11C5702CFD7CA400078620 /* ZurRosePatientAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRosePatientAddress.h; sourceTree = "<group>"; };
@@ -412,6 +423,9 @@
 				CF0E574B2EAE592800D4313B /* PriceComparisonTableViewCell.h */,
 				CF0E574C2EAE592800D4313B /* PriceComparisonTableViewCell.m */,
 				CF0E574D2EAE592800D4313B /* PriceComparisonTableViewCell.xib */,
+				CF0E57582EB097EE00D4313B /* PatinfoViewController.h */,
+				CF0E57592EB097EE00D4313B /* PatinfoViewController.m */,
+				CF0E575A2EB097EE00D4313B /* PatinfoViewController.xib */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -443,6 +457,9 @@
 				812C846E1FDCEB650020AD87 /* images.xcassets */,
 				81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */,
 				CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */,
+				CF0E575D2EB0F76900D4313B /* amiko_stylesheet.css */,
+				CF0E575F2EB0F77800D4313B /* color-scheme-dark.css */,
+				CF0E57602EB0F77800D4313B /* color-scheme-light.css */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -566,8 +583,12 @@
 				CF0E57572EAE6C3F00D4313B /* PriceComparisonViewController.xib in Resources */,
 				819273721535D56E0060859C /* InfoPlist.strings in Resources */,
 				812C84751FDCEB7B0020AD87 /* icon in Resources */,
+				CF0E575C2EB097EE00D4313B /* PatinfoViewController.xib in Resources */,
+				CF0E575E2EB0F76900D4313B /* amiko_stylesheet.css in Resources */,
 				CFB2A3EF2D0AB28D00014AFA /* swiss-zip-to-kanton.json in Resources */,
 				81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */,
+				CF0E57612EB0F77800D4313B /* color-scheme-dark.css in Resources */,
+				CF0E57622EB0F77800D4313B /* color-scheme-light.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -645,6 +666,7 @@
 				819273811535D56E0060859C /* MasterViewController.m in Sources */,
 				CF86BDD9236198FB004FF092 /* UIColorBackport.m in Sources */,
 				81888E1C20133F2B00515D3D /* ReceiptUsageViewController.m in Sources */,
+				CF0E575B2EB097EE00D4313B /* PatinfoViewController.m in Sources */,
 				81B86220153704330054EA0A /* WebViewController.m in Sources */,
 				CF11C57B2CFD7CA400078620 /* ZurRoseAddress.m in Sources */,
 				CF11C57C2CFD7CA400078620 /* ZurRosePatientAddress.m in Sources */,
@@ -843,7 +865,7 @@
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 2.1.38;
 				ONLY_ACTIVE_ARCH = YES;
@@ -899,7 +921,7 @@
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 2.1.38;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1059,7 +1081,7 @@
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 2.1.38;
 				ONLY_ACTIVE_ARCH = NO;
