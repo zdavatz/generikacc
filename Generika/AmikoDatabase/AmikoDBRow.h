@@ -35,7 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRow:(NSArray *)row;
 
 - (NSArray<AmikoDBPackage*>*)parsedPackages;
-
+- (NSArray<NSString *> *)chapterIds;
+- (NSArray<NSString *> *)chapterTitles;
 @end
 
 NS_ASSUME_NONNULL_END

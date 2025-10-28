@@ -63,6 +63,7 @@
 		CF0E575E2EB0F76900D4313B /* amiko_stylesheet.css in Resources */ = {isa = PBXBuildFile; fileRef = CF0E575D2EB0F76900D4313B /* amiko_stylesheet.css */; };
 		CF0E57612EB0F77800D4313B /* color-scheme-dark.css in Resources */ = {isa = PBXBuildFile; fileRef = CF0E575F2EB0F77800D4313B /* color-scheme-dark.css */; };
 		CF0E57622EB0F77800D4313B /* color-scheme-light.css in Resources */ = {isa = PBXBuildFile; fileRef = CF0E57602EB0F77800D4313B /* color-scheme-light.css */; };
+		CF0E57652EB0FA9500D4313B /* PatinfoChapterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CF0E57642EB0FA9500D4313B /* PatinfoChapterTableViewController.m */; };
 		CF11C57B2CFD7CA400078620 /* ZurRoseAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */; };
 		CF11C57C2CFD7CA400078620 /* ZurRosePatientAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5712CFD7CA400078620 /* ZurRosePatientAddress.m */; };
 		CF11C57D2CFD7CA400078620 /* ZurRosePosology.m in Sources */ = {isa = PBXBuildFile; fileRef = CF11C5732CFD7CA400078620 /* ZurRosePosology.m */; };
@@ -176,6 +177,8 @@
 		CF0E575D2EB0F76900D4313B /* amiko_stylesheet.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = amiko_stylesheet.css; sourceTree = "<group>"; };
 		CF0E575F2EB0F77800D4313B /* color-scheme-dark.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "color-scheme-dark.css"; sourceTree = "<group>"; };
 		CF0E57602EB0F77800D4313B /* color-scheme-light.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "color-scheme-light.css"; sourceTree = "<group>"; };
+		CF0E57632EB0FA9500D4313B /* PatinfoChapterTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PatinfoChapterTableViewController.h; sourceTree = "<group>"; };
+		CF0E57642EB0FA9500D4313B /* PatinfoChapterTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PatinfoChapterTableViewController.m; sourceTree = "<group>"; };
 		CF11C56E2CFD7CA400078620 /* ZurRoseAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRoseAddress.h; sourceTree = "<group>"; };
 		CF11C56F2CFD7CA400078620 /* ZurRoseAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZurRoseAddress.m; sourceTree = "<group>"; };
 		CF11C5702CFD7CA400078620 /* ZurRosePatientAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZurRosePatientAddress.h; sourceTree = "<group>"; };
@@ -426,6 +429,8 @@
 				CF0E57582EB097EE00D4313B /* PatinfoViewController.h */,
 				CF0E57592EB097EE00D4313B /* PatinfoViewController.m */,
 				CF0E575A2EB097EE00D4313B /* PatinfoViewController.xib */,
+				CF0E57632EB0FA9500D4313B /* PatinfoChapterTableViewController.h */,
+				CF0E57642EB0FA9500D4313B /* PatinfoChapterTableViewController.m */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -656,6 +661,7 @@
 				CF0E57562EAE6C3F00D4313B /* PriceComparisonViewController.m in Sources */,
 				CF30D4682D953BA000164F52 /* SettingsProfileTableViewController.m in Sources */,
 				819273741535D56E0060859C /* main.m in Sources */,
+				CF0E57652EB0FA9500D4313B /* PatinfoChapterTableViewController.m in Sources */,
 				819273781535D56E0060859C /* AppDelegate.m in Sources */,
 				CF4B16CD21AEEC120005C693 /* BarcodeExtractor.m in Sources */,
 				8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */,

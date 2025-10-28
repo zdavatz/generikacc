@@ -78,6 +78,22 @@
 }
 
 - (void)chapterButtonClicked:(id)sender {
+    PatinfoChapterTableViewController *controller = [[PatinfoChapterTableViewController alloc] initWithAmikoRow:self.amikoRow];
+    controller.delegate = self;
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewController:navController animated:YES completion:^{
+        
+    }];
+}
+
+- (void)chapterViewController:(id)sender didSelectedChapter:(NSString *)chapterId {
+    [sender dismissViewControllerAnimated:YES completion:^{
+        
+    }];
+    
+    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"document.querySelector('#%@')?.scrollIntoView()", chapterId]
+                   completionHandler:nil];
 }
 
 @end

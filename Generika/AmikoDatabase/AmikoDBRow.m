@@ -42,4 +42,12 @@
     return result;
 }
 
+- (NSArray<NSString *> *)chapterIds {
+    return [self.ids_str componentsSeparatedByString:@","];
+}
+
+- (NSArray<NSString *> *)chapterTitles {
+    return [self.titles_str componentsSeparatedByString:@";"];
+}
+
 @end
