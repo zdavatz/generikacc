@@ -35,6 +35,7 @@
 }
 
 - (NSArray<AmikoDBPackage*>*)parsedPackages {
+    if (!self.packages.length) return nil;
     NSMutableArray *result = [NSMutableArray array];
     for (NSString *str in [self.packages componentsSeparatedByString:@"\n"]) {
         [result addObject:[[AmikoDBPackage alloc] initWithPackageString:str parent:self]];
