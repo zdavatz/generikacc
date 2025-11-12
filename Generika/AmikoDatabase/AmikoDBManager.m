@@ -74,39 +74,42 @@ static AmikoDBManager *_sharedInstance = nil;
 - (NSArray<AmikoDBRow*>*)excuteSQL:(sqlite3_stmt *)compiledStatement {
     NSMutableArray *result = [NSMutableArray array];
     while (sqlite3_step(compiledStatement) == SQLITE_ROW) {
-        NSMutableArray *row = [NSMutableArray array];
-        for (int i=0; i<sqlite3_column_count(compiledStatement); i++) {
-            int colType = sqlite3_column_type(compiledStatement, i);
-            id value;
-            if (colType == SQLITE_TEXT) {
-                const char *col = (const char *)sqlite3_column_text(compiledStatement, i);
-                value = [[NSString alloc] initWithUTF8String:col];
-            }
-            else if (colType == SQLITE_INTEGER) {
-                int col = sqlite3_column_int(compiledStatement, i);
-                value = [NSNumber numberWithInt:col];
-            }
-            else if (colType == SQLITE_FLOAT) {
-                double col = sqlite3_column_double(compiledStatement, i);
-                value = [NSNumber numberWithDouble:col];
-            }
-            else if (colType == SQLITE_NULL) {
-                value = [NSNull null];
-            }
-            else {
-                NSLog(@"%s Unknown data type.", __FUNCTION__);
-            }
-
-            // Add value to row
-            [row addObject:value];
-            value = nil;
-        }
-        
-        AmikoDBRow *rowObj = [[AmikoDBRow alloc] initWithRow:row];
-        // Add row to array
-        [result addObject:rowObj];
+        [result addObject:[self _collectRowColumns:compiledStatement]];
     }
     return result;
+}
+
+- (AmikoDBRow *)_collectRowColumns:(sqlite3_stmt *)compiledStatement {
+    NSMutableArray *row = [NSMutableArray array];
+    for (int i=0; i<sqlite3_column_count(compiledStatement); i++) {
+        int colType = sqlite3_column_type(compiledStatement, i);
+        id value;
+        if (colType == SQLITE_TEXT) {
+            const char *col = (const char *)sqlite3_column_text(compiledStatement, i);
+            value = [[NSString alloc] initWithUTF8String:col];
+        }
+        else if (colType == SQLITE_INTEGER) {
+            int col = sqlite3_column_int(compiledStatement, i);
+            value = [NSNumber numberWithInt:col];
+        }
+        else if (colType == SQLITE_FLOAT) {
+            double col = sqlite3_column_double(compiledStatement, i);
+            value = [NSNumber numberWithDouble:col];
+        }
+        else if (colType == SQLITE_NULL) {
+            value = [NSNull null];
+        }
+        else {
+            NSLog(@"%s Unknown data type.", __FUNCTION__);
+        }
+
+        // Add value to row
+        [row addObject:value];
+        value = nil;
+    }
+    
+    AmikoDBRow *rowObj = [[AmikoDBRow alloc] initWithRow:row];
+    return rowObj;
 }
 
 - (NSArray<AmikoDBRow*>*)findWithRegnr:(NSString *)regnr {
@@ -214,6 +217,49 @@ static AmikoDBManager *_sharedInstance = nil;
     
     [downloadTask resume];
     return downloadTask;
+}
+
+- (NSString *)dbStat {
+//    Report on the imported items (number of PI, number products with prices, total number of products).
+    NSUInteger rowCount = 0;
+    NSUInteger packageCount = 0;
+    NSUInteger packageWithPriceCount = 0;
+    if (!sqliteDB && ![self open]) {
+        return nil;
+    }
+    
+    sqlite3_stmt *compiledStatement = nil;
+    int rc = sqlite3_prepare_v2(sqliteDB, [@"SELECT * FROM amikodb" UTF8String], -1, &compiledStatement, nil);
+    if (rc != SQLITE_OK) {
+        NSLog(@"%s Error when preparing query! %d", __FUNCTION__, rc);
+        return nil;
+    }
+    
+    while (sqlite3_step(compiledStatement) == SQLITE_ROW) {
+        AmikoDBRow *rowObj = [self _collectRowColumns:compiledStatement];
+        rowCount++;
+        NSArray *packages = [rowObj parsedPackages];
+        packageCount += packages.count;
+        for (AmikoDBPackage *package in packages) {
+            if (package.pp.length) {
+                packageWithPriceCount++;
+            }
+        }
+    }
+    
+    // Reset statement (not necessary)
+    sqlite3_reset(compiledStatement);
+    // Release compiled statement from memory
+    sqlite3_finalize(compiledStatement);
+    
+    return [NSString stringWithFormat:NSLocalizedString(@"The database contains:\n- %ld Products\n- %ld Packages\n- %ld Packages with price", @""), rowCount, packageCount, packageWithPriceCount];
+}
+
+- (NSString *)databaseLastUpdate {
+    NSDictionary *attrDict = [[NSFileManager defaultManager] fileAttributesAtPath:[self DBPath] traverseLink:NO];
+    return [NSDateFormatter localizedStringFromDate:[attrDict fileModificationDate]
+                                          dateStyle:NSDateFormatterShortStyle
+                                          timeStyle:NSDateFormatterShortStyle];
 }
 
 @end

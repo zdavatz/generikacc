@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<AmikoDBRow*>*)findWithRegnr:(NSString *)regnr;
 - (NSArray<AmikoDBRow*>*)findWithATC:(NSString *)atc;
 
+- (NSString *)dbStat;
+- (NSString *)databaseLastUpdate;
+
 - (NSURLSessionDownloadTask *)downloadNewDatabase:(void (^)(NSError *error))callback;
 
 @end

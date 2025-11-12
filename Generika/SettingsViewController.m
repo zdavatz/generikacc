@@ -10,6 +10,7 @@
 #import "SettingsProfileTableViewController.h"
 #import "UIColorBackport.h"
 #import "SettingsManager.h"
+#import "AmikoDatabase/AmikoDBManager.h"
 
 typedef enum : NSUInteger {
     SettingsViewControllerRowSearch = 0,
@@ -122,67 +123,131 @@ typedef enum : NSUInteger {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-  return 1;
+  return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
   numberOfRowsInSection:(NSInteger)section
 {
-  return 4;
+    switch (section) {
+        case 0:
+            return 4;
+        case 1:
+            return 1;
+    }
+    return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  static NSString *cellIdentifier = @"Cell";
+    static NSString *cellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
-    NSDictionary *context = [self contextFor:indexPath];
-    cell.textLabel.text = [self.entries objectAtIndex:indexPath.row];
-    
-    switch (indexPath.row) {
-        case SettingsViewControllerRowProfile:
-            cell.detailTextLabel.text = @"";
-            break;
-            
-        default: {
-            NSInteger selectedRow = [self.userDefaults
-                                     integerForKey:[context objectForKey:@"key"]];
-            cell.detailTextLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
+    if (indexPath.section == 0) {
+        NSDictionary *context = [self contextFor:indexPath];
+        cell.textLabel.text = [self.entries objectAtIndex:indexPath.row];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        switch (indexPath.row) {
+            case SettingsViewControllerRowProfile:
+                cell.detailTextLabel.text = @"";
+                break;
+                
+            default: {
+                NSInteger selectedRow = [self.userDefaults
+                                         integerForKey:[context objectForKey:@"key"]];
+                cell.detailTextLabel.text = [[context objectForKey:@"options"] objectAtIndex:selectedRow];
+            }
+                break;
         }
-            break;
+    } else if (indexPath.section == 1) {
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.textLabel.text = @"Update Database";
+        cell.detailTextLabel.text = @"";
     }
     
     return cell;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        return [NSString stringWithFormat:@"DB Generated at: %@", [[AmikoDBManager shared] databaseLastUpdate]];
+    }
+    return nil;
+}
+
 - (void)tableView:(UITableView *)tableView
   didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.row == SettingsViewControllerRowProfile) {
-        NSDictionary *dict = [[SettingsManager shared] getDictFromKeychain];
-        if (dict) {
-            SettingsProfileTableViewController *controller = [[SettingsProfileTableViewController alloc] initWithKeychainDict:dict];
-            [self.navigationController pushViewController:controller animated:YES];
+    if (indexPath.section == 0) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        if (indexPath.row == SettingsViewControllerRowProfile) {
+            NSDictionary *dict = [[SettingsManager shared] getDictFromKeychain];
+            if (dict) {
+                SettingsProfileTableViewController *controller = [[SettingsProfileTableViewController alloc] initWithKeychainDict:dict];
+                [self.navigationController pushViewController:controller animated:YES];
+            }
+            return;
         }
-        return;
+        self.settingsDetail = [[SettingsDetailViewController alloc] init];
+        self.settingsDetail.title = [self.entries objectAtIndex:indexPath.row];
+        NSDictionary *context = [self contextFor:indexPath];
+        NSString *label = [context objectForKey:@"label"];
+        if (label) {
+            self.settingsDetail.label = label;
+        }
+        self.settingsDetail.options    = [context objectForKey:@"options"];
+        self.settingsDetail.defaultKey = [context objectForKey:@"key"];
+        [self.navigationController
+         pushViewController:self.settingsDetail animated:YES];
+    } else if (indexPath.section == 1) {
+        __weak typeof(self) _self = self;
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Please wait", @"")
+                                                                       message:NSLocalizedString(@"Downloading database now...", @"")
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        NSURLSessionDownloadTask *task = [[AmikoDBManager shared] downloadNewDatabase:^(NSError * _Nonnull error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [alert dismissViewControllerAnimated:YES completion:^{}];
+                if (error && error.code != -999) {
+                    UIAlertController *a = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Fehler", @"")
+                                                                               message:error.localizedDescription
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                    [a addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"")
+                                                          style:UIAlertActionStyleCancel
+                                                        handler:^(UIAlertAction * _Nonnull action) {}]];
+                    [_self presentViewController:a animated:YES completion:^{}];
+                }
+                if (!error) {
+                    UIAlertController *a = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Downloaded", @"")
+                                                                               message:[[AmikoDBManager shared] dbStat]
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                    [a addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * _Nonnull action) {}]];
+                    [_self presentViewController:a animated:YES completion:^{}];
+                }
+                [_self.settingsView reloadData];
+            });
+        }];
+        UIProgressView *progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+        progressView.observedProgress = task.progress;
+        
+
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"")
+                                                  style:UIAlertActionStyleCancel
+                                                handler:^(UIAlertAction * _Nonnull action) {
+            [task cancel];
+        }]];
+
+        [self presentViewController:alert animated:YES completion:^{
+            [alert.view addSubview:progressView];
+            progressView.frame = CGRectMake(0, alert.view.frame.size.height - 45 - progressView.frame.size.height,
+                                            alert.view.frame.size.width, progressView.frame.size.height);
+        }];
     }
-  self.settingsDetail = [[SettingsDetailViewController alloc] init];
-  self.settingsDetail.title = [self.entries objectAtIndex:indexPath.row];
-  NSDictionary *context = [self contextFor:indexPath];
-  NSString *label = [context objectForKey:@"label"];
-  if (label) {
-    self.settingsDetail.label = label;
-  }
-  self.settingsDetail.options    = [context objectForKey:@"options"];
-  self.settingsDetail.defaultKey = [context objectForKey:@"key"];
-  [self.navigationController
-   pushViewController:self.settingsDetail animated:YES];
 }
 
 - (NSDictionary *)contextFor:(NSIndexPath *)indexPath
