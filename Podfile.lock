@@ -25,6 +25,7 @@ PODS:
   - KissXML/Core (5.3.1)
   - NTMonthYearPicker (1.0.0)
   - OCMock (3.4.1)
+  - SSZipArchive (2.4.3)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.2.1)
@@ -32,6 +33,7 @@ DEPENDENCIES:
   - KissXML (~> 5.3.1)
   - NTMonthYearPicker (~> 1.0)
   - OCMock (~> 3.4.1)
+  - SSZipArchive
 
 SPEC REPOS:
   trunk:
@@ -40,6 +42,7 @@ SPEC REPOS:
     - KissXML
     - NTMonthYearPicker
     - OCMock
+    - SSZipArchive
 
 SPEC CHECKSUMS:
   AFNetworking: cb604b1c2bded0871f5f61f5d53653739e841d6b
@@ -47,7 +50,8 @@ SPEC CHECKSUMS:
   KissXML: 5c8e0f2e8b9f071d3e1ae123dec3eb5da615c10c
   NTMonthYearPicker: 27e1739d6e29428628c8275a7c1a9e4835c352f4
   OCMock: 2cd0716969bab32a2283ff3a46fd26a8c8b4c5e3
+  SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
 
-PODFILE CHECKSUM: ce017e4a3a4efe987d5a722a0e58a7b0b17f8f83
+PODFILE CHECKSUM: 1b9c2a166913a25b75e26131349aa5c0e4df1481
 
 COCOAPODS: 1.16.2

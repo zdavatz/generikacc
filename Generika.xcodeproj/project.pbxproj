@@ -225,8 +225,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		CFFC02D02EA3D24800FFF3F9 /* Databases */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Databases; sourceTree = "<group>"; };
-		CFFC02D72EA6673600FFF3F9 /* AmikoDatabase */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AmikoDatabase; sourceTree = "<group>"; };
+		CFFC02D02EA3D24800FFF3F9 /* Databases */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Databases;
+			sourceTree = "<group>";
+		};
+		CFFC02D72EA6673600FFF3F9 /* AmikoDatabase */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AmikoDatabase;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -558,7 +566,6 @@
 				};
 			};
 			buildConfigurationList = 8192735D1535D56D0060859C /* Build configuration list for PBXProject "Generika" */;
-			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -566,6 +573,7 @@
 				Base,
 			);
 			mainGroup = 819273581535D56D0060859C;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 819273581535D56D0060859C;
 			projectDirPath = "";
 			projectRoot = "";

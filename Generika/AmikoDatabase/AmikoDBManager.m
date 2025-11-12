@@ -8,11 +8,16 @@
 
 #import "AmikoDBManager.h"
 #import <sqlite3.h>
+#import <SSZipArchive/SSZipArchive.h>
+
 #define AMIKODB_COLUMNS @"_id, title, auth, atc, substances, regnrs, atc_class, tindex_str, application_str, indications_str, customer_id, pack_info_str, add_info_str, ids_str, titles_str, content, style_str, packages"
 
 @interface AmikoDBManager () {
     sqlite3 *sqliteDB;
 }
+
+@property (nonatomic, strong) NSURLSession *downloadSession;
+@property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
 
 @end
 
@@ -28,8 +33,25 @@ static AmikoDBManager *_sharedInstance = nil;
   return _sharedInstance;
 }
 
+- (instancetype)init {
+    if (self = [super init]) {
+        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"AmikoDBManager.download"];
+        config.sessionSendsLaunchEvents = YES;
+        config.discretionary = YES;
+        self.downloadSession = [NSURLSession sessionWithConfiguration:config];
+    }
+    return self;
+}
+
+- (BOOL)reopen {
+    if (sqliteDB) {
+        sqlite3_close(sqliteDB);
+    }
+    [self open];
+}
+
 - (BOOL)open {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"amiko_db_full_idx_pinfo_de" ofType:@"db"];
+    NSString *path = [self externalDBPath];
     int rc = sqlite3_open_v2([path UTF8String], &sqliteDB, SQLITE_OPEN_READONLY, NULL);
     if (rc != SQLITE_OK) {
         NSLog(@"%s Unable to open database! %d", __FUNCTION__, rc);
@@ -133,6 +155,65 @@ static AmikoDBManager *_sharedInstance = nil;
     // Release compiled statement from memory
     sqlite3_finalize(compiledStatement);
     return result;
+}
+
+# pragma mark: - External DB
+
+- (NSString *)externalDBPath {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(
+        NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *path = [documentsDirectory
+      stringByAppendingPathComponent:@"database"];
+    NSError *error;
+    [[NSFileManager defaultManager] createDirectoryAtPath:path
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&error];
+    return [path stringByAppendingPathComponent:@"amiko_db_full_idx_pinfo_de.db"];
+}
+
+- (NSString *)DBPath {
+    NSString *externalDBPath = [self externalDBPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:externalDBPath]) {
+        return externalDBPath;
+    }
+    return [[NSBundle mainBundle] pathForResource:@"amiko_db_full_idx_pinfo_de" ofType:@"db"];
+}
+
+- (NSURLSessionDownloadTask *)downloadNewDatabase:(void (^)(NSError *error))callback {
+    if (self.downloadTask) {
+        [self.downloadTask cancel];
+    }
+    __weak typeof(self) _self = self;
+    NSURL *url = [NSURL URLWithString:@"http://pillbox.oddb.org/amiko_db_full_idx_pinfo_de.db.zip"];
+    NSURLSessionDownloadTask *downloadTask = [[NSURLSession sharedSession] downloadTaskWithURL:url
+                                                                     completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (error) {
+            _self.downloadTask = nil;
+            callback(error);
+            return;
+        }
+        if (location) {
+            NSError *error = nil;
+            [[NSFileManager defaultManager] removeItemAtPath:[self externalDBPath] error:nil];
+            if (sqliteDB) {
+                sqlite3_close(sqliteDB);
+                sqliteDB = nil;
+            }
+            BOOL unzip = [SSZipArchive unzipFileAtPath:location.path
+                                         toDestination:[self.externalDBPath stringByDeletingLastPathComponent]
+                                             overwrite:YES
+                                              password:nil
+                                                 error:&error];
+            _self.downloadTask = nil;
+            callback(error);
+        }
+    }];
+    self.downloadTask = downloadTask;
+    
+    [downloadTask resume];
+    return downloadTask;
 }
 
 @end
