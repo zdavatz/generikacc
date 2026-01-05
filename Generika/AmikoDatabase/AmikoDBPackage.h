@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isGeneric;
 - (BOOL)isOriginal;
+- (BOOL)isDosageEqualsTo:(AmikoDBPackage*)other;
 
 @end
 
