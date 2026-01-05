@@ -173,7 +173,7 @@ typedef enum : NSUInteger {
             case PriceComparisonSortingAuth:
                 return [obj1.package.parent.auth compare:obj2.package.parent.auth];
             case PriceComparisonSortingSize:
-                return [obj1.package.dosage compare:obj2.package.dosage];
+                return [@(obj1.package.dosage.doubleValue) compare:@(obj2.package.dosage.doubleValue)];
             case PriceComparisonSortingPrice:
                 return [@([[obj1.package.pp stringByReplacingOccurrencesOfString:@"CHF " withString:@""] doubleValue]) compare:@([[obj2.package.pp stringByReplacingOccurrencesOfString:@"CHF " withString:@""] doubleValue])];
             case PriceComparisonSortingPercentage:
