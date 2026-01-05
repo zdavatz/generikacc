@@ -42,6 +42,8 @@
     for (AmikoDBRow *row in [idToRowDict allValues]) {
         for (AmikoDBPackage *package in row.parsedPackages) {
             if ([package.gtin isEqual:gtin] || ![package.units isEqual:thePackage.units]) continue;
+            if (![package isDosageEqualsTo:thePackage]) continue;
+            
             
             AmikoDBPriceComparison *c = [[AmikoDBPriceComparison alloc] init];
             [results addObject:c];
