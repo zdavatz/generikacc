@@ -30,6 +30,9 @@
         self.content = row[15];
         self.style_str = row[16];
         self.packages = row[17];
+        if (row.count > 18) {
+            self.type = row[18];
+        }
     }
     return self;
 }
