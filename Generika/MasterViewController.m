@@ -967,18 +967,18 @@ static const int kSegmentReceipt = 1;
           [self.navigationController pushViewController:comparisonController
                                                animated:YES];
       }
-  } else if ([type isEqualToString:@"PI"]) {
-      NSArray<AmikoDBRow *> *rows = [[AmikoDBManager shared] findWithGtin:product.ean];
+  } else if ([type isEqualToString:@"PI"] || [type isEqualToString:@"FI"]) {
+      NSArray<AmikoDBRow *> *rows = [[AmikoDBManager shared] findWithGtin:product.ean type:type];
       if ([rows count]) {
           PatinfoViewController *controller = [[PatinfoViewController alloc] initWithRow:rows.firstObject];
           [self.navigationController pushViewController:controller animated:YES];
-      } else {
+      } else if ([type isEqualToString:@"PI"]) {
           url = [NSString stringWithFormat:@"%@/%@/generika/patinfo/reg/%@/seq/%@",
                  kOddbBaseURL, lang, product.reg, product.seq];
+      } else if ([type isEqualToString:@"FI"]) {
+          url = [NSString stringWithFormat:@"%@/%@/generika/fachinfo/reg/%@",
+                 kOddbBaseURL, lang, product.reg];
       }
-  } else if ([type isEqualToString:@"FI"]) {
-    url = [NSString stringWithFormat:@"%@/%@/generika/fachinfo/reg/%@",
-           kOddbBaseURL, lang, product.reg];
   }
     if (url) {
         [self openWebViewWithURL:[NSURL URLWithString:url]];
