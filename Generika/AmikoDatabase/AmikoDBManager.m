@@ -60,7 +60,30 @@ static AmikoDBManager *_sharedInstance = nil;
     return YES;
 }
 
-- (NSArray<AmikoDBRow*>*)findWithGtin:(NSString *)gtin {
+- (BOOL)isTypeColumnAvailable {
+    if (!sqliteDB && ![self open]) {
+        return nil;
+    }
+    NSString *sql = @"SELECT * FROM pragma_table_info('amikodb') AS tblInfo WHERE name='type'";
+    sqlite3_stmt *compiledStatement = nil;
+    int rc = sqlite3_prepare_v2(sqliteDB, [sql UTF8String], -1, &compiledStatement, nil);
+    if (rc != SQLITE_OK) {
+        NSLog(@"%s Error when preparing query! %d", __FUNCTION__, rc);
+        return nil;
+    }
+    NSUInteger count = 0;
+    while (sqlite3_step(compiledStatement) == SQLITE_ROW) {
+        count++;
+    }
+    // Reset statement (not necessary)
+    sqlite3_reset(compiledStatement);
+    // Release compiled statement from memory
+    sqlite3_finalize(compiledStatement);
+    return count > 0;
+}
+
+
+- (NSArray<AmikoDBRow*>*)findWithGtin:(NSString *)gtin type:(NSString *)type {
     if (!sqliteDB && ![self open]) {
         return nil;
     }
@@ -68,7 +91,7 @@ static AmikoDBManager *_sharedInstance = nil;
         return nil;
     }
     NSString *regnr = [gtin substringWithRange:NSMakeRange(4, 5)];
-    return [self findWithRegnr:regnr];
+    return [self findWithRegnr:regnr type:type];
 }
 
 - (NSArray<AmikoDBRow*>*)excuteSQL:(sqlite3_stmt *)compiledStatement {
@@ -112,22 +135,43 @@ static AmikoDBManager *_sharedInstance = nil;
     return rowObj;
 }
 
-- (NSArray<AmikoDBRow*>*)findWithRegnr:(NSString *)regnr {
+- (NSArray<AmikoDBRow*>*)findWithRegnr:(NSString *)regnr type:(NSString *)type {
     if (!sqliteDB && ![self open]) {
         return nil;
     }
-    NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM amikodb WHERE regnrs LIKE ?", AMIKODB_COLUMNS];
     sqlite3_stmt *compiledStatement = nil;
-    int rc = sqlite3_prepare_v2(sqliteDB, [sql UTF8String], -1, &compiledStatement, nil);
-    if (rc != SQLITE_OK) {
-        NSLog(@"%s Error when preparing query! %d", __FUNCTION__, rc);
-        return nil;
+    if ([self isTypeColumnAvailable] && type.length) {
+        NSString *sql = [NSString stringWithFormat:@"SELECT %@, type FROM amikodb WHERE regnrs LIKE ? AND type = ?", AMIKODB_COLUMNS];
+        int rc = sqlite3_prepare_v2(sqliteDB, [sql UTF8String], -1, &compiledStatement, nil);
+        if (rc != SQLITE_OK) {
+            NSLog(@"%s Error when preparing query! %d", __FUNCTION__, rc);
+            return nil;
+        }
+        rc = sqlite3_bind_text(compiledStatement, 1, [[NSString stringWithFormat:@"%%%@%%", regnr] UTF8String], -1, NULL);
+        if (rc != SQLITE_OK) {
+            NSLog(@"%s Error when binding query! %d", __FUNCTION__, rc);
+            return nil;
+        }
+        rc = sqlite3_bind_text(compiledStatement, 2, [type UTF8String], -1, NULL);
+        if (rc != SQLITE_OK) {
+            NSLog(@"%s Error when binding query! %d", __FUNCTION__, rc);
+            return nil;
+        }
+    } else {
+        // Old DB doesn't have the type column
+        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM amikodb WHERE regnrs LIKE ?", AMIKODB_COLUMNS];
+        int rc = sqlite3_prepare_v2(sqliteDB, [sql UTF8String], -1, &compiledStatement, nil);
+        if (rc != SQLITE_OK) {
+            NSLog(@"%s Error when preparing query! %d", __FUNCTION__, rc);
+            return nil;
+        }
+        rc = sqlite3_bind_text(compiledStatement, 1, [[NSString stringWithFormat:@"%%%@%%", regnr] UTF8String], -1, NULL);
+        if (rc != SQLITE_OK) {
+            NSLog(@"%s Error when binding query! %d", __FUNCTION__, rc);
+            return nil;
+        }
     }
-    rc = sqlite3_bind_text(compiledStatement, 1, [[NSString stringWithFormat:@"%%%@%%", regnr] UTF8String], -1, NULL);
-    if (rc != SQLITE_OK) {
-        NSLog(@"%s Error when binding query! %d", __FUNCTION__, rc);
-        return nil;
-    }
+    
     NSArray<AmikoDBRow*> *result = [self excuteSQL:compiledStatement];
     // Reset statement (not necessary)
     sqlite3_reset(compiledStatement);

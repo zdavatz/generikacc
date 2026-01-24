@@ -15,8 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (AmikoDBManager *)shared;
 
-- (NSArray<AmikoDBRow*>*)findWithGtin:(NSString *)gtin;
-- (NSArray<AmikoDBRow*>*)findWithRegnr:(NSString *)regnr;
+- (NSArray<AmikoDBRow*>*)findWithGtin:(NSString *)gtin type:(NSString *)type;
+- (NSArray<AmikoDBRow*>*)findWithRegnr:(NSString *)regnr type:(NSString * _Nullable)type;
 - (NSArray<AmikoDBRow*>*)findWithATC:(NSString *)atc;
 
 - (NSString *)dbStat;

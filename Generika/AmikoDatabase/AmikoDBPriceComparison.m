@@ -12,7 +12,7 @@
 @implementation AmikoDBPriceComparison
 
 + (NSArray<AmikoDBPriceComparison*> *)comparePrice:(NSString *)gtin {
-    NSArray *rows = [[AmikoDBManager shared] findWithGtin:gtin];
+    NSArray *rows = [[AmikoDBManager shared] findWithGtin:gtin type:nil];
     if (rows.count == 0) return nil;
     NSMutableDictionary *idToRowDict = [NSMutableDictionary dictionary];
     NSString *atc = nil;
