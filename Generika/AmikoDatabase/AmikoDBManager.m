@@ -51,7 +51,7 @@ static AmikoDBManager *_sharedInstance = nil;
 }
 
 - (BOOL)open {
-    NSString *path = [self externalDBPath];
+    NSString *path = [self DBPath];
     int rc = sqlite3_open_v2([path UTF8String], &sqliteDB, SQLITE_OPEN_READONLY, NULL);
     if (rc != SQLITE_OK) {
         NSLog(@"%s Unable to open database! %d", __FUNCTION__, rc);
