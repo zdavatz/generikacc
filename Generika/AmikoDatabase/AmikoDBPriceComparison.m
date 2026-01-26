@@ -38,13 +38,17 @@
     double basePrice = [[thePackage.pp stringByReplacingOccurrencesOfString:@"CHF " withString:@""] doubleValue];
 
     NSMutableArray<AmikoDBPriceComparison*> *results = [NSMutableArray array];
+    NSMutableSet *processedGtin = [NSMutableSet set];
     
     for (AmikoDBRow *row in [idToRowDict allValues]) {
         for (AmikoDBPackage *package in row.parsedPackages) {
             if ([package.gtin isEqual:gtin] || ![package.units isEqual:thePackage.units]) continue;
             if (![package isDosageEqualsTo:thePackage]) continue;
             
-            
+            if ([processedGtin containsObject:package.gtin]) {
+                continue;
+            }
+            [processedGtin addObject:package.gtin];
             AmikoDBPriceComparison *c = [[AmikoDBPriceComparison alloc] init];
             [results addObject:c];
             c.package = package;
