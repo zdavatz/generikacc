@@ -24,6 +24,8 @@
 #import "ReceiptUsageViewController.h"
 #import "ScannerViewController.h"
 #import "MasterViewController.h"
+#import "AmikoDBManager.h"
+#import "AmikoDBPackage.h"
 #import "VisionKit/VisionKit.h"
 #import "MessageUI/MessageUI.h"
 
@@ -755,7 +757,9 @@ static const int kSegmentReceipt = 1;
                     expiresAt:(NSString *)expiresAt
                     lotNumber:(NSString *)lotNumber
                         image:(UIImage *)image {
+  NSLog(@"didScanProductWithEan called - EAN: %@, reachable: %d", ean, [self isReachable]);
   if (![self isReachable]) {
+    NSLog(@"ERROR: No internet connection - returning early");
     UIAlertView *alert = [[UIAlertView alloc]
       initWithTitle:@"Keine Verbindung zum Internet!"
             message:nil
@@ -774,6 +778,7 @@ static const int kSegmentReceipt = 1;
     // API Request
     NSString *searchURL = [NSString stringWithFormat:
       @"%@/%@", kOddbProductSearchBaseURL, ean];
+    NSLog(@"Making API request to: %@", searchURL);
     NSURL *productSearch = [NSURL URLWithString:searchURL];
     // https://github.com/AFNetworking/AFNetworking/wiki/ \
     //   AFNetworking-3.0-Migration-Guide#afnetworking-3x-1
@@ -782,6 +787,7 @@ static const int kSegmentReceipt = 1;
     [session GET:[productSearch absoluteString]
       parameters:nil
          success:^(NSURLSessionTask *task, id responseObject) {
+           NSLog(@"API request SUCCESS - calling didFinishPicking");
            ProductManager *manager = [ProductManager sharedManager];
            NSUInteger before = [manager.products count];
            [self didFinishPicking:responseObject withEan:ean expiresAt:expiresAt lotNumber:lotNumber barcode:image];
@@ -792,7 +798,47 @@ static const int kSegmentReceipt = 1;
            }
          }
          failure:^(NSURLSessionTask *task, NSError *error) {
+            NSLog(@"API request FAILED: %@", error.localizedDescription);
             // pass
+            NSLog(@"API failed, but saving icon anyway");
+            ProductManager *manager = [ProductManager sharedManager];
+            NSString *barcodePath = [manager storeBarcode:image
+                                                    ofEan:ean
+                                                       to:@"both"];
+            NSLog(@"Icon saved at path: %@", barcodePath);
+            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:barcodePath];
+            NSLog(@"File exists: %@", fileExists ? @"YES" : @"NO");
+            // Create a basic product even without API data
+            Product *product = [[Product alloc] initWithEan:ean];
+            // Try to get product info from local database
+            AmikoDBManager *dbManager = [AmikoDBManager shared];
+            NSArray<AmikoDBRow*> *results = [dbManager findWithGtin:ean type:nil];
+            if (results.count > 0) {
+                AmikoDBRow *row = results[0];
+                product.name = row.title;
+                // Find matching package by EAN
+                NSArray<AmikoDBPackage*> *packages = [row parsedPackages];
+                for (AmikoDBPackage *pkg in packages) {
+                    if ([pkg.gtin isEqualToString:ean]) {
+                        product.pack = pkg.name;
+                        product.size = pkg.units;
+                        product.price = pkg.pp;
+                        break;
+                    }
+                }
+                NSLog(@"Found in DB: %@ - %@", product.name, product.pack);
+            } else {
+                NSLog(@"Product not found in local database");
+            }
+            product.barcode = barcodePath;
+            if (expiresAt) product.expiresAt = expiresAt;
+            NSDate *now = [NSDate date];
+            NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+            [dateFormat setDateFormat:@"HH:mm dd.MM.YYYY"];
+            product.datetime = [dateFormat stringFromDate:now];
+            ProductManager *manager2 = [ProductManager sharedManager];
+            [manager2 insertProduct:product atIndex:0];
+            NSLog(@"Product created with EAN: %@", ean);
          }
     ];
     // open oddb.org
