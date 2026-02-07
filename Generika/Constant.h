@@ -9,7 +9,6 @@
 extern CGFloat const kVersionNumber_iOS_6_1;
 
 extern NSString *const kOddbBaseURL;
-extern NSString *const kOddbProductSearchBaseURL;
 extern NSString *const kOddbMobileFlavorUserAgent;
 
 #ifdef __IPHONE_6_0 // >= iOS 6
