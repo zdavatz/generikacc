@@ -775,73 +775,42 @@ static const int kSegmentReceipt = 1;
   if ([ean length] != 13) {
     [self notFoundEan:ean];
   } else {
-    // API Request
-    NSString *searchURL = [NSString stringWithFormat:
-      @"%@/%@", kOddbProductSearchBaseURL, ean];
-    NSLog(@"Making API request to: %@", searchURL);
-    NSURL *productSearch = [NSURL URLWithString:searchURL];
-    // https://github.com/AFNetworking/AFNetworking/wiki/ \
-    //   AFNetworking-3.0-Migration-Guide#afnetworking-3x-1
-    AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
-    session.requestSerializer = [AFJSONRequestSerializer serializer];
-    [session GET:[productSearch absoluteString]
-      parameters:nil
-         success:^(NSURLSessionTask *task, id responseObject) {
-           NSLog(@"API request SUCCESS - calling didFinishPicking");
-           ProductManager *manager = [ProductManager sharedManager];
-           NSUInteger before = [manager.products count];
-           [self didFinishPicking:responseObject withEan:ean expiresAt:expiresAt lotNumber:lotNumber barcode:image];
-           NSUInteger after = [manager.products count];
-           if ([type isEqualToString:@"PI"] && before < after) {
-             Product *product = [manager productAtIndex:0];
-             [self searchInfoForProduct:product];
-           }
-         }
-         failure:^(NSURLSessionTask *task, NSError *error) {
-            NSLog(@"API request FAILED: %@", error.localizedDescription);
-            // pass
-            NSLog(@"API failed, but saving icon anyway");
-            ProductManager *manager = [ProductManager sharedManager];
-            NSString *barcodePath = [manager storeBarcode:image
-                                                    ofEan:ean
-                                                       to:@"both"];
-            NSLog(@"Icon saved at path: %@", barcodePath);
-            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:barcodePath];
-            NSLog(@"File exists: %@", fileExists ? @"YES" : @"NO");
-            // Create a basic product even without API data
-            Product *product = [[Product alloc] initWithEan:ean];
-            // Try to get product info from local database
-            AmikoDBManager *dbManager = [AmikoDBManager shared];
-            NSArray<AmikoDBRow*> *results = [dbManager findWithGtin:ean type:nil];
-            if (results.count > 0) {
-                AmikoDBRow *row = results[0];
-                product.name = row.title;
-                // Find matching package by EAN
-                NSArray<AmikoDBPackage*> *packages = [row parsedPackages];
-                for (AmikoDBPackage *pkg in packages) {
-                    if ([pkg.gtin isEqualToString:ean]) {
-                        product.pack = pkg.name;
-                        product.size = pkg.units;
-                        product.price = pkg.pp;
-                        break;
-                    }
-                }
-                NSLog(@"Found in DB: %@ - %@", product.name, product.pack);
-            } else {
-                NSLog(@"Product not found in local database");
-            }
-            product.barcode = barcodePath;
-            if (expiresAt) product.expiresAt = expiresAt;
-            NSDate *now = [NSDate date];
-            NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-            [dateFormat setDateFormat:@"HH:mm dd.MM.YYYY"];
-            product.datetime = [dateFormat stringFromDate:now];
-            ProductManager *manager2 = [ProductManager sharedManager];
-            [manager2 insertProduct:product atIndex:0];
-            NSLog(@"Product created with EAN: %@", ean);
-         }
-    ];
-    // open oddb.org
+      ProductManager *manager = [ProductManager sharedManager];
+      NSString *barcodePath = [manager storeBarcode:image
+                                              ofEan:ean
+                                                 to:@"both"];
+      NSLog(@"Icon saved at path: %@", barcodePath);
+      
+      // Create a basic product even without API data
+      Product *product = [[Product alloc] initWithEan:ean];
+      // Try to get product info from local database
+      AmikoDBManager *dbManager = [AmikoDBManager shared];
+      NSArray<AmikoDBRow*> *results = [dbManager findWithGtin:ean type:nil];
+      if (results.count > 0) {
+          AmikoDBRow *row = results[0];
+          product.name = row.title;
+          // Find matching package by EAN
+          NSArray<AmikoDBPackage*> *packages = [row parsedPackages];
+          for (AmikoDBPackage *pkg in packages) {
+              if ([pkg.gtin isEqualToString:ean]) {
+                  product.pack = pkg.name;
+                  product.size = pkg.units;
+                  product.price = pkg.pp;
+                  product.category = pkg.flags;
+                  break;
+              }
+          }
+          NSLog(@"Found in DB: %@ - %@", product.name, product.pack);
+      }
+      product.barcode = barcodePath;
+      if (expiresAt) product.expiresAt = expiresAt;
+      NSDate *now = [NSDate date];
+      NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+      [dateFormat setDateFormat:@"HH:mm dd.MM.YYYY"];
+      product.datetime = [dateFormat stringFromDate:now];
+      [manager insertProduct:product atIndex:0];
+      NSLog(@"Product created with EAN: %@", ean);
+      
     if (![type isEqualToString:@"PI"]) {
       Product *product = [[Product alloc] initWithEan:ean];
       [self searchInfoForProduct:product];
