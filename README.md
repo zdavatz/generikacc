@@ -32,9 +32,10 @@ https://github.com/zdavatz/generikacc
 See `Podfile`.
 
 * AFNetworking
-* JSONKit-NoWarning
-* ZBarSDK
 * NTMonthYearPicker
+* GZIP
+* KissXML
+* SSZipArchive
 
 ### Build
 
@@ -118,10 +119,9 @@ Check all schemas exists and its are valid from `Edit Scheme...` and
 # Manage Schemes
 Generika
 AFNetworking
-JSONKit-NoWarning
 NTMonthYearPicker
+KissXML
 Pods-Generika
-ZBarSDK
 ```
 
 ## Test
