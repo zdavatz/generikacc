@@ -33,6 +33,7 @@
 #import "AmikoDatabase/AmikoDBPriceComparison.h"
 #import "PriceComparisonViewController.h"
 #import "PatinfoViewController.h"
+#import "generika-Swift.h"
 
 static const float kCellHeight = 83.0;
 static const int kSegmentedControlTag = 100;
@@ -573,37 +574,16 @@ static const int kSegmentReceipt = 1;
                          completion:nil];
       }
     } else { // product
-      // open in safari
-      NSInteger selectedLangIndex = [self.userDefaults
-                                     integerForKey:@"search.result.lang"];
-      NSString *lang = [[Constant searchLangs]
-                        objectAtIndex:selectedLangIndex];
-      NSArray *uniqueEANs;
-      uniqueEANs = [[ProductManager sharedManager].products
-                    valueForKeyPath:@"@distinctUnionOfObjects.ean"];
-      NSMutableString *productEANs = [NSMutableString string];
-      for (NSString *ean in uniqueEANs) {
-        [productEANs appendString:[NSString stringWithFormat:@",%@", ean]];
-      }
-      if ([productEANs length] != 0) {
-        productEANs = [productEANs substringWithRange:NSMakeRange(
-          1, ([productEANs length] - 1))];
-        NSString *url;
-        url = [NSString stringWithFormat:
-          @"%@/%@/generika/home_interactions/%@", kOddbBaseURL, lang, productEANs];
-          NSURL *urlToOpen = [NSURL URLWithString:url];
-
-          if (urlToOpen) {
-              [[UIApplication sharedApplication] openURL:urlToOpen
-                                                 options:@{}
-                                       completionHandler:^(BOOL success) {
-                  if (success) {
-                      NSLog(@"Successfully opened the URL.");
-                  } else {
-                      NSLog(@"Failed to open the URL.");
-                  }
-              }];
-          }
+      NSArray *products = [ProductManager sharedManager].products;
+      if (products.count > 0) {
+        InteractionsViewController *interactionsVC =
+          [[InteractionsViewController alloc] initWithProducts:products];
+        UINavigationController *navController =
+          [[UINavigationController alloc]
+            initWithRootViewController:interactionsVC];
+        [self presentViewController:navController
+                           animated:YES
+                         completion:nil];
       }
     }
   }

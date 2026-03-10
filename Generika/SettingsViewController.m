@@ -11,6 +11,7 @@
 #import "UIColorBackport.h"
 #import "SettingsManager.h"
 #import "AmikoDatabase/AmikoDBManager.h"
+#import "generika-Swift.h"
 
 typedef enum : NSUInteger {
     SettingsViewControllerRowSearch = 0,
@@ -123,7 +124,7 @@ typedef enum : NSUInteger {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-  return 2;
+  return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
@@ -133,6 +134,8 @@ typedef enum : NSUInteger {
         case 0:
             return 4;
         case 1:
+            return 1;
+        case 2:
             return 1;
     }
     return 0;
@@ -167,14 +170,25 @@ typedef enum : NSUInteger {
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.textLabel.text = @"Update Database";
         cell.detailTextLabel.text = @"";
+    } else if (indexPath.section == 2) {
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.textLabel.text = @"Update Interactions DB";
+        cell.detailTextLabel.text = @"";
     }
-    
+
     return cell;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if (section == 1) {
         return [NSString stringWithFormat:@"DB Generated at: %@", [[AmikoDBManager shared] databaseLastUpdate]];
+    }
+    if (section == 2) {
+        NSString *lastUpdate = [[InteractionsManager shared] databaseLastUpdate];
+        if (lastUpdate) {
+            return [NSString stringWithFormat:@"Interactions DB: %@", lastUpdate];
+        }
+        return @"Interactions DB";
     }
     return nil;
 }
@@ -206,7 +220,7 @@ typedef enum : NSUInteger {
     } else if (indexPath.section == 1) {
         __weak typeof(self) _self = self;
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Please wait", @"")
-                                                                       message:NSLocalizedString(@"Downloading database now...", @"")
+                                                                       message:NSLocalizedString(@"Downloading database now...\n\n", @"")
                                                                 preferredStyle:UIAlertControllerStyleAlert];
         NSURLSessionDownloadTask *task = [[AmikoDBManager shared] downloadNewDatabase:^(NSError * _Nonnull error) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -244,8 +258,54 @@ typedef enum : NSUInteger {
 
         [self presentViewController:alert animated:YES completion:^{
             [alert.view addSubview:progressView];
-            progressView.frame = CGRectMake(0, alert.view.frame.size.height - 45 - progressView.frame.size.height,
-                                            alert.view.frame.size.width, progressView.frame.size.height);
+            CGFloat progressY = alert.view.frame.size.height - 88;
+            progressView.frame = CGRectMake(16, progressY,
+                                            alert.view.frame.size.width - 32, progressView.frame.size.height);
+        }];
+    } else if (indexPath.section == 2) {
+        __weak typeof(self) _self = self;
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Please wait", @"")
+                                                                       message:NSLocalizedString(@"Downloading interactions database...\n\n", @"")
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        NSURLSessionDownloadTask *task = [[InteractionsManager shared] downloadNewDatabase:^(NSError * _Nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [alert dismissViewControllerAnimated:YES completion:^{}];
+                if (error && error.code != -999) {
+                    UIAlertController *a = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Fehler", @"")
+                                                                               message:error.localizedDescription
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                    [a addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"")
+                                                          style:UIAlertActionStyleCancel
+                                                        handler:^(UIAlertAction * _Nonnull action) {}]];
+                    [_self presentViewController:a animated:YES completion:^{}];
+                }
+                if (!error) {
+                    [[InteractionsManager shared] reopen];
+                    UIAlertController *a = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Downloaded", @"")
+                                                                               message:[[InteractionsManager shared] dbStat]
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                    [a addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * _Nonnull action) {}]];
+                    [_self presentViewController:a animated:YES completion:^{}];
+                }
+                [_self.settingsView reloadData];
+            });
+        }];
+        UIProgressView *progressView2 = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+        progressView2.observedProgress = task.progress;
+
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"")
+                                                  style:UIAlertActionStyleCancel
+                                                handler:^(UIAlertAction * _Nonnull action) {
+            [task cancel];
+        }]];
+
+        [self presentViewController:alert animated:YES completion:^{
+            [alert.view addSubview:progressView2];
+            CGFloat progressY = alert.view.frame.size.height - 88;
+            progressView2.frame = CGRectMake(16, progressY,
+                                            alert.view.frame.size.width - 32, progressView2.frame.size.height);
         }];
     }
 }

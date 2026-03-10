@@ -10,6 +10,7 @@ https://travis-ci.org/zdavatz/generikacc)
 * EAN-13 Barcord Scan
 * Drug Preis Comparison Viewer
 * Fachinformation/Patienteninformation Viewer
+* Drug Interactions Checker (local SDIF database)
 * Side effects Viewer
 * Expiry date Saving
 
@@ -63,11 +64,12 @@ As next, setup dependencies via Cocoapods.
 - Rename `/Generika/ZurRose/ZurRoseCredential.h.sample` to `/Generika/ZurRose/ZurRoseCredential.h`, and set the password in the file.
 - Open `Generika.xcworkspace` (not `Generika.xcodeproj`) and build it.
 
-### Add local database
+### Add local databases
 
 - Generate `amiko_db_full_idx_pinfo_de.db` with cpp2sqlite
   - `./cpp2sqlite --lang=de  --pinfo`
 - Put it in Generika/Databases/
+- `interactions.db` is also in Generika/Databases/ and can be updated in-app via Settings or downloaded from `http://pillbox.oddb.org/interactions.db`
 
 ### Debug
 

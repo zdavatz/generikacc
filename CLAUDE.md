@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Generika.cc is a Swiss pharmacy iOS app (Objective-C) for medication barcode scanning, e-prescription management, drug price comparison, and receipt handling. Licensed GPL-3.0.
+Generika.cc is a Swiss pharmacy iOS app (Objective-C + Swift) for medication barcode scanning, e-prescription management, drug interactions checking, drug price comparison, and receipt handling. Licensed GPL-3.0.
 
 ## Build & Test Commands
 
@@ -34,6 +34,7 @@ pod install
 - ZurRose certificate at `Generika/ZurRose/client.p12`
 - Copy `ZurRoseCredential.h.sample` to `ZurRoseCredential.h` and set password
 - Optional: `Generika/Databases/amiko_db_full_idx_pinfo_de.db` (generated via cpp2sqlite)
+- `Generika/Databases/interactions.db` — drug interactions database (updatable in-app from `http://pillbox.oddb.org/interactions.db`)
 
 ## Architecture
 
@@ -44,6 +45,8 @@ pod install
 - **MasterViewController** is the central hub — manages product/receipt lists with segmented control tabs, orchestrates navigation to all other view controllers
 - **ProductManager** / **ReceiptManager** are singleton UIDocument subclasses handling persistence (iCloud-capable)
 - **AmikoDBManager** queries the local SQLite drug database by GTIN, REG number, or ATC code
+- **InteractionsManager** (Swift) checks drug interactions locally via `interactions.db` using 3 strategies: substance-level, ATC class-level, and CYP enzyme-mediated
+- **InteractionsViewController** (Swift) displays interaction results in a WKWebView with color-coded severity
 
 ### Key Models
 - **Product** — scanned medication (EAN, REG, name, price, expiry); supports NSCoding
@@ -57,6 +60,7 @@ pod install
 - **ProductManager** / **ReceiptManager** — CRUD + file persistence via UIDocument
 - **SettingsManager** — Keychain-based credential storage (ZSR number, ZurRose customer number)
 - **SessionManager** — Authentication token handling
+- **InteractionsManager** (Swift) — local drug interaction search engine + DB update from pillbox.oddb.org
 
 ### Networking
 - **AFNetworking 3.x** for HTTP requests
@@ -75,4 +79,5 @@ Located in `GenerikaTests/`: ProductTests, ProductManagerTests, BarcodeExtractor
 
 - "Build Active Architecture Only" must match between Generika and Pods targets
 - Platform minimum: iOS 9.0
+- Swift/ObjC bridging header: `Generika/Generika-Bridging-Header.h`; auto-generated header is `generika-Swift.h` (PRODUCT_NAME is lowercase `generika`)
 - UI is mix of programmatic and XIB (PatinfoViewController, PriceComparisonViewController)
