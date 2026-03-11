@@ -10,7 +10,7 @@ https://travis-ci.org/zdavatz/generikacc)
 * EAN-13 Barcord Scan
 * Drug Preis Comparison Viewer
 * Fachinformation/Patienteninformation Viewer
-* Drug Interactions Checker (local SDIF database)
+* Drug Interactions Checker (local SDIF database, full-screen on iPad)
 * Side effects Viewer
 * Expiry date Saving
 

@@ -46,7 +46,7 @@ pod install
 - **ProductManager** / **ReceiptManager** are singleton UIDocument subclasses handling persistence (iCloud-capable)
 - **AmikoDBManager** queries the local SQLite drug database by GTIN, REG number, or ATC code
 - **InteractionsManager** (Swift) checks drug interactions locally via `interactions.db` using 3 strategies: substance-level, ATC class-level, and CYP enzyme-mediated
-- **InteractionsViewController** (Swift) displays interaction results in a WKWebView with color-coded severity
+- **InteractionsViewController** (Swift) displays interaction results in a WKWebView with color-coded severity; presented full-screen on iPad via `UIModalPresentationFullScreen`
 
 ### Key Models
 - **Product** — scanned medication (EAN, REG, name, price, expiry); supports NSCoding

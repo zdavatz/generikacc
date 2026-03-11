@@ -581,6 +581,7 @@ static const int kSegmentReceipt = 1;
         UINavigationController *navController =
           [[UINavigationController alloc]
             initWithRootViewController:interactionsVC];
+        navController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:navController
                            animated:YES
                          completion:nil];
