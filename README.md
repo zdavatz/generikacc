@@ -30,43 +30,33 @@ https://github.com/zdavatz/generikacc
 
 * Xcode 16+ (iOS 15.0+ deployment target)
 * XCTest (for testing)
-* CocoaPods
 
 ### Dependencies
 
-See `Podfile`.
+No external dependencies. All previously used CocoaPods (AFNetworking, NTMonthYearPicker, GZIP, KissXML, SSZipArchive, OCMock) have been replaced with built-in iOS APIs and lightweight custom implementations:
 
-* AFNetworking
-* NTMonthYearPicker
-* GZIP
-* KissXML
-* SSZipArchive
+* `UIDatePicker` (replaces NTMonthYearPicker)
+* `zlib` (replaces GZIP and SSZipArchive)
+* `XMLBuilder` (replaces KissXML/DDXML)
 
 ### Build
 
-Install Cocoapods via `brew`.
-
 ```zsh
 % cd /path/to/generikacc
-
-# install cocoapods via homebrew
-% brew install cocoapods
+% open Generika.xcworkspace
 ```
 
-As next, setup dependencies via Cocoapods.
+Build with Xcode or from command line:
 
 ```zsh
-# you need this only once at first (it takes for a while)
-% export RUBYOPT="-E utf-8"
-% pod setup
-% pod install
+% xcodebuild -workspace Generika.xcworkspace -scheme Generika
 ```
 
 ### Set ZurRose certificate and password
 
-- Copy the ZurRose certificate to /Generika/ZurRose/client.p12.
-- Rename `/Generika/ZurRose/ZurRoseCredential.h.sample` to `/Generika/ZurRose/ZurRoseCredential.h`, and set the password in the file.
-- Open `Generika.xcworkspace` (not `Generika.xcodeproj`) and build it.
+- Copy the ZurRose certificate to `Generika/ZurRose/client.p12`.
+- Rename `Generika/ZurRose/ZurRoseCredential.h.sample` to `Generika/ZurRose/ZurRoseCredential.h`, and set the password in the file.
+- Open `Generika.xcworkspace` and build it.
 
 ### Add local databases
 
@@ -81,54 +71,10 @@ You may want to clean before rebuild, if you face something weird problem...
 
 ```zsh
 # remove cache and compiled objects, log etc.
-% rm -fr ~/Library/Developer/Xcode/DeriveredData
-# reset pods
-% rm -fr ./Pods
-# this may change build configuration of `Pods` as default one
-% pod install
+% rm -fr ~/Library/Developer/Xcode/DerivedData
 ```
 
 And then click `Product` > `Clean` from menu (Shift + Command + K)
-
-
-### Note
-
-#### Build Active Architecture Only
-
-It must be same values in Generika and Pods both.
-For `Pods`, after install, `Debug` value will be turned to `YES` (as default).
-
-```
-# Generika
-Debug Yes
-Generika_AppStore No
-Release No
-
-# Pods
-Debug Yes
-Generika_AppStore No
-Release No
-```
-
-#### Scheme
-
-Check all schemas exists and its are valid from `Edit Scheme...` and
-`Manage Schemes`.
-
-```txt
-# Edit Scheme... > Build
-▶ Pods-Generika
-  Generika
-▶ GenerikaTests
-
-
-# Manage Schemes
-Generika
-AFNetworking
-NTMonthYearPicker
-KissXML
-Pods-Generika
-```
 
 ## Test
 
