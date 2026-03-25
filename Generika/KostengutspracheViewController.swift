@@ -1,0 +1,422 @@
+//
+//  KostengutspracheViewController.swift
+//  Generika
+//
+//  Copyright (c) 2024-2026 ywesee GmbH. All rights reserved.
+//
+
+import UIKit
+import MessageUI
+
+@objc class KostengutspracheViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate {
+
+    private let receipt: Receipt
+    private var scrollView: UIScrollView!
+    private var contentView: UIView!
+
+    // Patient
+    private var patientNameField: UITextField!
+    private var patientFirstNameField: UITextField!
+    private var patientBirthDateField: UITextField!
+    private var patientGenderSegment: UISegmentedControl!
+
+    // Insurance
+    private var insurerNameField: UITextField!
+    private var insurerNumberField: UITextField!
+
+    // IBD specific
+    private var diagnosisSegment: UISegmentedControl!
+    private var medicationTextView: UITextView!
+
+    // Physician
+    private var physicianNameField: UITextField!
+    private var physicianFirstNameField: UITextField!
+    private var physicianZSRField: UITextField!
+
+    // Date
+    private var dateField: UITextField!
+
+    @objc init(receipt: Receipt) {
+        self.receipt = receipt
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "Kostengutsprache"
+        view.backgroundColor = .systemBackground
+        setupNavigationBar()
+        setupForm()
+        prefillFromReceipt()
+        registerKeyboardNotifications()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    // MARK: - Setup
+
+    private func setupNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .done, target: self, action: #selector(closeTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "PDF / Email", style: .plain, target: self, action: #selector(generateAndSendPDF))
+    }
+
+    @objc private func closeTapped() {
+        dismiss(animated: true)
+    }
+
+    private func setupForm() {
+        scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+
+        contentView = UIView()
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(contentView)
+
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+        ])
+
+        let m: CGFloat = 16
+        var y = contentView.topAnchor
+
+        // Title
+        y = addSectionHeader("Kostengutsprache KVV 71 \u{2013} IBD Gastroenterologie", below: y, margin: m, bold: true)
+
+        // Patient
+        y = addSectionHeader("Patient/in", below: y, margin: m)
+        patientNameField = addTextField("Name", below: &y, margin: m)
+        patientFirstNameField = addTextField("Vorname", below: &y, margin: m)
+        patientBirthDateField = addTextField("Geburtsdatum", below: &y, margin: m)
+
+        patientGenderSegment = UISegmentedControl(items: ["\u{2640} W", "\u{2642} M"])
+        patientGenderSegment.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(patientGenderSegment)
+        NSLayoutConstraint.activate([
+            patientGenderSegment.topAnchor.constraint(equalTo: y, constant: 6),
+            patientGenderSegment.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: m),
+            patientGenderSegment.widthAnchor.constraint(equalToConstant: 140),
+        ])
+        y = patientGenderSegment.bottomAnchor
+
+        // Insurance
+        y = addSectionHeader("Versicherung", below: y, margin: m)
+        insurerNameField = addTextField("Krankenversicherer", below: &y, margin: m)
+        insurerNumberField = addTextField("Versicherten-Nr.", below: &y, margin: m)
+
+        // Diagnosis (IBD specific)
+        y = addSectionHeader("Diagnose", below: y, margin: m)
+        diagnosisSegment = UISegmentedControl(items: ["M. Crohn", "Colitis ulcerosa"])
+        diagnosisSegment.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(diagnosisSegment)
+        NSLayoutConstraint.activate([
+            diagnosisSegment.topAnchor.constraint(equalTo: y, constant: 6),
+            diagnosisSegment.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: m),
+            diagnosisSegment.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -m),
+        ])
+        y = diagnosisSegment.bottomAnchor
+
+        // Medication
+        y = addSectionHeader("Medikament", below: y, margin: m)
+        medicationTextView = addTextView(below: &y, margin: m, height: 100)
+
+        // Physician
+        y = addSectionHeader("Arzt / \u{00C4}rztin", below: y, margin: m)
+        physicianNameField = addTextField("Name", below: &y, margin: m)
+        physicianFirstNameField = addTextField("Vorname", below: &y, margin: m)
+        physicianZSRField = addTextField("ZSR-Nr.", below: &y, margin: m)
+
+        // Date
+        dateField = addTextField("Datum", below: &y, margin: m)
+
+        contentView.bottomAnchor.constraint(equalTo: y, constant: 40).isActive = true
+    }
+
+    // MARK: - Form Helpers
+
+    private func addSectionHeader(_ text: String, below anchor: NSLayoutYAxisAnchor, margin: CGFloat, bold: Bool = false) -> NSLayoutYAxisAnchor {
+        let label = UILabel()
+        label.text = text
+        label.font = bold ? .boldSystemFont(ofSize: 17) : .systemFont(ofSize: 14, weight: .semibold)
+        label.textColor = bold ? .label : .secondaryLabel
+        label.numberOfLines = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: anchor, constant: bold ? 16 : 18),
+            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: margin),
+            label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -margin),
+        ])
+        return label.bottomAnchor
+    }
+
+    private func addTextField(_ placeholder: String, below anchor: inout NSLayoutYAxisAnchor, margin: CGFloat) -> UITextField {
+        let field = UITextField()
+        field.placeholder = placeholder
+        field.borderStyle = .roundedRect
+        field.font = .systemFont(ofSize: 15)
+        field.delegate = self
+        field.returnKeyType = .next
+        field.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(field)
+        NSLayoutConstraint.activate([
+            field.topAnchor.constraint(equalTo: anchor, constant: 6),
+            field.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: margin),
+            field.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -margin),
+            field.heightAnchor.constraint(equalToConstant: 40),
+        ])
+        anchor = field.bottomAnchor
+        return field
+    }
+
+    private func addTextView(below anchor: inout NSLayoutYAxisAnchor, margin: CGFloat, height: CGFloat) -> UITextView {
+        let tv = UITextView()
+        tv.font = .systemFont(ofSize: 15)
+        tv.layer.borderColor = UIColor.separator.cgColor
+        tv.layer.borderWidth = 0.5
+        tv.layer.cornerRadius = 6
+        tv.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(tv)
+        NSLayoutConstraint.activate([
+            tv.topAnchor.constraint(equalTo: anchor, constant: 6),
+            tv.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: margin),
+            tv.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -margin),
+            tv.heightAnchor.constraint(equalToConstant: height),
+        ])
+        anchor = tv.bottomAnchor
+        return tv
+    }
+
+    // MARK: - Prefill
+
+    private func prefillFromReceipt() {
+        let patient = receipt.patient
+        patientNameField.text = patient?.familyName ?? ""
+        patientFirstNameField.text = patient?.givenName ?? ""
+        patientBirthDateField.text = patient?.birthDate ?? ""
+
+        if let gender = patient?.gender, !gender.isEmpty {
+            let g = gender.lowercased()
+            if g == "woman" || g == "2" || g == "w" || g == "f" {
+                patientGenderSegment.selectedSegmentIndex = 0
+            } else if g == "man" || g == "1" || g == "m" {
+                patientGenderSegment.selectedSegmentIndex = 1
+            }
+        }
+
+        insurerNumberField.text = patient?.identifier ?? ""
+
+        let op = receipt.operator
+        physicianNameField.text = op?.familyName ?? ""
+        physicianFirstNameField.text = op?.givenName ?? ""
+        physicianZSRField.text = op?.zsrNumber ?? ""
+
+        // Medications from receipt
+        var medText = ""
+        if let products = receipt.products as? [Product] {
+            for product in products {
+                let name = product.pack ?? product.name ?? product.ean ?? "?"
+                if !medText.isEmpty { medText += "\n" }
+                medText += name
+                if let comment = product.comment, !comment.isEmpty {
+                    medText += " \u{2013} \(comment)"
+                }
+            }
+        }
+        medicationTextView.text = medText
+
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd"
+        dateField.text = fmt.string(from: Date())
+    }
+
+    // MARK: - PDF
+
+    @objc private func generateAndSendPDF() {
+        let pdfData = renderPDF()
+
+        if MFMailComposeViewController.canSendMail() {
+            let mail = MFMailComposeViewController()
+            mail.mailComposeDelegate = self
+            let patientFullName = "\(patientFirstNameField.text ?? "") \(patientNameField.text ?? "")".trimmingCharacters(in: .whitespaces)
+            mail.setSubject("Kostengutsprache KVV 71 \u{2013} \(patientFullName)")
+            mail.setMessageBody("Anbei die Kostengutsprache gem\u{00E4}ss Art. 71a-d KVV f\u{00FC}r \(patientFullName).", isHTML: false)
+            mail.addAttachmentData(pdfData, mimeType: "application/pdf", fileName: "Kostengutsprache_KVV71.pdf")
+            present(mail, animated: true)
+        } else {
+            let tmpURL = FileManager.default.temporaryDirectory.appendingPathComponent("Kostengutsprache_KVV71.pdf")
+            try? pdfData.write(to: tmpURL)
+            let ac = UIActivityViewController(activityItems: [tmpURL], applicationActivities: nil)
+            ac.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+            present(ac, animated: true)
+        }
+    }
+
+    private func renderPDF() -> Data {
+        let pageRect = CGRect(x: 0, y: 0, width: 595.2, height: 841.8) // A4
+        let margin: CGFloat = 40
+        let w = pageRect.width - 2 * margin
+        let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
+
+        return renderer.pdfData { ctx in
+            ctx.beginPage()
+            var y: CGFloat = margin
+
+            y = drawText("Kostengutsprache zu Art. 71a-d KVV", x: margin, y: y, width: w,
+                         font: .boldSystemFont(ofSize: 16))
+            y += 2
+            y = drawText("IBD Gastroenterologie", x: margin, y: y, width: w,
+                         font: .systemFont(ofSize: 12), color: .darkGray)
+            y += 16
+
+            // Patient
+            y = drawSectionHeader("Patient/in", x: margin, y: y, width: w)
+            y = drawRow("Name:", patientNameField.text, x: margin, y: y, width: w)
+            y = drawRow("Vorname:", patientFirstNameField.text, x: margin, y: y, width: w)
+            y = drawRow("Geburtsdatum:", patientBirthDateField.text, x: margin, y: y, width: w)
+            let genderText = patientGenderSegment.selectedSegmentIndex == 0 ? "weiblich" :
+                             patientGenderSegment.selectedSegmentIndex == 1 ? "m\u{00E4}nnlich" : ""
+            y = drawRow("Geschlecht:", genderText, x: margin, y: y, width: w)
+            y += 10
+
+            // Insurance
+            y = drawSectionHeader("Versicherung", x: margin, y: y, width: w)
+            y = drawRow("Krankenversicherer:", insurerNameField.text, x: margin, y: y, width: w)
+            y = drawRow("Versicherten-Nr.:", insurerNumberField.text, x: margin, y: y, width: w)
+            y += 10
+
+            // Diagnosis
+            y = drawSectionHeader("Diagnose", x: margin, y: y, width: w)
+            let diagnosis: String
+            if diagnosisSegment.selectedSegmentIndex == 0 {
+                diagnosis = "Morbus Crohn"
+            } else if diagnosisSegment.selectedSegmentIndex == 1 {
+                diagnosis = "Colitis ulcerosa"
+            } else {
+                diagnosis = ""
+            }
+            y = drawRow("Diagnose:", diagnosis, x: margin, y: y, width: w)
+            y += 10
+
+            // Medication
+            y = drawSectionHeader("Medikament", x: margin, y: y, width: w)
+            y = drawMultiline(medicationTextView.text ?? "", x: margin, y: y, width: w)
+            y += 10
+
+            // Physician
+            y = drawSectionHeader("Behandelnder Arzt / \u{00C4}rztin", x: margin, y: y, width: w)
+            y = drawRow("Name:", physicianNameField.text, x: margin, y: y, width: w)
+            y = drawRow("Vorname:", physicianFirstNameField.text, x: margin, y: y, width: w)
+            y = drawRow("ZSR-Nr.:", physicianZSRField.text, x: margin, y: y, width: w)
+            y += 10
+
+            y = drawRow("Datum:", dateField.text, x: margin, y: y, width: w)
+        }
+    }
+
+    // MARK: - PDF Drawing
+
+    @discardableResult
+    private func drawText(_ text: String, x: CGFloat, y: CGFloat, width: CGFloat,
+                          font: UIFont, color: UIColor = .black) -> CGFloat {
+        let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: color]
+        let rect = (text as NSString).boundingRect(
+            with: CGSize(width: width, height: .greatestFiniteMagnitude),
+            options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
+        (text as NSString).draw(in: CGRect(x: x, y: y, width: width, height: rect.height), withAttributes: attrs)
+        return y + rect.height
+    }
+
+    private func drawSectionHeader(_ text: String, x: CGFloat, y: CGFloat, width: CGFloat) -> CGFloat {
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.boldSystemFont(ofSize: 11),
+            .foregroundColor: UIColor.darkGray
+        ]
+        (text as NSString).draw(at: CGPoint(x: x, y: y), withAttributes: attrs)
+        let lineY = y + 15
+        UIColor.gray.setStroke()
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: x, y: lineY))
+        path.addLine(to: CGPoint(x: x + width, y: lineY))
+        path.lineWidth = 0.5
+        path.stroke()
+        return lineY + 4
+    }
+
+    private func drawRow(_ label: String, _ value: String?, x: CGFloat, y: CGFloat, width: CGFloat) -> CGFloat {
+        let labelW: CGFloat = 130
+        let labelAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 10, weight: .medium), .foregroundColor: UIColor.darkGray]
+        let valAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 10), .foregroundColor: UIColor.black]
+        (label as NSString).draw(at: CGPoint(x: x, y: y), withAttributes: labelAttrs)
+        let v = value ?? ""
+        let sz = (v as NSString).boundingRect(
+            with: CGSize(width: width - labelW, height: .greatestFiniteMagnitude),
+            options: .usesLineFragmentOrigin, attributes: valAttrs, context: nil)
+        (v as NSString).draw(in: CGRect(x: x + labelW, y: y, width: width - labelW, height: sz.height),
+                             withAttributes: valAttrs)
+        return y + max(14, sz.height + 2)
+    }
+
+    private func drawMultiline(_ text: String, x: CGFloat, y: CGFloat, width: CGFloat) -> CGFloat {
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 10), .foregroundColor: UIColor.black]
+        let sz = (text as NSString).boundingRect(
+            with: CGSize(width: width, height: .greatestFiniteMagnitude),
+            options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
+        (text as NSString).draw(in: CGRect(x: x, y: y, width: width, height: sz.height), withAttributes: attrs)
+        return y + sz.height + 2
+    }
+
+    // MARK: - Keyboard
+
+    private func registerKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardWillShow(_:)),
+            name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardWillHide(_:)),
+            name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    @objc private func keyboardWillShow(_ n: Notification) {
+        guard let kb = (n.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        scrollView.contentInset.bottom = kb.height
+        scrollView.scrollIndicatorInsets.bottom = kb.height
+    }
+
+    @objc private func keyboardWillHide(_ n: Notification) {
+        scrollView.contentInset.bottom = 0
+        scrollView.scrollIndicatorInsets.bottom = 0
+    }
+
+    // MARK: - UITextFieldDelegate
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+
+    // MARK: - MFMailComposeViewControllerDelegate
+
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true)
+    }
+}

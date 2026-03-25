@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B3F84C8529D991D981754103 /* InteractionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1250B04D10D43068E16D835 /* InteractionsManager.swift */; };
 		55CD6216E99B7AD89059BA9F /* InteractionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7868D80F429447A515AFBEEF /* InteractionsViewController.swift */; };
+		KG00000001E99B7AD89059BA /* KostengutspracheViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = KG00000002429447A515AFBE /* KostengutspracheViewController.swift */; };
 		655D0B626DC9948729287B91 /* libPods-GenerikaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */; };
 		810A928D179CD50A00DAA963 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 810A928C179CD50A00DAA963 /* Security.framework */; };
 		8127F27D201C4BA30029F080 /* Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8127F27B201C4BA20029F080 /* Helper.m */; };
@@ -226,6 +227,7 @@
 		F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A1250B04D10D43068E16D835 /* InteractionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionsManager.swift; sourceTree = "<group>"; };
 		7868D80F429447A515AFBEEF /* InteractionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionsViewController.swift; sourceTree = "<group>"; };
+		KG00000002429447A515AFBE /* KostengutspracheViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KostengutspracheViewController.swift; sourceTree = "<group>"; };
 		78A6EFE89E89D742809EF164 /* Generika-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Generika-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -447,6 +449,7 @@
 				CF0E57632EB0FA9500D4313B /* PatinfoChapterTableViewController.h */,
 				CF0E57642EB0FA9500D4313B /* PatinfoChapterTableViewController.m */,
 				7868D80F429447A515AFBEEF /* InteractionsViewController.swift */,
+				KG00000002429447A515AFBE /* KostengutspracheViewController.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -706,6 +709,7 @@
 				819E165917B20E8B00B315B3 /* Constant.m in Sources */,
 				B3F84C8529D991D981754103 /* InteractionsManager.swift in Sources */,
 				55CD6216E99B7AD89059BA9F /* InteractionsViewController.swift in Sources */,
+				KG00000001E99B7AD89059BA /* KostengutspracheViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

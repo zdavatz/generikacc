@@ -11,3 +11,4 @@
 #import "ProductManager.h"
 #import "AmikoDatabase/AmikoDBManager.h"
 #import "AmikoDatabase/AmikoDBRow.h"
+#import "Receipt.h"

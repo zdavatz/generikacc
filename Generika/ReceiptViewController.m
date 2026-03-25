@@ -8,6 +8,7 @@
 #import "ReceiptViewController.h"
 #import "Product.h"
 #import "UIColorBackport.h"
+#import "generika-Swift.h"
 
 // default uitableview's cell height: 44.0
 static const float kInfoCellHeight = 22.0;  // fixed
@@ -760,36 +761,41 @@ viewForHeaderInSection:(NSInteger)section
 
 - (void)showActions
 {
-  UIActionSheet *sheet = [[UIActionSheet alloc] init];
-  sheet.delegate = self;
-
   NSString *description = [NSString stringWithFormat:@"%@\r%@",
     self.receipt.filename,
     self.receipt.importedAt];
-  sheet.title = description;
 
-  // TODO
-  // more actions
-  [sheet addButtonWithTitle:@"Back to List"];
-  [sheet addButtonWithTitle:@"Cancel"];
-  sheet.destructiveButtonIndex = 0;
-  sheet.cancelButtonIndex = 1;
-  [sheet showInView:self.view];
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:description
+                                                                message:nil
+                                                         preferredStyle:UIAlertControllerStyleActionSheet];
+
+  [alert addAction:[UIAlertAction actionWithTitle:@"Kostengutsprache"
+                                            style:UIAlertActionStyleDefault
+                                          handler:^(UIAlertAction * _Nonnull action) {
+    [self openKostengutsprache];
+  }]];
+
+  [alert addAction:[UIAlertAction actionWithTitle:@"Back to List"
+                                            style:UIAlertActionStyleDestructive
+                                          handler:^(UIAlertAction * _Nonnull action) {
+    MasterViewController *parent = [self.navigationController.viewControllers objectAtIndex:0];
+    [self.navigationController popToViewController:(UIViewController *)parent animated:YES];
+  }]];
+
+  [alert addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                            style:UIAlertActionStyleCancel
+                                          handler:nil]];
+
+  alert.popoverPresentationController.barButtonItem = self.navigationItem.rightBarButtonItem;
+  [self presentViewController:alert animated:YES completion:nil];
 }
 
-#pragma mark - ActionSheet
-
-- (void)actionSheet:(UIActionSheet *)sheet
-  clickedButtonAtIndex:(NSInteger)index
+- (void)openKostengutsprache
 {
-  if (index == sheet.destructiveButtonIndex) { // back to list
-    // TODO
-    // Add archive action
-    MasterViewController *parent = [self.navigationController.viewControllers
-                                    objectAtIndex:0];
-    [self.navigationController popToViewController:(
-        UIViewController *)parent animated:YES];
-  }
+  KostengutspracheViewController *vc = [[KostengutspracheViewController alloc] initWithReceipt:self.receipt];
+  UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+  nav.modalPresentationStyle = UIModalPresentationFullScreen;
+  [self presentViewController:nav animated:YES completion:nil];
 }
 
 @end
