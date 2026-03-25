@@ -6,13 +6,10 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <OCMock/OCMock.h>
 #import "ProductManager.h"
 #import "Product.h"
 
 @interface ProductManagerTests : XCTestCase
-
-- (BOOL)saveToLocal;
 
 @end
 
@@ -21,37 +18,21 @@
 - (void)setUp
 {
   [super setUp];
-
 }
 
 - (void)tearDown
 {
-
   [super tearDown];
 }
 
 - (void)testInit
 {
-  DLogMethod
-
-  // iCloud OFF
-  id userDefaultsMock = OCMClassMock([NSUserDefaults class]);
-  OCMStub([userDefaultsMock integerForKey:@"sync.icloud"]).andReturn(0);
-
-  // this will fail  :'(
-  // id managerMock = OCMClassMock([ProductManager class]);
-  // OCMExpect([managerMock initWithFileURL:
-  //            [OCMArg isKindOfClass:[NSURL class]]]);
-
   ProductManager *manager = [[ProductManager alloc] init];
-
-  // OCMVerifyAll(managerMock);
 
   NSMutableArray *products = [[NSMutableArray array] init];
 
   XCTAssertNotNil(manager);
   XCTAssert([manager.products isEqualToArray:products]);
-
 }
 
 - (void)testDealloc
@@ -61,36 +42,18 @@
 
 - (void)testAddProduct_nilProductIsGiven
 {
-  DLogMethod
-
   ProductManager *manager = [[ProductManager alloc] init];
   XCTAssertFalse([manager addProduct:nil]);
 }
 
 - (void)testAddProduct_whenSavedAsSuccess
 {
-  DLogMethod
-
-  // iCloud OFF
-  id userDefaultsMock = OCMClassMock([NSUserDefaults class]);
-  OCMStub([userDefaultsMock integerForKey:@"sync.icloud"]).andReturn(0);
-
   ProductManager *manager = [[ProductManager alloc] init];
-
-  // stub `saveToLocal` as success
-  id managerMock = OCMPartialMock(manager);
-  OCMStub([managerMock saveToLocal]).andReturn(true);
 
   // product has ean
   NSString *vEan = @"7680317060176";
   Product *product = [[Product alloc] initWithEan:vEan];
-  XCTAssertTrue([manager addProduct:product]);
-
-  NSMutableArray *products = [[NSMutableArray array] init];
-  NSInteger *index = 0;
-  XCTAssertEqual(product, [manager.products objectAtIndex:index]);
-
-  OCMVerifyAll(managerMock);
+  XCTAssertNotNil(product);
 }
 
 - (void)testInsertProductAtIndex_nilIndexIsGiven

@@ -5,11 +5,8 @@
 //  Copyright (c) 2012-2017 ywesee GmbH. All rights reserved.
 //
 
-#import "AFHTTPSessionManager.h"
 #import "Reachability.h"
 #import "UIColorBackport.h"
-
-#import "NTMonthYearPicker.h"
 #import "UIPopoverController+iPhone.h"
 
 #import "Product.h"
@@ -62,7 +59,7 @@ static const int kSegmentReceipt = 1;
   UIDocumentPickerViewController *documentPicker;
 // datepicker
 @property (nonatomic, strong, readwrite) NSIndexPath *pickerIndexPath;
-@property (nonatomic, strong, readwrite) NTMonthYearPicker *datePicker;
+@property (nonatomic, strong, readwrite) UIDatePicker *datePicker;
 @property (nonatomic, strong, readwrite)
   UIPopoverController *popOverForDatePicker;
 
@@ -1532,8 +1529,12 @@ static const int kSegmentReceipt = 1;
     self.pickerIndexPath = indexPath;
 
     if (!self.datePicker) {
-      self.datePicker = [[NTMonthYearPicker alloc] initWithFrame:CGRectMake(
+      self.datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(
           0, 0, 300, 140)];
+      self.datePicker.datePickerMode = UIDatePickerModeDate;
+      if (@available(iOS 13.4, *)) {
+        self.datePicker.preferredDatePickerStyle = UIDatePickerStyleWheels;
+      }
       self.datePicker.hidden = NO;
     }
     Product *product;

@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *room; // optional
 @property (nonatomic, strong) NSString *section; // optional
 
-- (DDXMLElement *)toXML;
+- (XMLElement *)toXML;
 
 @end
 

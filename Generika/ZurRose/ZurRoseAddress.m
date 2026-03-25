@@ -16,40 +16,40 @@
     return self;
 }
 
-- (void)writeBodyToXMLElement:(DDXMLElement *)e {
+- (void)writeBodyToXMLElement:(XMLElement *)e {
     if (self.title) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"title" stringValue:self.title]];
+        [e addAttribute:[XMLNode attributeWithName:@"title" stringValue:self.title]];
     };
 
     if (self.titleCode != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"titleCode" stringValue:[@(self.titleCode) stringValue]]];
+        [e addAttribute:[XMLNode attributeWithName:@"titleCode" stringValue:[@(self.titleCode) stringValue]]];
     }
 
-    [e addAttribute:[DDXMLNode attributeWithName:@"lastName" stringValue:self.lastName]];
+    [e addAttribute:[XMLNode attributeWithName:@"lastName" stringValue:self.lastName]];
 
     if (self.firstName) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"firstName" stringValue:self.firstName]];
+        [e addAttribute:[XMLNode attributeWithName:@"firstName" stringValue:self.firstName]];
     };
 
-    [e addAttribute:[DDXMLNode attributeWithName:@"street" stringValue:self.street]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"zipCode" stringValue:self.zipCode ?: @""]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"city" stringValue:self.city]];
+    [e addAttribute:[XMLNode attributeWithName:@"street" stringValue:self.street]];
+    [e addAttribute:[XMLNode attributeWithName:@"zipCode" stringValue:self.zipCode ?: @""]];
+    [e addAttribute:[XMLNode attributeWithName:@"city" stringValue:self.city]];
 
-    [e addAttribute:[DDXMLNode attributeWithName:@"kanton" stringValue:self.kanton ?: @""]];
+    [e addAttribute:[XMLNode attributeWithName:@"kanton" stringValue:self.kanton ?: @""]];
     if (self.country) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"country" stringValue:self.country]];
+        [e addAttribute:[XMLNode attributeWithName:@"country" stringValue:self.country]];
     };
     if (self.phoneNrBusiness) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"phoneNrBusiness" stringValue:self.phoneNrBusiness]];
+        [e addAttribute:[XMLNode attributeWithName:@"phoneNrBusiness" stringValue:self.phoneNrBusiness]];
     };
     if (self.phoneNrHome) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"phoneNrHome" stringValue:self.phoneNrHome]];
+        [e addAttribute:[XMLNode attributeWithName:@"phoneNrHome" stringValue:self.phoneNrHome]];
     };
     if (self.faxNr) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"faxNr" stringValue:self.faxNr]];
+        [e addAttribute:[XMLNode attributeWithName:@"faxNr" stringValue:self.faxNr]];
     };
     if (self.email) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"email" stringValue:self.email]];
+        [e addAttribute:[XMLNode attributeWithName:@"email" stringValue:self.email]];
     };    
 }
 

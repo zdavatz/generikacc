@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "XMLBuilder.h"
 #import "ZurRoseAddress.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *zsrId;
 @property (nonatomic, strong) NSString *eanId; // optional
 
-- (DDXMLElement *)toXML;
+- (XMLElement *)toXML;
 
 @end
 

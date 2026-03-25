@@ -10,15 +10,15 @@
 
 @implementation ZurRosePrescriptorAddress
 
-- (DDXMLElement *)toXML {
-    DDXMLElement *e = [DDXMLElement elementWithName:@"prescriptorAddress"];
+- (XMLElement *)toXML {
+    XMLElement *e = [XMLElement elementWithName:@"prescriptorAddress"];
     [super writeBodyToXMLElement:e];
 
-    [e addAttribute:[DDXMLNode attributeWithName:@"langCode" stringValue:[@(self.langCode) stringValue]]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"clientNrClustertec" stringValue:self.clientNrClustertec]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"zsrId" stringValue:self.zsrId]];
+    [e addAttribute:[XMLNode attributeWithName:@"langCode" stringValue:[@(self.langCode) stringValue]]];
+    [e addAttribute:[XMLNode attributeWithName:@"clientNrClustertec" stringValue:self.clientNrClustertec]];
+    [e addAttribute:[XMLNode attributeWithName:@"zsrId" stringValue:self.zsrId]];
     if (self.eanId) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"eanId" stringValue:self.eanId]];
+        [e addAttribute:[XMLNode attributeWithName:@"eanId" stringValue:self.eanId]];
     }
     return e;
 }

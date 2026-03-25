@@ -20,38 +20,38 @@
     return self;
 }
 
-- (DDXMLElement *)toXML {
-    DDXMLElement *e = [DDXMLElement elementWithName:@"posology"];
+- (XMLElement *)toXML {
+    XMLElement *e = [XMLElement elementWithName:@"posology"];
     
     if (self.qtyMorning != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"qtyMorning" stringValue:[@(self.qtyMorning) stringValue]]];
+        [e addAttribute:[XMLNode attributeWithName:@"qtyMorning" stringValue:[@(self.qtyMorning) stringValue]]];
     }
     if (self.qtyMidday != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"qtyMidday" stringValue:[@(self.qtyMidday) stringValue]]];
+        [e addAttribute:[XMLNode attributeWithName:@"qtyMidday" stringValue:[@(self.qtyMidday) stringValue]]];
     }
     if (self.qtyEvening != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"qtyEvening" stringValue:[@(self.qtyEvening) stringValue]]];
+        [e addAttribute:[XMLNode attributeWithName:@"qtyEvening" stringValue:[@(self.qtyEvening) stringValue]]];
     }
     if (self.qtyNight != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"qtyNight" stringValue:[@(self.qtyNight) stringValue]]];
+        [e addAttribute:[XMLNode attributeWithName:@"qtyNight" stringValue:[@(self.qtyNight) stringValue]]];
     }
     if (self.qtyMorningString) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"qtyMorningString" stringValue:self.qtyMorningString]];
+        [e addAttribute:[XMLNode attributeWithName:@"qtyMorningString" stringValue:self.qtyMorningString]];
     }
     if (self.qtyMiddayString) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"qtyMiddayString" stringValue:self.qtyMiddayString]];
+        [e addAttribute:[XMLNode attributeWithName:@"qtyMiddayString" stringValue:self.qtyMiddayString]];
     }
     if (self.qtyEveningString) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"qtyEveningString" stringValue:self.qtyEveningString]];
+        [e addAttribute:[XMLNode attributeWithName:@"qtyEveningString" stringValue:self.qtyEveningString]];
     }
     if (self.qtyNightString) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"qtyNightString" stringValue:self.qtyNightString]];
+        [e addAttribute:[XMLNode attributeWithName:@"qtyNightString" stringValue:self.qtyNightString]];
     }
     if (self.posologyText) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"posologyText" stringValue:self.posologyText]];
+        [e addAttribute:[XMLNode attributeWithName:@"posologyText" stringValue:self.posologyText]];
     }
     if (self.label != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"label" stringValue:self.label ? @"true" : @"false"]];
+        [e addAttribute:[XMLNode attributeWithName:@"label" stringValue:self.label ? @"true" : @"false"]];
     }
     
     return e;

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "DDXML.h"
+#import "XMLBuilder.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *posologyText; // optional
 @property (nonatomic, assign) int label; // optional, boolean, -1 = null
 
-- (DDXMLElement *)toXML;
+- (XMLElement *)toXML;
 
 @end
 

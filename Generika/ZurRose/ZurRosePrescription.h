@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "DDXML.h"
+#import "XMLBuilder.h"
 #import "ZurRosePrescriptorAddress.h"
 #import "ZurRosePatientAddress.h"
 #import "ZurRoseProduct.h"
@@ -40,7 +40,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, strong) NSArray <ZurRoseProduct*> *products;
 
-- (DDXMLDocument *)toXML;
+- (XMLDocument *)toXML;
 
 - (void)sendToZurRoseWithCompletion:(void (^)(NSHTTPURLResponse* res, NSError* error))callback;
 

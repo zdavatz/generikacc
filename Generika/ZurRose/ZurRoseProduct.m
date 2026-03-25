@@ -25,73 +25,73 @@
     return self;
 }
 
-- (DDXMLElement *)toXML {
-    DDXMLElement *e = [DDXMLElement elementWithName:@"product"];
+- (XMLElement *)toXML {
+    XMLElement *e = [XMLElement elementWithName:@"product"];
     
     if (self.pharmacode) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"pharmacode" stringValue:self.pharmacode]];
+        [e addAttribute:[XMLNode attributeWithName:@"pharmacode" stringValue:self.pharmacode]];
     }
     if (self.eanId) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"eanId" stringValue:self.eanId]];
+        [e addAttribute:[XMLNode attributeWithName:@"eanId" stringValue:self.eanId]];
     }
     if (self.description_) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"description" stringValue:self.description_]];
+        [e addAttribute:[XMLNode attributeWithName:@"description" stringValue:self.description_]];
     }
-    [e addAttribute:[DDXMLNode attributeWithName:@"repetition" stringValue:self.repetition ? @"true" : @"false"]];
+    [e addAttribute:[XMLNode attributeWithName:@"repetition" stringValue:self.repetition ? @"true" : @"false"]];
     if (self.nrOfRepetitions >= 0) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"nrOfRepetitions" stringValue:[@(self.nrOfRepetitions) stringValue]]];
+        [e addAttribute:[XMLNode attributeWithName:@"nrOfRepetitions" stringValue:[@(self.nrOfRepetitions) stringValue]]];
     }
-    [e addAttribute:[DDXMLNode attributeWithName:@"quantity" stringValue:[@(self.quantity ?: 1) stringValue]]];
+    [e addAttribute:[XMLNode attributeWithName:@"quantity" stringValue:[@(self.quantity ?: 1) stringValue]]];
     if (self.validityRepetition) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"validityRepetition" stringValue:self.validityRepetition]];
+        [e addAttribute:[XMLNode attributeWithName:@"validityRepetition" stringValue:self.validityRepetition]];
     }
     if (self.notSubstitutableForBrandName >= 0) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"notSubstitutableForBrandName" stringValue:[@(self.notSubstitutableForBrandName) stringValue]]];
+        [e addAttribute:[XMLNode attributeWithName:@"notSubstitutableForBrandName" stringValue:[@(self.notSubstitutableForBrandName) stringValue]]];
     }
     if (self.remark) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"remark" stringValue:self.remark]];
+        [e addAttribute:[XMLNode attributeWithName:@"remark" stringValue:self.remark]];
     }
     if (self.dailymed != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"dailymed" stringValue:self.dailymed ? @"true" : @"false"]];
+        [e addAttribute:[XMLNode attributeWithName:@"dailymed" stringValue:self.dailymed ? @"true" : @"false"]];
     }
     if (self.dailymed_mo != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"dailymed_mo" stringValue:self.dailymed_mo ? @"true" : @"false"]];
+        [e addAttribute:[XMLNode attributeWithName:@"dailymed_mo" stringValue:self.dailymed_mo ? @"true" : @"false"]];
     }
     if (self.dailymed_tu != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"dailymed_tu" stringValue:self.dailymed_tu ? @"true" : @"false"]];
+        [e addAttribute:[XMLNode attributeWithName:@"dailymed_tu" stringValue:self.dailymed_tu ? @"true" : @"false"]];
     }
     if (self.dailymed_we != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"dailymed_we" stringValue:self.dailymed_we ? @"true" : @"false"]];
+        [e addAttribute:[XMLNode attributeWithName:@"dailymed_we" stringValue:self.dailymed_we ? @"true" : @"false"]];
     }
     if (self.dailymed_th != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"dailymed_th" stringValue:self.dailymed_th ? @"true" : @"false"]];
+        [e addAttribute:[XMLNode attributeWithName:@"dailymed_th" stringValue:self.dailymed_th ? @"true" : @"false"]];
     }
     if (self.dailymed_fr != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"dailymed_fr" stringValue:self.dailymed_fr ? @"true" : @"false"]];
+        [e addAttribute:[XMLNode attributeWithName:@"dailymed_fr" stringValue:self.dailymed_fr ? @"true" : @"false"]];
     }
     if (self.dailymed_sa != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"dailymed_sa" stringValue:self.dailymed_sa ? @"true" : @"false"]];
+        [e addAttribute:[XMLNode attributeWithName:@"dailymed_sa" stringValue:self.dailymed_sa ? @"true" : @"false"]];
     }
     if (self.dailymed_su != -1) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"dailymed_su" stringValue:self.dailymed_su ? @"true" : @"false"]];
+        [e addAttribute:[XMLNode attributeWithName:@"dailymed_su" stringValue:self.dailymed_su ? @"true" : @"false"]];
     }
     
-    DDXMLElement *insurance = [DDXMLElement elementWithName:@"insurance"];
+    XMLElement *insurance = [XMLElement elementWithName:@"insurance"];
     [e addChild:insurance];
     
-    [insurance addAttribute:[DDXMLNode attributeWithName:@"eanId" stringValue:self.insuranceEanId.length ? self.insuranceEanId : @"1"]];
+    [insurance addAttribute:[XMLNode attributeWithName:@"eanId" stringValue:self.insuranceEanId.length ? self.insuranceEanId : @"1"]];
     
     if (self.insuranceBsvNr) {
-        [insurance addAttribute:[DDXMLNode attributeWithName:@"bsvNr" stringValue:self.insuranceBsvNr]];
+        [insurance addAttribute:[XMLNode attributeWithName:@"bsvNr" stringValue:self.insuranceBsvNr]];
     }
     if (self.insuranceInsuranceName) {
-        [insurance addAttribute:[DDXMLNode attributeWithName:@"insuranceName" stringValue:self.insuranceInsuranceName]];
+        [insurance addAttribute:[XMLNode attributeWithName:@"insuranceName" stringValue:self.insuranceInsuranceName]];
     }
 
-    [insurance addAttribute:[DDXMLNode attributeWithName:@"billingType" stringValue:[@(self.insuranceBillingType) stringValue]]];
+    [insurance addAttribute:[XMLNode attributeWithName:@"billingType" stringValue:[@(self.insuranceBillingType) stringValue]]];
 
     if (self.insuranceInsureeNr) {
-        [insurance addAttribute:[DDXMLNode attributeWithName:@"insureeNr" stringValue:self.insuranceInsureeNr]];
+        [insurance addAttribute:[XMLNode attributeWithName:@"insureeNr" stringValue:self.insuranceInsureeNr]];
     }
     
     for (ZurRosePosology *p in self.posology) {

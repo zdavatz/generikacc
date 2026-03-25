@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "DDXML.h"
+#import "XMLBuilder.h"
 #import "ZurRosePosology.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSArray<ZurRosePosology *> *posology;
 
-- (DDXMLElement *)toXML;
+- (XMLElement *)toXML;
 
 @end
 

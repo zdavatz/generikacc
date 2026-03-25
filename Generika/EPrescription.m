@@ -7,7 +7,7 @@
 //
 
 #import "EPrescription.h"
-#import "NSData+GZIP.h"
+#import <zlib.h>
 
 @implementation EPrescriptionPatientId
 @end
@@ -36,7 +36,30 @@
     if ([str hasPrefix:prefix]) {
         str = [str substringFromIndex:[prefix length]];
         NSData *compressed = [[NSData alloc] initWithBase64EncodedString:str options:0];
-        jsonData = [compressed gunzippedData];
+        // Decompress gzip data using zlib
+        if (compressed.length > 0) {
+            z_stream strm;
+            memset(&strm, 0, sizeof(strm));
+            strm.next_in = (Bytef *)compressed.bytes;
+            strm.avail_in = (uInt)compressed.length;
+            if (inflateInit2(&strm, 15 + 32) == Z_OK) {
+                NSMutableData *decompressed = [NSMutableData dataWithLength:compressed.length * 4];
+                strm.next_out = (Bytef *)decompressed.mutableBytes;
+                strm.avail_out = (uInt)decompressed.length;
+                int status;
+                while ((status = inflate(&strm, Z_NO_FLUSH)) == Z_OK || status == Z_BUF_ERROR) {
+                    if (strm.avail_out == 0) {
+                        NSUInteger oldLen = decompressed.length;
+                        decompressed.length = oldLen * 2;
+                        strm.next_out = (Bytef *)decompressed.mutableBytes + oldLen;
+                        strm.avail_out = (uInt)(decompressed.length - oldLen);
+                    } else break;
+                }
+                decompressed.length = strm.total_out;
+                inflateEnd(&strm);
+                jsonData = decompressed;
+            }
+        }
     }
     prefix = @"CHMED16A0";
     if ([str hasPrefix:prefix]) {

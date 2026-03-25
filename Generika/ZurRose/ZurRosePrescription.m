@@ -15,32 +15,32 @@
 
 @implementation ZurRosePrescription
 
-- (DDXMLDocument *)toXML {
+- (XMLDocument *)toXML {
     NSError *error = nil;
-    DDXMLDocument *document = [[DDXMLDocument alloc] initWithXMLString:@"<prescription></prescription>"
+    XMLDocument *document = [[XMLDocument alloc] initWithXMLString:@"<prescription></prescription>"
                                                                options:0
                                                                  error:&error];
-    DDXMLElement *e = [document rootElement];
+    XMLElement *e = [document rootElement];
 
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyy-MM-dd";
-    [e addAttribute:[DDXMLNode attributeWithName:@"issueDate" stringValue:[formatter stringFromDate:self.issueDate]]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"validity" stringValue:
+    [e addAttribute:[XMLNode attributeWithName:@"issueDate" stringValue:[formatter stringFromDate:self.issueDate]]];
+    [e addAttribute:[XMLNode attributeWithName:@"validity" stringValue:
                     self.validity ? [formatter stringFromDate:self.validity] :
                      self.issueDate ? [formatter stringFromDate:self.issueDate] : @""]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"user" stringValue:self.user]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"password" stringValue:self.password]];
+    [e addAttribute:[XMLNode attributeWithName:@"user" stringValue:self.user]];
+    [e addAttribute:[XMLNode attributeWithName:@"password" stringValue:self.password]];
     if (self.prescriptionNr) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"prescriptionNr" stringValue:self.prescriptionNr]];
+        [e addAttribute:[XMLNode attributeWithName:@"prescriptionNr" stringValue:self.prescriptionNr]];
     }
     
-    [e addAttribute:[DDXMLNode attributeWithName:@"deliveryType" stringValue:[@(self.deliveryType) stringValue]]];
+    [e addAttribute:[XMLNode attributeWithName:@"deliveryType" stringValue:[@(self.deliveryType) stringValue]]];
     
-    [e addAttribute:[DDXMLNode attributeWithName:@"ignoreInteractions" stringValue:self.ignoreInteractions ? @"true" : @"false"]];
-    [e addAttribute:[DDXMLNode attributeWithName:@"interactionsWithOldPres" stringValue:self.interactionsWithOldPres ? @"true" : @"false"]];
+    [e addAttribute:[XMLNode attributeWithName:@"ignoreInteractions" stringValue:self.ignoreInteractions ? @"true" : @"false"]];
+    [e addAttribute:[XMLNode attributeWithName:@"interactionsWithOldPres" stringValue:self.interactionsWithOldPres ? @"true" : @"false"]];
     
     if (self.remark) {
-        [e addAttribute:[DDXMLNode attributeWithName:@"remark" stringValue:self.remark]];
+        [e addAttribute:[XMLNode attributeWithName:@"remark" stringValue:self.remark]];
     }
     
     if (self.prescriptorAddress) {

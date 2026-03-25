@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "DDXML.h"
+#import "XMLBuilder.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *faxNr; // optional
 @property (nonatomic, strong) NSString *email; // optional
 
-- (void)writeBodyToXMLElement:(DDXMLElement *)e;
+- (void)writeBodyToXMLElement:(XMLElement *)e;
 
 @end
 

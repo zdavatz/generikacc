@@ -8,7 +8,7 @@
 
 #import "AmikoDBManager.h"
 #import <sqlite3.h>
-#import <SSZipArchive/SSZipArchive.h>
+#import "SimpleUnzip.h"
 
 #define AMIKODB_COLUMNS @"_id, title, auth, atc, substances, regnrs, atc_class, tindex_str, application_str, indications_str, customer_id, pack_info_str, add_info_str, ids_str, titles_str, content, style_str, packages"
 
@@ -263,11 +263,11 @@ static AmikoDBManager *_sharedInstance = nil;
                 sqlite3_close(sqliteDB);
                 sqliteDB = nil;
             }
-            BOOL unzip = [SSZipArchive unzipFileAtPath:location.path
-                                         toDestination:[self.externalDBPath stringByDeletingLastPathComponent]
-                                             overwrite:YES
-                                              password:nil
-                                                 error:&error];
+            BOOL unzip = [SimpleUnzip unzipFileAtPath:location.path
+                                        toDestination:[self.externalDBPath stringByDeletingLastPathComponent]
+                                            overwrite:YES
+                                             password:nil
+                                                error:&error];
             _self.downloadTask = nil;
             callback(error);
         }
