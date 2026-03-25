@@ -8,7 +8,7 @@
 import UIKit
 import MessageUI
 
-@objc class KostengutspracheViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate {
+@objc class KostengutspracheViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate, InsuranceCardScannerDelegate {
 
     private let receipt: Receipt
     private var scrollView: UIScrollView!
@@ -69,7 +69,10 @@ import MessageUI
     }
 
     @objc private func closeTapped() {
-        dismiss(animated: true)
+        dismiss(animated: true) {
+            // Notify to refresh the receipt list
+            NotificationCenter.default.post(name: NSNotification.Name("receiptsDidLoaded"), object: nil)
+        }
     }
 
     private func setupForm() {
@@ -115,8 +118,9 @@ import MessageUI
         ])
         y = patientGenderSegment.bottomAnchor
 
-        // Insurance
-        y = addSectionHeader("Versicherung", below: y, margin: m)
+        // Insurance (with camera button for card scanning)
+        let insuranceHeader = addSectionHeaderWithCamera("Versicherung", below: y, margin: m)
+        y = insuranceHeader
         insurerNameField = addTextField("Krankenversicherer", below: &y, margin: m)
         insurerNumberField = addTextField("Versicherten-Nr.", below: &y, margin: m)
 
@@ -185,6 +189,78 @@ import MessageUI
         return field
     }
 
+    private func addSectionHeaderWithCamera(_ text: String, below anchor: NSLayoutYAxisAnchor, margin: CGFloat) -> NSLayoutYAxisAnchor {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(container)
+
+        let label = UILabel()
+        label.text = text
+        label.font = .systemFont(ofSize: 14, weight: .semibold)
+        label.textColor = .secondaryLabel
+        label.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
+
+        let cameraButton = UIButton(type: .system)
+        cameraButton.setImage(UIImage(systemName: "camera.fill"), for: .normal)
+        cameraButton.addTarget(self, action: #selector(scanInsuranceCard), for: .touchUpInside)
+        cameraButton.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(cameraButton)
+
+        NSLayoutConstraint.activate([
+            container.topAnchor.constraint(equalTo: anchor, constant: 18),
+            container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: margin),
+            container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -margin),
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            cameraButton.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            cameraButton.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            cameraButton.widthAnchor.constraint(equalToConstant: 36),
+            cameraButton.heightAnchor.constraint(equalToConstant: 36),
+            container.heightAnchor.constraint(equalToConstant: 30),
+        ])
+        return container.bottomAnchor
+    }
+
+    @objc private func scanInsuranceCard() {
+        let scanner = InsuranceCardScannerViewController()
+        scanner.delegate = self
+        scanner.modalPresentationStyle = .fullScreen
+        present(scanner, animated: true)
+    }
+
+    // MARK: - InsuranceCardScannerDelegate
+
+    func insuranceCardScanner(_ scanner: InsuranceCardScannerViewController, didScan result: InsuranceCardResult) {
+        scanner.dismiss(animated: true) {
+            self.insurerNumberField.text = result.cardNumberString
+            if !result.insuranceName.isEmpty {
+                self.insurerNameField.text = result.insuranceName
+            }
+            // Also populate patient fields if they were empty
+            if self.patientNameField.text?.isEmpty ?? true {
+                self.patientNameField.text = result.familyName
+            }
+            if self.patientFirstNameField.text?.isEmpty ?? true {
+                self.patientFirstNameField.text = result.givenName
+            }
+            if self.patientBirthDateField.text?.isEmpty ?? true {
+                self.patientBirthDateField.text = result.dateString
+            }
+            if self.patientGenderSegment.selectedSegmentIndex == -1 {
+                if result.sexString == "F" {
+                    self.patientGenderSegment.selectedSegmentIndex = 0
+                } else if result.sexString == "M" {
+                    self.patientGenderSegment.selectedSegmentIndex = 1
+                }
+            }
+        }
+    }
+
+    func insuranceCardScannerDidCancel(_ scanner: InsuranceCardScannerViewController) {
+        scanner.dismiss(animated: true)
+    }
+
     private func addTextView(below anchor: inout NSLayoutYAxisAnchor, margin: CGFloat, height: CGFloat) -> UITextView {
         let tv = UITextView()
         tv.font = .systemFont(ofSize: 15)
@@ -220,18 +296,37 @@ import MessageUI
             }
         }
 
-        insurerNumberField.text = patient?.identifier ?? ""
+        insurerNumberField.text = patient?.healthCardNumber ?? ""
 
         let op = receipt.operator
         physicianNameField.text = op?.familyName ?? ""
         physicianFirstNameField.text = op?.givenName ?? ""
         physicianZSRField.text = op?.zsrNumber ?? ""
 
-        // Medications from receipt
+        // Medications from receipt — look up names from AmiKo DB via GTIN
         var medText = ""
         if let products = receipt.products as? [Product] {
             for product in products {
-                let name = product.pack ?? product.name ?? product.ean ?? "?"
+                var name = product.pack ?? product.name ?? ""
+                if name.isEmpty, let ean = product.ean, !ean.isEmpty {
+                    // Look up in AmiKo database
+                    if let rows = AmikoDBManager.shared().find(withGtin: ean, type: "") as? [AmikoDBRow],
+                       let row = rows.first {
+                        // Find the specific package matching this GTIN
+                        for pkg in row.parsedPackages() {
+                            if pkg.gtin == ean {
+                                name = pkg.name ?? row.title ?? ean
+                                break
+                            }
+                        }
+                        if name.isEmpty {
+                            name = row.title ?? ean
+                        }
+                    } else {
+                        name = ean
+                    }
+                }
+                if name.isEmpty { name = "?" }
                 if !medText.isEmpty { medText += "\n" }
                 medText += name
                 if let comment = product.comment, !comment.isEmpty {
@@ -250,22 +345,15 @@ import MessageUI
 
     @objc private func generateAndSendPDF() {
         let pdfData = renderPDF()
+        let patientFullName = "\(patientFirstNameField.text ?? "") \(patientNameField.text ?? "")".trimmingCharacters(in: .whitespaces)
 
-        if MFMailComposeViewController.canSendMail() {
-            let mail = MFMailComposeViewController()
-            mail.mailComposeDelegate = self
-            let patientFullName = "\(patientFirstNameField.text ?? "") \(patientNameField.text ?? "")".trimmingCharacters(in: .whitespaces)
-            mail.setSubject("Kostengutsprache KVV 71 \u{2013} \(patientFullName)")
-            mail.setMessageBody("Anbei die Kostengutsprache gem\u{00E4}ss Art. 71a-d KVV f\u{00FC}r \(patientFullName).", isHTML: false)
-            mail.addAttachmentData(pdfData, mimeType: "application/pdf", fileName: "Kostengutsprache_KVV71.pdf")
-            present(mail, animated: true)
-        } else {
-            let tmpURL = FileManager.default.temporaryDirectory.appendingPathComponent("Kostengutsprache_KVV71.pdf")
-            try? pdfData.write(to: tmpURL)
-            let ac = UIActivityViewController(activityItems: [tmpURL], applicationActivities: nil)
-            ac.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
-            present(ac, animated: true)
-        }
+        // Always use share sheet — works even without Mail app configured
+        let tmpURL = FileManager.default.temporaryDirectory.appendingPathComponent("Kostengutsprache_KVV71.pdf")
+        try? pdfData.write(to: tmpURL)
+        let ac = UIActivityViewController(activityItems: [tmpURL], applicationActivities: nil)
+        ac.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        ac.setValue("Kostengutsprache KVV 71 \u{2013} \(patientFullName)", forKey: "subject")
+        present(ac, animated: true)
     }
 
     private func renderPDF() -> Data {

@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B3F84C8529D991D981754103 /* InteractionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1250B04D10D43068E16D835 /* InteractionsManager.swift */; };
+		0585AF49F504750BCB71C432 /* UIImage+Cropping.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B294CDE987D5215C948C76D /* UIImage+Cropping.m */; };
+		19C007D7AE75A97B3D4BF9CF /* InsuranceCardScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70035B28B67DE648715A84A /* InsuranceCardScanner.swift */; };
+		2CAC6F8429291AD2E72910FB /* bag-to-insurance-name.json in Resources */ = {isa = PBXBuildFile; fileRef = 808AB032984D27780A1DF7E8 /* bag-to-insurance-name.json */; };
+		33039F4E7F155C9747737928 /* bag-to-insurance-gln.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DEB8496ECCFB97CE90003A4 /* bag-to-insurance-gln.json */; };
 		55CD6216E99B7AD89059BA9F /* InteractionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7868D80F429447A515AFBEEF /* InteractionsViewController.swift */; };
-		KG00000001E99B7AD89059BA /* KostengutspracheViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = KG00000002429447A515AFBE /* KostengutspracheViewController.swift */; };
 		655D0B626DC9948729287B91 /* libPods-GenerikaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */; };
 		810A928D179CD50A00DAA963 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 810A928C179CD50A00DAA963 /* Security.framework */; };
 		8127F27D201C4BA30029F080 /* Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8127F27B201C4BA20029F080 /* Helper.m */; };
@@ -53,6 +55,7 @@
 		81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		81F2DEE917B877490058AC62 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 81F2DEE517B877490058AC62 /* fontawesome-webfont.ttf */; };
 		8BE0B9CD1F547A2800B68E3B /* UIPopoverController+iPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */; };
+		B3F84C8529D991D981754103 /* InteractionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1250B04D10D43068E16D835 /* InteractionsManager.swift */; };
 		C8D52752834EB687BBCE051E /* libPods-Generika.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */; };
 		CF04B1902DD72F8B00B78973 /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */; };
 		CF04B1932DD825AB00B78973 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CF04B1922DD825AB00B78973 /* SettingsManager.m */; };
@@ -92,6 +95,7 @@
 		CFA37CF82CEEFF8600187BE6 /* EPrescription.m in Sources */ = {isa = PBXBuildFile; fileRef = CFA37CF72CEEFF8600187BE6 /* EPrescription.m */; };
 		CFA77AFC2EA66C7A0015E084 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CFFC02D62EA3DB1C00FFF3F9 /* libsqlite3.tbd */; };
 		CFB2A3EF2D0AB28D00014AFA /* swiss-zip-to-kanton.json in Resources */ = {isa = PBXBuildFile; fileRef = CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */; };
+		KG00000001E99B7AD89059BA /* KostengutspracheViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = KG00000002429447A515AFBE /* KostengutspracheViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,8 +110,14 @@
 
 /* Begin PBXFileReference section */
 		0CF9631F19C2569452A76CE5 /* Pods-Generika.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.release.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.release.xcconfig"; sourceTree = "<group>"; };
+		1B294CDE987D5215C948C76D /* UIImage+Cropping.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Cropping.m"; sourceTree = "<group>"; };
 		2A1FFF20E1446C46E024C55C /* Pods-GenerikaTests.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.generika_appstore.xcconfig"; sourceTree = "<group>"; };
+		2DEB8496ECCFB97CE90003A4 /* bag-to-insurance-gln.json */ = {isa = PBXFileReference; includeInIndex = 1; path = "bag-to-insurance-gln.json"; sourceTree = "<group>"; };
+		44D25CEC2D75C254721CCAE7 /* UIImage+Cropping.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "UIImage+Cropping.h"; sourceTree = "<group>"; };
 		6033EDCABCCB5F8CC1D93C5E /* libPods-Generika.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Generika.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7868D80F429447A515AFBEEF /* InteractionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionsViewController.swift; sourceTree = "<group>"; };
+		78A6EFE89E89D742809EF164 /* Generika-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Generika-Bridging-Header.h"; sourceTree = "<group>"; };
+		808AB032984D27780A1DF7E8 /* bag-to-insurance-name.json */ = {isa = PBXFileReference; includeInIndex = 1; path = "bag-to-insurance-name.json"; sourceTree = "<group>"; };
 		810A928C179CD50A00DAA963 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		81245DC617D70E1500995F5C /* Generika.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Generika.entitlements; sourceTree = "<group>"; };
 		8127F27B201C4BA20029F080 /* Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Helper.m; sourceTree = "<group>"; };
@@ -164,7 +174,9 @@
 		8BE0B9CB1F547A2800B68E3B /* UIPopoverController+iPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIPopoverController+iPhone.h"; sourceTree = "<group>"; };
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
 		9BE9B58F1D2656261ADD6A0F /* Pods-GenerikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.release.xcconfig"; sourceTree = "<group>"; };
+		A1250B04D10D43068E16D835 /* InteractionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionsManager.swift; sourceTree = "<group>"; };
 		B0638EBF595B6D8A30BBE8C0 /* Pods-Generika.generika_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.generika_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.generika_appstore.xcconfig"; sourceTree = "<group>"; };
+		B70035B28B67DE648715A84A /* InsuranceCardScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsuranceCardScanner.swift; sourceTree = "<group>"; };
 		CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
 		CF04B1912DD825AB00B78973 /* SettingsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsManager.h; sourceTree = "<group>"; };
 		CF04B1922DD825AB00B78973 /* SettingsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsManager.m; sourceTree = "<group>"; };
@@ -225,20 +237,21 @@
 		D11259016471743A2A72EF97 /* Pods-Generika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generika/Pods-Generika.debug.xcconfig"; sourceTree = "<group>"; };
 		EB5FAC97AB01AFB8DAA522EC /* libPods-GenerikaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GenerikaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0DCFF12E0D159B951492A27 /* Pods-GenerikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GenerikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GenerikaTests/Pods-GenerikaTests.debug.xcconfig"; sourceTree = "<group>"; };
-		A1250B04D10D43068E16D835 /* InteractionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionsManager.swift; sourceTree = "<group>"; };
-		7868D80F429447A515AFBEEF /* InteractionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionsViewController.swift; sourceTree = "<group>"; };
 		KG00000002429447A515AFBE /* KostengutspracheViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KostengutspracheViewController.swift; sourceTree = "<group>"; };
-		78A6EFE89E89D742809EF164 /* Generika-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Generika-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CFFC02D02EA3D24800FFF3F9 /* Databases */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = Databases;
 			sourceTree = "<group>";
 		};
 		CFFC02D72EA6673600FFF3F9 /* AmikoDatabase */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = AmikoDatabase;
 			sourceTree = "<group>";
 		};
@@ -349,6 +362,11 @@
 				CFFC02D02EA3D24800FFF3F9 /* Databases */,
 				81FEDA1F1538962900756CAE /* Resources */,
 				8192736E1535D56E0060859C /* Supporting Files */,
+				B70035B28B67DE648715A84A /* InsuranceCardScanner.swift */,
+				44D25CEC2D75C254721CCAE7 /* UIImage+Cropping.h */,
+				1B294CDE987D5215C948C76D /* UIImage+Cropping.m */,
+				2DEB8496ECCFB97CE90003A4 /* bag-to-insurance-gln.json */,
+				808AB032984D27780A1DF7E8 /* bag-to-insurance-name.json */,
 			);
 			path = Generika;
 			sourceTree = "<group>";
@@ -613,6 +631,8 @@
 				81F2DEE817B877490058AC62 /* fontawesome-webfont.ttf in Resources */,
 				CF0E57612EB0F77800D4313B /* color-scheme-dark.css in Resources */,
 				CF0E57622EB0F77800D4313B /* color-scheme-light.css in Resources */,
+				33039F4E7F155C9747737928 /* bag-to-insurance-gln.json in Resources */,
+				2CAC6F8429291AD2E72910FB /* bag-to-insurance-name.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -710,6 +730,8 @@
 				B3F84C8529D991D981754103 /* InteractionsManager.swift in Sources */,
 				55CD6216E99B7AD89059BA9F /* InteractionsViewController.swift in Sources */,
 				KG00000001E99B7AD89059BA /* KostengutspracheViewController.swift in Sources */,
+				19C007D7AE75A97B3D4BF9CF /* InsuranceCardScanner.swift in Sources */,
+				0585AF49F504750BCB71C432 /* UIImage+Cropping.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -885,7 +907,7 @@
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 20260311;
+				CURRENT_PROJECT_VERSION = 20260325;
 				DEVELOPMENT_TEAM = 4B37356EGR;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
@@ -893,9 +915,9 @@
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 2.1.49;
+				MARKETING_VERSION = 2.1.50;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -924,9 +946,9 @@
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
-				VALIDATE_PRODUCT = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Generika/Generika-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = NO;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
@@ -943,7 +965,7 @@
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 20260311;
+				CURRENT_PROJECT_VERSION = 20260325;
 				DEVELOPMENT_TEAM = 4B37356EGR;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
@@ -951,9 +973,9 @@
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 2.1.49;
+				MARKETING_VERSION = 2.1.50;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1105,7 +1127,7 @@
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 20260311;
+				CURRENT_PROJECT_VERSION = 20260325;
 				DEVELOPMENT_TEAM = 4B37356EGR;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
@@ -1113,9 +1135,9 @@
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 2.1.49;
+				MARKETING_VERSION = 2.1.50;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",

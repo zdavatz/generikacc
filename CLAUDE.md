@@ -47,10 +47,12 @@ pod install
 - **AmikoDBManager** queries the local SQLite drug database by GTIN, REG number, or ATC code
 - **InteractionsManager** (Swift) checks drug interactions locally via `interactions.db` using 3 strategies: substance-level, ATC class-level, and CYP enzyme-mediated
 - **InteractionsViewController** (Swift) displays interaction results in a WKWebView with color-coded severity; presented full-screen on iPad via `UIModalPresentationFullScreen`
+- **KostengutspracheViewController** (Swift) — Kostengutsprache KVV 71 form for IBD Gastroenterology; generates PDF, sends via share sheet; pre-fills from Receipt data; resolves medication names via GTIN lookup in AmiKo DB
+- **InsuranceCardScannerViewController** (Swift) — OCR scanner for Swiss health insurance cards using Vision framework; extracts patient name, card number, BAG number, AHV number, birth date, gender; maps BAG to insurer name/GLN via JSON lookup tables
 
 ### Key Models
 - **Product** — scanned medication (EAN, REG, name, price, expiry); supports NSCoding
-- **Receipt** — imported prescription from `.amk` files; contains Operator, Patient, and Products
+- **Receipt** — imported prescription from `.amk` files; contains Operator, Patient (with healthCardNumber), and Products
 - **EPrescription** — parsed from CHMED16A1 QR codes; converts to ZurRosePrescription objects
 
 ### ZurRose Integration (`Generika/ZurRose/`)
@@ -63,7 +65,7 @@ pod install
 - **InteractionsManager** (Swift) — local drug interaction search engine + DB update from pillbox.oddb.org
 
 ### Networking
-- **AFNetworking 3.x** for HTTP requests
+- **AFNetworking 4.x** for HTTP requests
 - **Reachability** for network status monitoring
 - API endpoints configured in `Constant.h` (ODDB base URL, user agents)
 
@@ -78,6 +80,6 @@ Located in `GenerikaTests/`: ProductTests, ProductManagerTests, BarcodeExtractor
 ## Important Notes
 
 - "Build Active Architecture Only" must match between Generika and Pods targets
-- Platform minimum: iOS 9.0
+- Platform minimum: iOS 15.0
 - Swift/ObjC bridging header: `Generika/Generika-Bridging-Header.h`; auto-generated header is `generika-Swift.h` (PRODUCT_NAME is lowercase `generika`)
 - UI is mix of programmatic and XIB (PatinfoViewController, PriceComparisonViewController)

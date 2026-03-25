@@ -7,12 +7,16 @@ https://travis-ci.org/zdavatz/generikacc)
 ## Features
 
 * iPhone/iPad Support
-* EAN-13 Barcord Scan
-* Drug Preis Comparison Viewer
+* EAN-13 Barcode Scan
+* CHMED16A1 e-Prescription QR Code Scan
+* Kostengutsprache (KVV 71) form for IBD Gastroenterology with PDF/Email export
+* Insurance card OCR scanner (Swiss Versichertenkarte) with BAG-to-insurer lookup
+* Drug Price Comparison Viewer
 * Fachinformation/Patienteninformation Viewer
 * Drug Interactions Checker (local SDIF database, full-screen on iPad)
 * Side effects Viewer
 * Expiry date Saving
+* ZurRose pharmacy prescription submission
 
 
 ## Repository
@@ -24,9 +28,9 @@ https://github.com/zdavatz/generikacc
 
 ### Requirements
 
-* Xcode 11
+* Xcode 16+ (iOS 15.0+ deployment target)
 * XCTest (for testing)
-* Cocoapods
+* CocoaPods
 
 ### Dependencies
 
@@ -151,7 +155,7 @@ About target versions, see also _matrix_ in `.travis.yml`.
 
 ```txt
 Generika.cc
-Copyright (c) 2012-2017 ywesee GmbH
+Copyright (c) 2012-2026 ywesee GmbH
 ```
 
 See [LICENSE.txt](LICENCE).

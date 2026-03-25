@@ -42,6 +42,7 @@
 @property (nonatomic, strong, readwrite) NSString *birthDate;
 @property (nonatomic, strong, readwrite) NSString *gender;
 @property (nonatomic, strong, readwrite) NSString *gln;
+@property (nonatomic, strong, readwrite) NSString *healthCardNumber;
 
 @property (nonatomic, strong, readwrite) NSString *email;
 @property (nonatomic, strong, readwrite) NSString *phone;

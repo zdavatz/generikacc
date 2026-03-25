@@ -533,9 +533,10 @@ static const int kSegmentReceipt = 1;
 
   if (control.selectedSegmentIndex == kSegmentReceipt) {
     // navigationbar
-    // change button camera -> plus
+    // show plus and camera buttons (no doc scan to save space)
     UIBarButtonItem *plusButtonItem = [self buildPlusButtonItem];
-    self.navigationItem.rightBarButtonItems = @[plusButtonItem];
+    UIBarButtonItem *cameraItem = [self buildScanButtonItems].firstObject;
+    self.navigationItem.rightBarButtonItems = @[plusButtonItem, cameraItem];
     // toolbar
     // info icon
     [utilButton setTitle:@"\uF129" forState:UIControlStateNormal];
@@ -677,6 +678,18 @@ static const int kSegmentReceipt = 1;
             NSString *amkFilename = [NSString stringWithFormat:@"RZ_%@.amk", [dateFormatter stringFromDate:[NSDate date]]];
             Receipt *r = [[ReceiptManager sharedManager] importReceiptFromAMKDict:[result amkDict] fileName:amkFilename];
             BOOL saved = [[ReceiptManager sharedManager] insertReceipt:r atIndex:0];
+
+            if ([self currentSegmentedType] == kSegmentReceipt) {
+                // In Rezepte mode: import receipt and open Kostengutsprache
+                [self refresh];
+                KostengutspracheViewController *vc = [[KostengutspracheViewController alloc] initWithReceipt:r];
+                UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+                nav.modalPresentationStyle = UIModalPresentationFullScreen;
+                [self presentViewController:nav animated:YES completion:nil];
+                return;
+            }
+
+            // In Medikamente mode: send to ZurRose
             NSDictionary *keychainDict = [[SettingsManager shared] getDictFromKeychainCached:false];
             if (!keychainDict) {
                 UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"")
@@ -1072,8 +1085,33 @@ static const int kSegmentReceipt = 1;
     } else {
       receipt = [[ReceiptManager sharedManager] receiptAtIndex:indexPath.row];
     }
-    // place date
-    if (![receipt.placeDate isEqualToString:@""]) {
+    // patient name + birth date (top line)
+    Patient *patient = receipt.patient;
+    if (patient) {
+      NSMutableString *patientInfo = [NSMutableString string];
+      if (patient.givenName.length > 0) {
+        [patientInfo appendString:patient.givenName];
+      }
+      if (patient.familyName.length > 0) {
+        if (patientInfo.length > 0) [patientInfo appendString:@" "];
+        [patientInfo appendString:patient.familyName];
+      }
+      if (patient.birthDate.length > 0) {
+        if (patientInfo.length > 0) [patientInfo appendString:@", "];
+        [patientInfo appendString:patient.birthDate];
+      }
+      if (patientInfo.length > 0) {
+        UILabel *patientLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+          7.2, 8.0, itemView.frame.size.width - 22.0, 14.0)];
+        patientLabel.font = [UIFont boldSystemFontOfSize:13.0];
+        patientLabel.textAlignment = kTextAlignmentLeft;
+        patientLabel.textColor = [UIColorBackport labelColor];
+        patientLabel.backgroundColor = [UIColor clearColor];
+        patientLabel.text = patientInfo;
+        [cell.contentView addSubview:patientLabel];
+      }
+    } else if (![receipt.placeDate isEqualToString:@""]) {
+      // Fallback: show place date if no patient info
       UILabel *placeDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(
         7.2, 8.0, itemView.frame.size.width - 22.0, 14.0)];
       placeDateLabel.font = [UIFont boldSystemFontOfSize:13.0];
@@ -1454,7 +1492,10 @@ static const int kSegmentReceipt = 1;
     } else {
       receipt = [[ReceiptManager sharedManager] receiptAtIndex:indexPath.row];
     }
-    [self displayInfoForReceipt:receipt animated:YES];
+    KostengutspracheViewController *vc = [[KostengutspracheViewController alloc] initWithReceipt:receipt];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+    nav.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:nav animated:YES completion:nil];
   } else {  // product (default)
     Product *product;
     if (self.search.active) {
