@@ -165,22 +165,17 @@ static const int kSegmentReceipt = 1;
   // edit
   self.navigationItem.leftBarButtonItem = self.editButtonItem;
   // segmented control
-  UIView *segmentView = [[UIView alloc]
-                         initWithFrame:CGRectMake(0, 0, 196, 24)];
   UISegmentedControl *segmentedControl = [[UISegmentedControl alloc]
     initWithItems:[NSArray arrayWithObjects:@"Medikamente", @"Rezepte", nil]];
-  segmentedControl.frame = CGRectMake(0, 0, 196, 24);
   segmentedControl.selectedSegmentIndex = 0;
   segmentedControl.tintColor = [Helper activeUIColor];
-  segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
   // set initial selected state
   segmentedControl.selectedSegmentIndex = self.selectedSegmentIndex;
   segmentedControl.tag = kSegmentedControlTag;
   [segmentedControl addTarget:self
                        action:@selector(segmentChanged:)
              forControlEvents:UIControlEventValueChanged];
-  [segmentView addSubview:segmentedControl];
-  self.navigationItem.titleView = segmentView;
+  self.navigationItem.titleView = segmentedControl;
   // camera
     self.navigationItem.rightBarButtonItems = [self buildScanButtonItems];
   // toolbar
@@ -501,9 +496,8 @@ static const int kSegmentReceipt = 1;
 - (int)currentSegmentedType
 {
   if (self.navigationItem && self.navigationItem.titleView) {
-    UIView *titleView = self.navigationItem.titleView;
-    UISegmentedControl *control = (UISegmentedControl *)[
-      titleView viewWithTag:kSegmentedControlTag];
+    UISegmentedControl *control = (UISegmentedControl *)
+      self.navigationItem.titleView;
     return control.selectedSegmentIndex;
   } else {
     return (int)self.selectedSegmentIndex;
@@ -1407,9 +1401,8 @@ static const int kSegmentReceipt = 1;
 {
   [super setEditing:editing animated:animated];
   [self.itemsView setEditing:editing animated:animated];
-  UIView *titleView = self.navigationItem.titleView;
-  UISegmentedControl *control = (UISegmentedControl *)[
-    titleView viewWithTag:kSegmentedControlTag];
+  UISegmentedControl *control = (UISegmentedControl *)
+    self.navigationItem.titleView;
   // toolbar: space, (interaction|help), space, settings, space
   UIBarButtonItem *utilItem = [self.toolbarItems objectAtIndex:1];
   UIBarButtonItem *settingsItem = [self.toolbarItems objectAtIndex:3];
@@ -1721,9 +1714,8 @@ didPickDocumentAtURL:(NSURL *)url
 
   // invoke `segmentChanged:control` manually
   if (self.navigationItem && self.navigationItem.titleView) {
-    UIView *titleView = self.navigationItem.titleView;
-    UISegmentedControl *control = (UISegmentedControl *)[
-      titleView viewWithTag:kSegmentedControlTag];
+    UISegmentedControl *control = (UISegmentedControl *)
+      self.navigationItem.titleView;
     control.selectedSegmentIndex = _selectedSegmentIndex;
     [self segmentChanged:control];
   }

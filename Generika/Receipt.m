@@ -316,6 +316,7 @@
   _operator = nil;
   _patient = nil;
   _products = nil;
+  _diagnosis = nil;
 }
 
 #pragma mark - NSCoding Interface
@@ -417,7 +418,8 @@
   NSArray *additionalKeys = @[
     @"amkfile",  // RZ_`timestamp`.amk
     @"filename",  // RZ_YYYY-mm-ddTHHMMss.amk (expected)
-    @"datetime"
+    @"datetime",
+    @"diagnosis"
   ];
   return [additionalKeys arrayByAddingObjectsFromArray:
     [[[self class] receiptKeyMaps] allKeys]];

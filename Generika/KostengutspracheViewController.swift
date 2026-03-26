@@ -128,6 +128,13 @@ import MessageUI
             }
         }
 
+        // Diagnosis
+        if diagnosisSegment.selectedSegmentIndex == 0 {
+            receipt.diagnosis = "crohn"
+        } else if diagnosisSegment.selectedSegmentIndex == 1 {
+            receipt.diagnosis = "colitis"
+        }
+
         // Save
         ReceiptManager.shared().save()
     }
@@ -669,6 +676,15 @@ import MessageUI
             }
         }
         medicationTextView.text = medText
+
+        // Diagnosis
+        if let diag = receipt.diagnosis, !diag.isEmpty {
+            if diag == "crohn" {
+                diagnosisSegment.selectedSegmentIndex = 0
+            } else if diag == "colitis" {
+                diagnosisSegment.selectedSegmentIndex = 1
+            }
+        }
 
         let fmt = DateFormatter()
         fmt.dateFormat = "yyyy-MM-dd"

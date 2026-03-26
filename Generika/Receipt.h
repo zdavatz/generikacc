@@ -75,6 +75,7 @@
 @property (nonatomic, strong, readwrite) Operator *operator;
 @property (nonatomic, strong, readwrite) Patient *patient;
 @property (nonatomic, strong, readwrite) NSArray *products;
+@property (nonatomic, strong, readwrite) NSString *diagnosis;
 
 @property (nonatomic, strong, readonly) NSString *issuedDate;
 @property (nonatomic, strong, readonly) NSString *issuedPlace;

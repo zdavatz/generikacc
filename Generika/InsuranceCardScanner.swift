@@ -247,11 +247,21 @@ class InsuranceCardScannerViewController: UIViewController, AVCaptureVideoDataOu
         var ahvBox: [String: Any]?       // NNN.NNNN.NNNN.NN
         var dateSexBox: [String: Any]?   // DD.MM.YYYY M/F
 
-        for box in allBoxes {
+        // First pass: look for a trailing-comma name box and its following box
+        var trailingCommaIdx: Int?
+        for (i, box) in allBoxes.enumerated() {
+            guard let text = box["text"] as? String else { continue }
+            // Name ending with comma (OCR split "Family," and "Given" into 2 boxes)
+            if trailingCommaIdx == nil && text.hasSuffix(",") && text.count > 2 {
+                trailingCommaIdx = i
+            }
+        }
+
+        for (i, box) in allBoxes.enumerated() {
             guard let text = box["text"] as? String else { continue }
 
-            // Card number: exactly 20 digits
-            if cardBox == nil && text.count == 20 && text.allSatisfy({ $0.isNumber }) {
+            // Card number: 19-20 digits (OCR sometimes drops a digit)
+            if cardBox == nil && (text.count == 19 || text.count == 20) && text.allSatisfy({ $0.isNumber }) {
                 cardBox = box; continue
             }
             // BAG number: exactly 5 digits
@@ -263,12 +273,13 @@ class InsuranceCardScannerViewController: UIViewController, AVCaptureVideoDataOu
                text.range(of: "^[0-9]{3}\\.[0-9]{4}\\.[0-9]{4}\\.[0-9]{2}$", options: .regularExpression) != nil {
                 ahvBox = box; continue
             }
-            // Date + Sex: DD.MM.YYYY M or DD.MM.YYYY F
-            if dateSexBox == nil &&
-               text.range(of: "^\\d{2}\\.\\d{2}\\.\\d{4}\\s+[MF]$", options: .regularExpression) != nil {
-                dateSexBox = box; continue
+            // Date + Sex: DD.MM.YYYY M or DD.MM.YYYY.M (OCR sometimes uses dot instead of space)
+            if dateSexBox == nil {
+                if text.range(of: "^\\d{2}\\.\\d{2}\\.\\d{4}[\\s.]+[MF]$", options: .regularExpression) != nil {
+                    dateSexBox = box; continue
+                }
             }
-            // Name: contains comma (Family, Given)
+            // Name: contains comma with given name after it (Family, Given)
             if nameBox == nil && text.contains(",") {
                 let parts = text.components(separatedBy: ",")
                 if parts.count >= 2 && !parts[1].trimmingCharacters(in: .whitespaces).isEmpty {
@@ -277,9 +288,32 @@ class InsuranceCardScannerViewController: UIViewController, AVCaptureVideoDataOu
             }
         }
 
-        guard let n = nameBox, let c = cardBox, let b = bagBox, let a = ahvBox, let d = dateSexBox else {
+        // If name not found as single box, try combining trailing-comma box with next box
+        if nameBox == nil, let idx = trailingCommaIdx, idx + 1 < allBoxes.count {
+            let familyText = (allBoxes[idx]["text"] as? String) ?? ""
+            let givenText = (allBoxes[idx + 1]["text"] as? String) ?? ""
+            if !givenText.isEmpty && givenText.rangeOfCharacter(from: .decimalDigits) == nil {
+                let combined = "\(familyText) \(givenText)"
+                nameBox = ["text": combined, "conf": Float(0.8), "box": NSValue(cgRect: .zero)]
+            }
+        }
+
+        // If AHV not found with dots, try extracting from "NNNNN NNNNNNN" pattern (BAG + AHV without dots)
+        // AHV is typically embedded in the card number starting with 756
+        if ahvBox == nil, let cardText = cardBox?["text"] as? String, cardText.hasPrefix("8075") {
+            // Extract AHV from card number: 80 + 756.NNNN.NNNN.NN + check
+            let digits = cardText.dropFirst(2).dropLast(1) // remove 80 prefix and last check digit
+            if digits.count == 13 {
+                let ahv = "\(digits.prefix(3)).\(digits.dropFirst(3).prefix(4)).\(digits.dropFirst(7).prefix(4)).\(digits.suffix(2))"
+                ahvBox = ["text": ahv, "conf": Float(0.8), "box": NSValue(cgRect: .zero)]
+            }
+        }
+
+        guard let n = nameBox, let c = cardBox, let b = bagBox, let d = dateSexBox else {
             return []
         }
+        // AHV is optional — use empty placeholder if not found
+        let a = ahvBox ?? ["text": "", "conf": Float(0.0), "box": NSValue(cgRect: .zero)]
         return [n, c, b, a, d]
     }
 
@@ -294,9 +328,9 @@ class InsuranceCardScannerViewController: UIViewController, AVCaptureVideoDataOu
         let givenName = parts[1].trimmingCharacters(in: .whitespaces)
         guard !givenName.isEmpty else { return false }
 
-        // Box 1: Card number (20 digits)
+        // Box 1: Card number (19-20 digits)
         let cardNumber = (ocrResults[1]["text"] as? String) ?? ""
-        guard cardNumber.count == 20, cardNumber.allSatisfy({ $0.isNumber }) else { return false }
+        guard (cardNumber.count == 19 || cardNumber.count == 20), cardNumber.allSatisfy({ $0.isNumber }) else { return false }
 
         // Box 2: BAG number
         let bagNumber = (ocrResults[2]["text"] as? String) ?? ""
@@ -304,13 +338,18 @@ class InsuranceCardScannerViewController: UIViewController, AVCaptureVideoDataOu
         // Box 3: AHV number
         let ahvNumber = (ocrResults[3]["text"] as? String) ?? ""
 
-        // Box 4: Date + Sex
-        let line2 = (ocrResults[4]["text"] as? String) ?? ""
-        let line2Parts = line2.components(separatedBy: " ").filter { !$0.isEmpty }
-        guard line2Parts.count >= 2 else { return false }
-        let dateString = line2Parts[0]
-        let sexString = line2Parts[1]
-        guard sexString == "M" || sexString == "F" else { return false }
+        // Box 4: Date + Sex (may be separated by space or dot, e.g. "08.06.2005 M" or "08.06.2005.M")
+        var line2 = (ocrResults[4]["text"] as? String) ?? ""
+        // Normalize "DD.MM.YYYY.M" -> "DD.MM.YYYY M"
+        if let range = line2.range(of: "^(\\d{2}\\.\\d{2}\\.\\d{4})[.\\s]+([MF])$", options: .regularExpression) {
+            let _ = range // just for validation
+        }
+        // Split on last space or extract sex from last character
+        let sexChar = String(line2.suffix(1))
+        guard sexChar == "M" || sexChar == "F" else { return false }
+        let sexString = sexChar
+        // Remove sex and separator
+        let dateString = line2.dropLast().trimmingCharacters(in: CharacterSet(charactersIn: ". "))
 
         // Look up insurance GLN and name from BAG number
         let bagKey = String(Int(bagNumber) ?? 0)
