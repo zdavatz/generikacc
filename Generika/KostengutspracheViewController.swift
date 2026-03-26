@@ -101,7 +101,8 @@ import MessageUI
             patient.city = zipCityParts.dropFirst().joined(separator: " ")
         }
         patient.healthCardNumber = insurerNumberField.text ?? ""
-        patient.country = patientAHVField.text ?? ""
+        patient.insurerName = insurerNameField.text ?? ""
+        patient.ahvNumber = patientAHVField.text ?? ""
         receipt.patient = patient
 
         // Update operator (physician)
@@ -620,9 +621,9 @@ import MessageUI
             patientZipCityField.text = "\(zip) \(city)".trimmingCharacters(in: .whitespaces)
         }
 
-        // AHV number (stored in patient.country, since identifier is a hash)
-        patientAHVField.text = patient?.country ?? ""
+        patientAHVField.text = patient?.ahvNumber ?? ""
 
+        insurerNameField.text = patient?.insurerName ?? ""
         insurerNumberField.text = patient?.healthCardNumber ?? ""
 
         let op = receipt.operator
@@ -650,7 +651,8 @@ import MessageUI
                 }
 
                 // Build display line: "Medikamentenname (Pharmacode: 1234567)"
-                if !name.isEmpty && name != ean && !ean.isEmpty && ean.count < 13 {
+                if !name.isEmpty && name != ean && !ean.isEmpty && ean.count < 13
+                   && !name.contains(ean) {
                     // Pharmacode — show both name and code
                     name = "\(name) (Pharmacode: \(ean))"
                 } else if name.isEmpty && !ean.isEmpty {

@@ -9,8 +9,9 @@ https://travis-ci.org/zdavatz/generikacc)
 * iPhone/iPad Support
 * EAN-13 Barcode Scan
 * CHMED16A1 e-Prescription QR Code Scan
-* Kostengutsprache (KVV 71) form for IBD Gastroenterology with PDF/Email export
-* Two-stage prescription scanner: QR code (CHMED16A) + full-page OCR to auto-fill KKV forms (medications, AHV, physician, hospital, patient address)
+* Kostengutsprache (KVV 71) form for IBD Gastroenterology with PDF/Email export and full data persistence
+* Two-stage prescription scanner: QR code (CHMED16A) + full-page OCR to auto-fill KKV forms (medications, AHV, physician, hospital, patient address, insurer name)
+* Pharmacode support: OCR medication name extraction when no GTIN available
 * Insurance card OCR scanner (Swiss Versichertenkarte) with BAG-to-insurer lookup
 * Drug Price Comparison Viewer
 * Fachinformation/Patienteninformation Viewer

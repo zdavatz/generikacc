@@ -161,6 +161,8 @@
     @"country"    : @"country",
     @"gln"        : @"insurance_gln",
     @"healthCardNumber" : @"health_card_number",
+    @"insurerName" : @"insurer_name",
+    @"ahvNumber"   : @"ahv_number",
   };
 }
 
@@ -202,6 +204,8 @@
   _zipcode = nil;
   _country = nil;
   _healthCardNumber = nil;
+  _insurerName = nil;
+  _ahvNumber = nil;
 }
 
 #pragma mark - NSCoding Interface
