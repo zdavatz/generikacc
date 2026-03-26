@@ -97,6 +97,7 @@
 		CFB2A3EF2D0AB28D00014AFA /* swiss-zip-to-kanton.json in Resources */ = {isa = PBXBuildFile; fileRef = CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */; };
 		E63E3FFD8B6FC4841C9606EF /* SimpleUnzip.m in Sources */ = {isa = PBXBuildFile; fileRef = D06180A97F99670CF321843A /* SimpleUnzip.m */; };
 		KG00000001E99B7AD89059BA /* KostengutspracheViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = KG00000002429447A515AFBE /* KostengutspracheViewController.swift */; };
+		PS00000001PRESCSCANNER01 /* PrescriptionScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS00000002PRESCSCANNER02 /* PrescriptionScannerViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -175,6 +176,7 @@
 		8BE0B9CC1F547A2800B68E3B /* UIPopoverController+iPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIPopoverController+iPhone.m"; sourceTree = "<group>"; };
 		A1250B04D10D43068E16D835 /* InteractionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionsManager.swift; sourceTree = "<group>"; };
 		B70035B28B67DE648715A84A /* InsuranceCardScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsuranceCardScanner.swift; sourceTree = "<group>"; };
+		PS00000002PRESCSCANNER02 /* PrescriptionScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrescriptionScannerViewController.swift; sourceTree = "<group>"; };
 		C012EC3D764315946D507047 /* libz.tbd */ = {isa = PBXFileReference; includeInIndex = 1; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		C2BF8D0C3F473BE509797A53 /* XMLBuilder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = XMLBuilder.h; sourceTree = "<group>"; };
 		CF04B18F2DD72F8B00B78973 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
@@ -345,6 +347,7 @@
 				81FEDA1F1538962900756CAE /* Resources */,
 				8192736E1535D56E0060859C /* Supporting Files */,
 				B70035B28B67DE648715A84A /* InsuranceCardScanner.swift */,
+				PS00000002PRESCSCANNER02 /* PrescriptionScannerViewController.swift */,
 				44D25CEC2D75C254721CCAE7 /* UIImage+Cropping.h */,
 				1B294CDE987D5215C948C76D /* UIImage+Cropping.m */,
 				2DEB8496ECCFB97CE90003A4 /* bag-to-insurance-gln.json */,
@@ -676,6 +679,7 @@
 				55CD6216E99B7AD89059BA9F /* InteractionsViewController.swift in Sources */,
 				KG00000001E99B7AD89059BA /* KostengutspracheViewController.swift in Sources */,
 				19C007D7AE75A97B3D4BF9CF /* InsuranceCardScanner.swift in Sources */,
+				PS00000001PRESCSCANNER01 /* PrescriptionScannerViewController.swift in Sources */,
 				0585AF49F504750BCB71C432 /* UIImage+Cropping.m in Sources */,
 				360015682400414F6515CC76 /* XMLBuilder.m in Sources */,
 				E63E3FFD8B6FC4841C9606EF /* SimpleUnzip.m in Sources */,

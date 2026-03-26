@@ -47,7 +47,8 @@ pod install
 - **AmikoDBManager** queries the local SQLite drug database by GTIN, REG number, or ATC code
 - **InteractionsManager** (Swift) checks drug interactions locally via `interactions.db` using 3 strategies: substance-level, ATC class-level, and CYP enzyme-mediated
 - **InteractionsViewController** (Swift) displays interaction results in a WKWebView with color-coded severity; presented full-screen on iPad via `UIModalPresentationFullScreen`
-- **KostengutspracheViewController** (Swift) — Kostengutsprache KVV 71 form for IBD Gastroenterology; generates PDF, sends via share sheet; pre-fills from Receipt data; resolves medication names via GTIN lookup in AmiKo DB
+- **KostengutspracheViewController** (Swift) — Kostengutsprache KVV 71 form for IBD Gastroenterology; generates PDF, sends via share sheet; pre-fills from Receipt data and prescription scan; resolves medication names via GTIN lookup in AmiKo DB; includes fields for patient address, AHV number, physician hospital/department
+- **PrescriptionScannerViewController** (Swift) — Two-stage prescription scanner: live QR detection (CHMED16A) + photo capture with full-page OCR (VNRecognizeTextRequest); extracts medications, dosages, AHV number, ZSR, physician name/title, hospital, department, patient address from prescription documents; merges QR + OCR data for KKV form filling
 - **InsuranceCardScannerViewController** (Swift) — OCR scanner for Swiss health insurance cards using Vision framework; extracts patient name, card number, BAG number, AHV number, birth date, gender; maps BAG to insurer name/GLN via JSON lookup tables
 
 ### Key Models
@@ -69,9 +70,9 @@ pod install
 - **Reachability** for network status monitoring
 - API endpoints configured in `Constant.h` (ODDB base URL, user agents)
 
-## Dependencies (CocoaPods)
+## Dependencies
 
-AFNetworking, NTMonthYearPicker, GZIP, KissXML, SSZipArchive. Test-only: OCMock.
+No external dependencies. All previously used CocoaPods have been replaced with built-in iOS APIs.
 
 ## Test Files
 

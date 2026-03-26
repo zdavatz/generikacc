@@ -13,3 +13,4 @@
 #import "AmikoDatabase/AmikoDBRow.h"
 #import "Receipt.h"
 #import "UIImage+Cropping.h"
+#import "EPrescription.h"

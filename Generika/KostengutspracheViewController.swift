@@ -8,7 +8,7 @@
 import UIKit
 import MessageUI
 
-@objc class KostengutspracheViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate, InsuranceCardScannerDelegate {
+@objc class KostengutspracheViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate, InsuranceCardScannerDelegate, PrescriptionScannerDelegate {
 
     private let receipt: Receipt
     private var scrollView: UIScrollView!
@@ -19,6 +19,9 @@ import MessageUI
     private var patientFirstNameField: UITextField!
     private var patientBirthDateField: UITextField!
     private var patientGenderSegment: UISegmentedControl!
+    private var patientStreetField: UITextField!
+    private var patientZipCityField: UITextField!
+    private var patientAHVField: UITextField!
 
     // Insurance
     private var insurerNameField: UITextField!
@@ -32,6 +35,8 @@ import MessageUI
     private var physicianNameField: UITextField!
     private var physicianFirstNameField: UITextField!
     private var physicianZSRField: UITextField!
+    private var physicianHospitalField: UITextField!
+    private var physicianDepartmentField: UITextField!
 
     // Date
     private var dateField: UITextField!
@@ -99,8 +104,8 @@ import MessageUI
         let m: CGFloat = 16
         var y = contentView.topAnchor
 
-        // Title
-        y = addSectionHeader("Kostengutsprache KVV 71 \u{2013} IBD Gastroenterologie", below: y, margin: m, bold: true)
+        // Title with prescription scan button
+        y = addTitleHeaderWithScan("Kostengutsprache KVV 71 \u{2013} IBD Gastroenterologie", below: y, margin: m)
 
         // Patient
         y = addSectionHeader("Patient/in", below: y, margin: m)
@@ -117,6 +122,10 @@ import MessageUI
             patientGenderSegment.widthAnchor.constraint(equalToConstant: 140),
         ])
         y = patientGenderSegment.bottomAnchor
+
+        patientStreetField = addTextField("Strasse", below: &y, margin: m)
+        patientZipCityField = addTextField("PLZ / Ort", below: &y, margin: m)
+        patientAHVField = addTextField("AHV-Nr.", below: &y, margin: m)
 
         // Insurance (with camera button for card scanning)
         let insuranceHeader = addSectionHeaderWithCamera("Versicherung", below: y, margin: m)
@@ -145,6 +154,8 @@ import MessageUI
         physicianNameField = addTextField("Name", below: &y, margin: m)
         physicianFirstNameField = addTextField("Vorname", below: &y, margin: m)
         physicianZSRField = addTextField("ZSR-Nr.", below: &y, margin: m)
+        physicianHospitalField = addTextField("Spital / Praxis", below: &y, margin: m)
+        physicianDepartmentField = addTextField("Abteilung", below: &y, margin: m)
 
         // Date
         dateField = addTextField("Datum", below: &y, margin: m)
@@ -153,6 +164,42 @@ import MessageUI
     }
 
     // MARK: - Form Helpers
+
+    private func addTitleHeaderWithScan(_ text: String, below anchor: NSLayoutYAxisAnchor, margin: CGFloat) -> NSLayoutYAxisAnchor {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(container)
+
+        let label = UILabel()
+        label.text = text
+        label.font = .boldSystemFont(ofSize: 17)
+        label.textColor = .label
+        label.numberOfLines = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
+
+        let scanButton = UIButton(type: .system)
+        scanButton.setImage(UIImage(systemName: "doc.viewfinder"), for: .normal)
+        scanButton.addTarget(self, action: #selector(scanPrescription), for: .touchUpInside)
+        scanButton.translatesAutoresizingMaskIntoConstraints = false
+        scanButton.accessibilityLabel = "Rezept scannen"
+        container.addSubview(scanButton)
+
+        NSLayoutConstraint.activate([
+            container.topAnchor.constraint(equalTo: anchor, constant: 16),
+            container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: margin),
+            container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -margin),
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            label.topAnchor.constraint(equalTo: container.topAnchor),
+            label.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            label.trailingAnchor.constraint(lessThanOrEqualTo: scanButton.leadingAnchor, constant: -8),
+            scanButton.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            scanButton.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            scanButton.widthAnchor.constraint(equalToConstant: 40),
+            scanButton.heightAnchor.constraint(equalToConstant: 40),
+        ])
+        return container.bottomAnchor
+    }
 
     private func addSectionHeader(_ text: String, below anchor: NSLayoutYAxisAnchor, margin: CGFloat, bold: Bool = false) -> NSLayoutYAxisAnchor {
         let label = UILabel()
@@ -222,6 +269,204 @@ import MessageUI
         return container.bottomAnchor
     }
 
+    // MARK: - Prescription Scanner
+
+    @objc private func scanPrescription() {
+        let scanner = PrescriptionScannerViewController()
+        scanner.delegate = self
+        scanner.modalPresentationStyle = .fullScreen
+        present(scanner, animated: true)
+    }
+
+    func prescriptionScanner(_ scanner: PrescriptionScannerViewController, didScan result: PrescriptionScanResult) {
+        scanner.dismiss(animated: true) {
+            self.applyPrescriptionScanResult(result)
+        }
+    }
+
+    func prescriptionScannerDidCancel(_ scanner: PrescriptionScannerViewController) {
+        scanner.dismiss(animated: true)
+    }
+
+    private func applyPrescriptionScanResult(_ result: PrescriptionScanResult) {
+        // Stage 1: QR code data (structured, reliable)
+        if let ep = result.ePrescription {
+            let fmt = DateFormatter()
+            fmt.dateFormat = "dd.MM.yyyy"
+
+            if patientNameField.text?.isEmpty ?? true {
+                patientNameField.text = ep.patientLastName
+            }
+            if patientFirstNameField.text?.isEmpty ?? true {
+                patientFirstNameField.text = ep.patientFirstName
+            }
+            if patientBirthDateField.text?.isEmpty ?? true {
+                let bd = ep.patientBirthdate
+                if bd != nil {
+                    patientBirthDateField.text = fmt.string(from: bd)
+                }
+            }
+            if patientGenderSegment.selectedSegmentIndex == -1 {
+                if ep.patientGender.intValue == 2 {
+                    patientGenderSegment.selectedSegmentIndex = 0 // W
+                } else if ep.patientGender.intValue == 1 {
+                    patientGenderSegment.selectedSegmentIndex = 1 // M
+                }
+            }
+            // QR may have patient address
+            if patientStreetField.text?.isEmpty ?? true, !ep.patientStreet.isEmpty {
+                patientStreetField.text = ep.patientStreet
+            }
+            if patientZipCityField.text?.isEmpty ?? true {
+                let zip = ep.patientZip ?? ""
+                let city = ep.patientCity ?? ""
+                if !zip.isEmpty || !city.isEmpty {
+                    patientZipCityField.text = "\(zip) \(city)".trimmingCharacters(in: .whitespaces)
+                }
+            }
+
+            // Physician from QR
+            if physicianZSRField.text?.isEmpty ?? true, !ep.zsr.isEmpty {
+                physicianZSRField.text = ep.zsr
+            }
+
+            // Health card number from QR
+            for pid in ep.patientIds {
+                if pid.type.intValue == 1 {
+                    if pid.value.count == 20 || pid.value.contains(".") {
+                        if insurerNumberField.text?.isEmpty ?? true {
+                            insurerNumberField.text = pid.value
+                        }
+                    }
+                }
+            }
+
+            // Medications from QR (via GTIN lookup in AmiKo DB)
+            if medicationTextView.text.isEmpty {
+                var medText = ""
+                for med in ep.medicaments {
+                    var name = ""
+                    let gtin = med.medicamentId ?? ""
+                    if !gtin.isEmpty {
+                        if let rows = AmikoDBManager.shared().find(withGtin: gtin, type: "") as? [AmikoDBRow],
+                           let row = rows.first {
+                            for pkg in row.parsedPackages() {
+                                if pkg.gtin == gtin {
+                                    name = pkg.name ?? row.title ?? gtin
+                                    break
+                                }
+                            }
+                            if name.isEmpty {
+                                name = row.title ?? gtin
+                            }
+                        } else {
+                            name = gtin
+                        }
+                    }
+                    if name.isEmpty { name = med.medicamentId ?? "?" }
+                    if !medText.isEmpty { medText += "\n" }
+                    medText += name
+                    let instr = med.appInstr ?? ""
+                    if !instr.isEmpty {
+                        medText += " \u{2013} \(instr)"
+                    }
+                }
+                medicationTextView.text = medText
+            }
+        }
+
+        // Stage 2: OCR data (supplements QR, fills gaps)
+
+        // AHV number (never in QR)
+        if patientAHVField.text?.isEmpty ?? true, !result.ahvNumber.isEmpty {
+            patientAHVField.text = result.ahvNumber
+        }
+
+        // Patient address from OCR (if not from QR)
+        if patientStreetField.text?.isEmpty ?? true, !result.patientStreet.isEmpty {
+            patientStreetField.text = result.patientStreet
+        }
+        if patientZipCityField.text?.isEmpty ?? true {
+            if !result.patientZip.isEmpty || !result.patientCity.isEmpty {
+                patientZipCityField.text = "\(result.patientZip) \(result.patientCity)".trimmingCharacters(in: .whitespaces)
+            }
+        }
+
+        // Phone from OCR
+        if result.patientPhone.isEmpty == false {
+            // Store phone for later use — could add a phone field if needed
+        }
+
+        // Physician from OCR (title, hospital, department)
+        if !result.physicianFullName.isEmpty {
+            // Parse "Prof. Dr. med. Christoph Gubler" into first/last name
+            var fullName = result.physicianFullName
+            // Remove title prefix
+            let titlePatterns = ["Prof.", "PD", "Dr.", "med.", "Dr"]
+            for pattern in titlePatterns {
+                fullName = fullName.replacingOccurrences(of: pattern, with: "").trimmingCharacters(in: .whitespaces)
+            }
+            // Clean up multiple spaces
+            while fullName.contains("  ") {
+                fullName = fullName.replacingOccurrences(of: "  ", with: " ")
+            }
+            let parts = fullName.components(separatedBy: " ").filter { !$0.isEmpty }
+            if parts.count >= 2 {
+                if physicianFirstNameField.text?.isEmpty ?? true {
+                    physicianFirstNameField.text = parts.dropLast().joined(separator: " ")
+                }
+                if physicianNameField.text?.isEmpty ?? true {
+                    physicianNameField.text = parts.last
+                }
+            }
+        }
+        if physicianZSRField.text?.isEmpty ?? true, !result.zsrNumber.isEmpty {
+            physicianZSRField.text = result.zsrNumber
+        }
+        if physicianHospitalField.text?.isEmpty ?? true, !result.hospitalName.isEmpty {
+            physicianHospitalField.text = result.hospitalName
+        }
+        if physicianDepartmentField.text?.isEmpty ?? true, !result.departmentName.isEmpty {
+            physicianDepartmentField.text = result.departmentName
+        }
+
+        // Medications from OCR (if QR didn't provide them or they were just GTINs)
+        if !result.medications.isEmpty {
+            let currentText = medicationTextView.text ?? ""
+            // If current text only has GTINs (all numeric), replace with OCR names
+            let currentLines = currentText.components(separatedBy: "\n").filter { !$0.isEmpty }
+            let allGTIN = !currentLines.isEmpty && currentLines.allSatisfy { line in
+                let cleaned = line.trimmingCharacters(in: .whitespaces)
+                return cleaned.allSatisfy { $0.isNumber } && cleaned.count >= 8
+            }
+
+            if currentText.isEmpty || allGTIN {
+                var medText = ""
+                for med in result.medications {
+                    if !medText.isEmpty { medText += "\n" }
+                    medText += med.name
+                    if !med.dosage.isEmpty {
+                        medText += " \u{2013} \(med.dosage)"
+                    }
+                }
+                if !medText.isEmpty {
+                    medicationTextView.text = medText
+                }
+            }
+        }
+
+        // Prescription date from OCR
+        if !result.prescriptionDate.isEmpty {
+            // Convert DD.MM.YYYY to YYYY-MM-DD for the date field
+            let parts = result.prescriptionDate.components(separatedBy: ".")
+            if parts.count == 3, let day = parts.first, let month = parts.dropFirst().first, let year = parts.last {
+                dateField.text = "\(year)-\(month)-\(day)"
+            }
+        }
+    }
+
+    // MARK: - Insurance Card Scanner
+
     @objc private func scanInsuranceCard() {
         let scanner = InsuranceCardScannerViewController()
         scanner.delegate = self
@@ -253,6 +498,10 @@ import MessageUI
                 } else if result.sexString == "M" {
                     self.patientGenderSegment.selectedSegmentIndex = 1
                 }
+            }
+            // AHV number from insurance card
+            if self.patientAHVField.text?.isEmpty ?? true, !result.ahvNumber.isEmpty {
+                self.patientAHVField.text = result.ahvNumber
             }
         }
     }
@@ -381,6 +630,9 @@ import MessageUI
             let genderText = patientGenderSegment.selectedSegmentIndex == 0 ? "weiblich" :
                              patientGenderSegment.selectedSegmentIndex == 1 ? "m\u{00E4}nnlich" : ""
             y = drawRow("Geschlecht:", genderText, x: margin, y: y, width: w)
+            y = drawRow("Strasse:", patientStreetField.text, x: margin, y: y, width: w)
+            y = drawRow("PLZ / Ort:", patientZipCityField.text, x: margin, y: y, width: w)
+            y = drawRow("AHV-Nr.:", patientAHVField.text, x: margin, y: y, width: w)
             y += 10
 
             // Insurance
@@ -412,6 +664,8 @@ import MessageUI
             y = drawRow("Name:", physicianNameField.text, x: margin, y: y, width: w)
             y = drawRow("Vorname:", physicianFirstNameField.text, x: margin, y: y, width: w)
             y = drawRow("ZSR-Nr.:", physicianZSRField.text, x: margin, y: y, width: w)
+            y = drawRow("Spital / Praxis:", physicianHospitalField.text, x: margin, y: y, width: w)
+            y = drawRow("Abteilung:", physicianDepartmentField.text, x: margin, y: y, width: w)
             y += 10
 
             y = drawRow("Datum:", dateField.text, x: margin, y: y, width: w)
