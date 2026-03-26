@@ -109,6 +109,32 @@ static AmikoDBManager *_sharedInstance = nil;
     return result;
 }
 
+- (NSArray<AmikoDBRow*>*)findWithPharmacode:(NSString *)pharmacode {
+    if (!sqliteDB && ![self open]) {
+        return nil;
+    }
+    if ([pharmacode length] == 0) {
+        return nil;
+    }
+    // Pharmacode is stored in the packages column (pipe-delimited, last field)
+    sqlite3_stmt *compiledStatement = nil;
+    NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM amikodb WHERE packages LIKE ?", AMIKODB_COLUMNS];
+    int rc = sqlite3_prepare_v2(sqliteDB, [sql UTF8String], -1, &compiledStatement, nil);
+    if (rc != SQLITE_OK) {
+        NSLog(@"%s Error when preparing query! %d", __FUNCTION__, rc);
+        return nil;
+    }
+    rc = sqlite3_bind_text(compiledStatement, 1, [[NSString stringWithFormat:@"%%%@%%", pharmacode] UTF8String], -1, NULL);
+    if (rc != SQLITE_OK) {
+        NSLog(@"%s Error when binding query! %d", __FUNCTION__, rc);
+        return nil;
+    }
+    NSArray *result = [self excuteSQL:compiledStatement];
+    sqlite3_reset(compiledStatement);
+    sqlite3_finalize(compiledStatement);
+    return result;
+}
+
 - (NSArray<AmikoDBRow*>*)excuteSQL:(sqlite3_stmt *)compiledStatement {
     NSMutableArray *result = [NSMutableArray array];
     while (sqlite3_step(compiledStatement) == SQLITE_ROW) {

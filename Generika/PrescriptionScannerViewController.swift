@@ -49,7 +49,7 @@ class PrescriptionScannerViewController: UIViewController {
 
     private var qrFound = false
     private var qrPayload: String?
-    private var qrIndicatorLayer = CAShapeLayer()
+    private var qrCheckmark = UILabel()
 
     private let statusLabel = UILabel()
     private let captureButton = UIButton(type: .system)
@@ -108,11 +108,6 @@ class PrescriptionScannerViewController: UIViewController {
         previewLayer.frame = view.bounds
         view.layer.insertSublayer(previewLayer, at: 0)
 
-        // QR indicator overlay
-        qrIndicatorLayer.strokeColor = UIColor.systemGreen.cgColor
-        qrIndicatorLayer.fillColor = UIColor.systemGreen.withAlphaComponent(0.1).cgColor
-        qrIndicatorLayer.lineWidth = 3
-        view.layer.addSublayer(qrIndicatorLayer)
     }
 
     private func setupUI() {
@@ -126,13 +121,20 @@ class PrescriptionScannerViewController: UIViewController {
         view.addSubview(cancelBtn)
 
         // Status label
-        statusLabel.text = "Rezept in den Rahmen halten"
+        statusLabel.text = "Rezept vor die Kamera halten"
         statusLabel.textColor = .white
         statusLabel.font = .systemFont(ofSize: 16)
         statusLabel.textAlignment = .center
         statusLabel.numberOfLines = 0
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(statusLabel)
+
+        // QR checkmark (hidden until QR found, next to status label)
+        qrCheckmark.text = "\u{2705}"
+        qrCheckmark.font = .systemFont(ofSize: 24)
+        qrCheckmark.isHidden = true
+        qrCheckmark.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(qrCheckmark)
 
         // Capture button (shutter)
         captureButton.translatesAutoresizingMaskIntoConstraints = false
@@ -142,11 +144,11 @@ class PrescriptionScannerViewController: UIViewController {
         captureButton.addTarget(self, action: #selector(captureTapped), for: .touchUpInside)
         view.addSubview(captureButton)
 
-        // Document frame guide
+        // A4 document frame guide
         let frameGuide = UIView()
-        frameGuide.layer.borderColor = UIColor.white.withAlphaComponent(0.6).cgColor
-        frameGuide.layer.borderWidth = 2
-        frameGuide.layer.cornerRadius = 12
+        frameGuide.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
+        frameGuide.layer.borderWidth = 1.5
+        frameGuide.layer.cornerRadius = 8
         frameGuide.translatesAutoresizingMaskIntoConstraints = false
         frameGuide.isUserInteractionEnabled = false
         view.addSubview(frameGuide)
@@ -159,14 +161,17 @@ class PrescriptionScannerViewController: UIViewController {
             statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             statusLabel.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, multiplier: 0.6),
 
+            qrCheckmark.leadingAnchor.constraint(equalTo: statusLabel.trailingAnchor, constant: 4),
+            qrCheckmark.centerYAnchor.constraint(equalTo: statusLabel.centerYAnchor),
+
             captureButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             captureButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
-            // A4-ish frame guide (roughly 3:4 aspect)
+            // A4 frame guide (210:297 aspect ratio)
             frameGuide.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            frameGuide.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -30),
-            frameGuide.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
-            frameGuide.heightAnchor.constraint(equalTo: frameGuide.widthAnchor, multiplier: 1.3),
+            frameGuide.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -10),
+            frameGuide.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.85),
+            frameGuide.heightAnchor.constraint(equalTo: frameGuide.widthAnchor, multiplier: 297.0 / 210.0),
         ])
     }
 
@@ -210,12 +215,7 @@ extension PrescriptionScannerViewController: AVCaptureVideoDataOutputSampleBuffe
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: [:])
         try? handler.perform([request])
 
-        guard let results = request.results, !results.isEmpty else {
-            DispatchQueue.main.async {
-                self.qrIndicatorLayer.path = nil
-            }
-            return
-        }
+        guard let results = request.results, !results.isEmpty else { return }
 
         for obs in results {
             if let payload = obs.payloadStringValue,
@@ -224,20 +224,8 @@ extension PrescriptionScannerViewController: AVCaptureVideoDataOutputSampleBuffe
                 qrPayload = payload
 
                 DispatchQueue.main.async {
-                    // Highlight the QR code
-                    let box = obs.boundingBox
-                    let viewW = self.view.bounds.width
-                    let viewH = self.view.bounds.height
-                    let rect = CGRect(
-                        x: box.origin.x * viewW,
-                        y: (1 - box.origin.y - box.height) * viewH,
-                        width: box.width * viewW,
-                        height: box.height * viewH
-                    )
-                    let path = UIBezierPath(roundedRect: rect, cornerRadius: 8)
-                    self.qrIndicatorLayer.path = path.cgPath
-
-                    self.statusLabel.text = "QR-Code erkannt \u{2705}\nJetzt aufnehmen f\u{00FC}r OCR"
+                    self.qrCheckmark.isHidden = false
+                    self.statusLabel.text = "QR-Code erkannt\nJetzt aufnehmen f\u{00FC}r OCR"
                 }
                 break
             }
@@ -336,11 +324,9 @@ extension PrescriptionScannerViewController: AVCapturePhotoCaptureDelegate {
         let sorted = texts.sorted { $0.1.origin.y > $1.1.origin.y }
         let lines = sorted.map { $0.0 }
 
-        // State for medication table parsing
-        var inMedicationTable = false
-        var currentMedName: String?
-        var currentDosage: String?
-        var foundMedHeader = false
+        // Collect all medication names and dosages from OCR
+        var medNames: [String] = []
+        var dosages: [String] = []
 
         for (index, line) in lines.enumerated() {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
@@ -356,7 +342,6 @@ extension PrescriptionScannerViewController: AVCapturePhotoCaptureDelegate {
             if result.zsrNumber.isEmpty {
                 if let range = trimmed.range(of: "ZSR[\\-\\s]*Nr\\.?:?\\s*([A-Z]\\d{4,6})", options: .regularExpression) {
                     let match = String(trimmed[range])
-                    // Extract just the number part
                     if let numRange = match.range(of: "[A-Z]\\d{4,6}", options: .regularExpression) {
                         result.zsrNumber = String(match[numRange])
                     }
@@ -385,24 +370,19 @@ extension PrescriptionScannerViewController: AVCapturePhotoCaptureDelegate {
 
             // Patient address: "Strasse Nr, CH-PLZZ Ort" or "Strasse Nr, PLZZ Ort"
             if result.patientStreet.isEmpty {
-                // Pattern: line with comma, followed by CH-NNNN or just NNNN
                 if let commaIdx = trimmed.firstIndex(of: ",") {
                     let afterComma = String(trimmed[trimmed.index(after: commaIdx)...]).trimmingCharacters(in: .whitespaces)
-                    // Check for "CH-8038 Zürich" or "8038 Zürich"
                     if afterComma.range(of: "^(CH-)?\\d{4}\\s+\\S", options: .regularExpression) != nil {
                         let street = String(trimmed[..<commaIdx]).trimmingCharacters(in: .whitespaces)
-                        // Only treat as address if it looks like a street (has a number)
                         if street.range(of: "\\d", options: .regularExpression) != nil,
                            !street.contains("AHV"),
                            !street.contains("PID"),
                            !street.contains("FID") {
                             result.patientStreet = street
-                            // Extract PLZ and city
                             let cleaned = afterComma.replacingOccurrences(of: "CH-", with: "")
                             if let plzRange = cleaned.range(of: "^\\d{4}", options: .regularExpression) {
                                 result.patientZip = String(cleaned[plzRange])
                                 let cityPart = String(cleaned[plzRange.upperBound...]).trimmingCharacters(in: .whitespaces)
-                                // Remove trailing phone/other info
                                 if let commaInCity = cityPart.firstIndex(of: ",") {
                                     result.patientCity = String(cityPart[..<commaInCity]).trimmingCharacters(in: .whitespaces)
                                 } else {
@@ -414,35 +394,33 @@ extension PrescriptionScannerViewController: AVCapturePhotoCaptureDelegate {
                 }
             }
 
-            // Hospital/Clinic name: typically in header, contains "spital", "klinik", "praxis"
+            // Hospital/Clinic name
             if result.hospitalName.isEmpty {
                 let lower = trimmed.lowercased()
                 if lower.contains("spital") || lower.contains("klinik") || lower.contains("praxis") || lower.contains("universit") {
-                    // Skip if it's too short or contains "strasse"
                     if trimmed.count > 5 && !lower.contains("strasse") && !lower.contains("str.") {
                         result.hospitalName = trimmed
                     }
                 }
             }
 
-            // Department: "Gastroenterologie", "Hepatologie", etc.
+            // Department
             if result.departmentName.isEmpty {
                 let lower = trimmed.lowercased()
                 if lower.contains("gastroenterologie") || lower.contains("hepatologie") ||
                    lower.contains("abteilung") || lower.contains("innere medizin") {
-                    if !lower.contains("chefarzt") { // Don't use the doctor title line
+                    if !lower.contains("chefarzt") {
                         result.departmentName = trimmed
                     }
                 }
             }
 
-            // Physician name: "Prof. Dr. med." or "Dr. med." pattern
+            // Physician name
             if result.physicianFullName.isEmpty {
                 if trimmed.range(of: "(Prof\\.?|PD|Dr\\.?)\\s", options: .regularExpression) != nil,
                    !trimmed.lowercased().contains("chefarzt"),
                    !trimmed.lowercased().contains("abteilung") {
                     result.physicianFullName = trimmed
-                    // Extract title
                     if let titleEnd = trimmed.range(of: "med\\.?\\s", options: .regularExpression)?.upperBound {
                         result.physicianTitle = String(trimmed[..<titleEnd]).trimmingCharacters(in: .whitespaces)
                     } else if let titleEnd = trimmed.range(of: "Dr\\.?\\s", options: .regularExpression)?.upperBound {
@@ -451,71 +429,39 @@ extension PrescriptionScannerViewController: AVCapturePhotoCaptureDelegate {
                 }
             }
 
-            // Medication table detection
-            if trimmed.contains("Medikamentenname") || trimmed.contains("Beginn Rezeptierung") {
-                foundMedHeader = true
-                inMedicationTable = true
-                continue
-            }
-            if trimmed.contains("Ende Rezeptierung") {
-                inMedicationTable = false
-                if let name = currentMedName {
-                    result.medications.append((name: name, dosage: currentDosage ?? ""))
-                    currentMedName = nil
-                    currentDosage = nil
-                }
-                continue
-            }
+            // --- Medication detection (pattern-based, not table-dependent) ---
 
-            // Inside medication table: parse medication lines
-            if inMedicationTable {
-                // Lines starting with "OP" or a number followed by medication name
-                if trimmed.range(of: "^\\d+\\s*OP\\s", options: .regularExpression) != nil ||
-                   trimmed.range(of: "^OP\\s", options: .regularExpression) != nil {
-                    // Save previous medication
-                    if let name = currentMedName {
-                        result.medications.append((name: name, dosage: currentDosage ?? ""))
-                    }
-                    // Extract medication name (everything after "OP" marker)
-                    let cleaned = trimmed.replacingOccurrences(of: "^\\d*\\s*OP\\s*", with: "", options: .regularExpression)
-                    currentMedName = cleaned
-                    currentDosage = nil
-                }
-                // Dosage line: "bei Bedarf", "max 3x/d", "Mo", "Ab", etc.
-                else if currentMedName != nil {
-                    let lower = trimmed.lowercased()
-                    if lower.contains("bedarf") || lower.contains("max") || lower.contains("x/d") ||
-                       lower.contains("t\u{00E4}glich") || lower.contains("mg/") || lower.contains("stk") {
-                        if currentDosage == nil || currentDosage!.isEmpty {
-                            currentDosage = trimmed
-                        } else {
-                            currentDosage! += ", " + trimmed
-                        }
-                    }
-                    // Wirkstoff line (active ingredient in italics)
-                    else if trimmed.range(of: "^[A-Z][a-z].*\\d+\\s*mg", options: .regularExpression) != nil {
-                        // This is the active ingredient line, append to med name
-                        currentMedName! += " (\(trimmed))"
+            // Medication name: contains dosage form keywords
+            let dosageForms = "(Filmtabl|Tabl|Kaps|Drag|Supp|Inf|Inj|Sirup|Tropfen|Salbe|Gel|Creme|L\u{00F6}sung|Susp|Amp|Retard|Depot)"
+            if trimmed.range(of: dosageForms, options: .regularExpression) != nil {
+                let lower = trimmed.lowercased()
+                if !lower.contains("aus medizinischen") && !lower.contains("substituieren") &&
+                   !lower.contains("medikamentenname") && !lower.contains("wirkstoff") {
+                    // Clean up: remove leading "1 OP" etc.
+                    var medName = trimmed.replacingOccurrences(of: "^\\d+\\s*OP\\s*", with: "", options: .regularExpression)
+                    medName = medName.trimmingCharacters(in: .whitespaces)
+                    if !medName.isEmpty {
+                        medNames.append(medName)
                     }
                 }
             }
 
-            // Also detect medication outside table by pattern:
-            // "Dafalgan (Filmtabl 1 g)" etc. — only if no table found
-            if !foundMedHeader && result.medications.isEmpty {
-                // Common Swiss medication patterns with dosage forms
-                if trimmed.range(of: "(Filmtabl|Tabl|Kaps|Supp|Inf|Inj|Sirup|Tropfen|Salbe|Gel|Creme|L\u{00F6}sung)\\b", options: .regularExpression) != nil {
-                    let lower = trimmed.lowercased()
-                    if !lower.contains("aus medizinischen") && !lower.contains("substituieren") {
-                        result.medications.append((name: trimmed, dosage: ""))
-                    }
+            // Dosage/instruction: "bei Bedarf", "max Nx/d", "täglich", "1-0-1-0" etc.
+            let lower = trimmed.lowercased()
+            if lower.contains("bedarf") || lower.contains("x/d") ||
+               lower.range(of: "max\\s+\\d", options: .regularExpression) != nil ||
+               lower.contains("t\u{00E4}glich") ||
+               lower.range(of: "^\\d+-\\d+-\\d+", options: .regularExpression) != nil {
+                if !lower.contains("medikamentenname") && !lower.contains("rezeptierung") {
+                    dosages.append(trimmed)
                 }
             }
         }
 
-        // Flush last medication if still pending
-        if let name = currentMedName {
-            result.medications.append((name: name, dosage: currentDosage ?? ""))
+        // Build medication list from collected names and dosages
+        for (i, name) in medNames.enumerated() {
+            let dosage = i < dosages.count ? dosages[i] : ""
+            result.medications.append((name: name, dosage: dosage))
         }
     }
 }

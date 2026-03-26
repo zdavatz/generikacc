@@ -10,7 +10,7 @@ import MessageUI
 
 @objc class KostengutspracheViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate, InsuranceCardScannerDelegate, PrescriptionScannerDelegate {
 
-    private let receipt: Receipt
+    private var receipt: Receipt
     private var scrollView: UIScrollView!
     private var contentView: UIView!
 
@@ -74,10 +74,61 @@ import MessageUI
     }
 
     @objc private func closeTapped() {
+        saveFormToReceipt()
         dismiss(animated: true) {
-            // Notify to refresh the receipt list
             NotificationCenter.default.post(name: NSNotification.Name("receiptsDidLoaded"), object: nil)
         }
+    }
+
+    private func saveFormToReceipt() {
+        // Update patient
+        let patient = receipt.patient ?? Patient.import(fromDict: [:]) as! Patient
+        patient.familyName = patientNameField.text ?? ""
+        patient.givenName = patientFirstNameField.text ?? ""
+        patient.birthDate = patientBirthDateField.text ?? ""
+        if patientGenderSegment.selectedSegmentIndex == 0 {
+            patient.gender = "F"
+        } else if patientGenderSegment.selectedSegmentIndex == 1 {
+            patient.gender = "M"
+        }
+        patient.address = patientStreetField.text ?? ""
+        let zipCity = patientZipCityField.text ?? ""
+        let zipCityParts = zipCity.components(separatedBy: " ")
+        if zipCityParts.count >= 1 {
+            patient.zipcode = zipCityParts[0]
+        }
+        if zipCityParts.count >= 2 {
+            patient.city = zipCityParts.dropFirst().joined(separator: " ")
+        }
+        patient.healthCardNumber = insurerNumberField.text ?? ""
+        patient.country = patientAHVField.text ?? ""
+        receipt.patient = patient
+
+        // Update operator (physician)
+        let op = receipt.operator ?? Operator.import(fromDict: [:]) as! Operator
+        op.familyName = physicianNameField.text ?? ""
+        op.givenName = physicianFirstNameField.text ?? ""
+        op.zsrNumber = physicianZSRField.text ?? ""
+        receipt.operator = op
+
+        // Update product names from medication text
+        let medLines = (medicationTextView.text ?? "").components(separatedBy: "\n").filter { !$0.isEmpty }
+        if let products = receipt.products as? [Product] {
+            for (i, product) in products.enumerated() {
+                if i < medLines.count {
+                    let line = medLines[i]
+                    // Split on " – " to separate name and dosage
+                    let parts = line.components(separatedBy: " \u{2013} ")
+                    product.name = parts[0]
+                    if parts.count > 1 {
+                        product.comment = parts.dropFirst().joined(separator: " \u{2013} ")
+                    }
+                }
+            }
+        }
+
+        // Save
+        ReceiptManager.shared().save()
     }
 
     private func setupForm() {
@@ -289,6 +340,18 @@ import MessageUI
     }
 
     private func applyPrescriptionScanResult(_ result: PrescriptionScanResult) {
+        // Save Receipt from QR code (like MasterViewController does)
+        if let ep = result.ePrescription {
+            let dateFmt = DateFormatter()
+            dateFmt.dateFormat = "yyyy-MM-dd'T'HH.mm.ss"
+            dateFmt.timeZone = TimeZone.current
+            let amkFilename = "RZ_\(dateFmt.string(from: Date())).amk"
+            if let newReceipt = ReceiptManager.shared().importReceipt(fromAMKDict: ep.amkDict(), fileName: amkFilename) as? Receipt {
+                ReceiptManager.shared().insertReceipt(newReceipt, at: 0)
+                self.receipt = newReceipt
+            }
+        }
+
         // Stage 1: QR code data (structured, reliable)
         if let ep = result.ePrescription {
             let fmt = DateFormatter()
@@ -341,36 +404,40 @@ import MessageUI
                 }
             }
 
-            // Medications from QR (via GTIN lookup in AmiKo DB)
-            if medicationTextView.text.isEmpty {
-                var medText = ""
-                for med in ep.medicaments {
-                    var name = ""
-                    let gtin = med.medicamentId ?? ""
-                    if !gtin.isEmpty {
-                        if let rows = AmikoDBManager.shared().find(withGtin: gtin, type: "") as? [AmikoDBRow],
-                           let row = rows.first {
-                            for pkg in row.parsedPackages() {
-                                if pkg.gtin == gtin {
-                                    name = pkg.name ?? row.title ?? gtin
-                                    break
-                                }
-                            }
-                            if name.isEmpty {
-                                name = row.title ?? gtin
-                            }
-                        } else {
-                            name = gtin
-                        }
+            // Medications from QR + OCR (always overwrite — scan data is fresher)
+            var medText = ""
+            for (index, med) in ep.medicaments.enumerated() {
+                var name = ""
+                let medId = med.medicamentId ?? ""
+                let idType = med.idType.intValue
+
+                if idType == 3 {
+                    // Pharmacode — not in AmiKo DB, use OCR text directly
+                    if index < result.medications.count {
+                        name = result.medications[index].name
                     }
-                    if name.isEmpty { name = med.medicamentId ?? "?" }
-                    if !medText.isEmpty { medText += "\n" }
-                    medText += name
-                    let instr = med.appInstr ?? ""
-                    if !instr.isEmpty {
-                        medText += " \u{2013} \(instr)"
-                    }
+                } else if idType == 2 && !medId.isEmpty {
+                    // GTIN — look up in AmiKo DB
+                    name = lookupMedNameByGTIN(medId)
                 }
+
+                // Fallback: use OCR medication name
+                if (name.isEmpty || name == medId), index < result.medications.count {
+                    name = result.medications[index].name
+                }
+
+                if name.isEmpty { name = medId.isEmpty ? "?" : medId }
+                if !medText.isEmpty { medText += "\n" }
+                medText += name
+                // Dosage: prefer QR appInstr, fallback to OCR dosage
+                let instr = med.appInstr ?? ""
+                if !instr.isEmpty {
+                    medText += " \u{2013} \(instr)"
+                } else if index < result.medications.count, !result.medications[index].dosage.isEmpty {
+                    medText += " \u{2013} \(result.medications[index].dosage)"
+                }
+            }
+            if !medText.isEmpty {
                 medicationTextView.text = medText
             }
         }
@@ -435,12 +502,12 @@ import MessageUI
             let currentText = medicationTextView.text ?? ""
             // If current text only has GTINs (all numeric), replace with OCR names
             let currentLines = currentText.components(separatedBy: "\n").filter { !$0.isEmpty }
-            let allGTIN = !currentLines.isEmpty && currentLines.allSatisfy { line in
+            let allNumericIds = !currentLines.isEmpty && currentLines.allSatisfy { line in
                 let cleaned = line.trimmingCharacters(in: .whitespaces)
-                return cleaned.allSatisfy { $0.isNumber } && cleaned.count >= 8
+                return cleaned.allSatisfy { $0.isNumber } && cleaned.count >= 4
             }
 
-            if currentText.isEmpty || allGTIN {
+            if currentText.isEmpty || allNumericIds {
                 var medText = ""
                 for med in result.medications {
                     if !medText.isEmpty { medText += "\n" }
@@ -545,6 +612,17 @@ import MessageUI
             }
         }
 
+        // Address
+        patientStreetField.text = patient?.address ?? ""
+        let zip = patient?.zipcode ?? ""
+        let city = patient?.city ?? ""
+        if !zip.isEmpty || !city.isEmpty {
+            patientZipCityField.text = "\(zip) \(city)".trimmingCharacters(in: .whitespaces)
+        }
+
+        // AHV number (stored in patient.country, since identifier is a hash)
+        patientAHVField.text = patient?.country ?? ""
+
         insurerNumberField.text = patient?.healthCardNumber ?? ""
 
         let op = receipt.operator
@@ -552,29 +630,34 @@ import MessageUI
         physicianFirstNameField.text = op?.givenName ?? ""
         physicianZSRField.text = op?.zsrNumber ?? ""
 
-        // Medications from receipt — look up names from AmiKo DB via GTIN
+        // Medications from receipt — use saved name, show pharmacode alongside
         var medText = ""
         if let products = receipt.products as? [Product] {
             for product in products {
-                var name = product.pack ?? product.name ?? ""
-                if name.isEmpty, let ean = product.ean, !ean.isEmpty {
-                    // Look up in AmiKo database
-                    if let rows = AmikoDBManager.shared().find(withGtin: ean, type: "") as? [AmikoDBRow],
-                       let row = rows.first {
-                        // Find the specific package matching this GTIN
-                        for pkg in row.parsedPackages() {
-                            if pkg.gtin == ean {
-                                name = pkg.name ?? row.title ?? ean
-                                break
-                            }
-                        }
-                        if name.isEmpty {
-                            name = row.title ?? ean
-                        }
-                    } else {
-                        name = ean
+                var name = product.name ?? ""
+                let pack = product.pack ?? ""
+                let ean = product.ean ?? ""
+
+                // Use pack or name if available (saved from previous OCR scan)
+                if !pack.isEmpty {
+                    name = pack
+                } else if name.isEmpty && !ean.isEmpty {
+                    // Try GTIN lookup (only works for 13-digit GTINs)
+                    let dbName = lookupMedNameByGTIN(ean)
+                    if !dbName.isEmpty {
+                        name = dbName
                     }
                 }
+
+                // Build display line: "Medikamentenname (Pharmacode: 1234567)"
+                if !name.isEmpty && name != ean && !ean.isEmpty && ean.count < 13 {
+                    // Pharmacode — show both name and code
+                    name = "\(name) (Pharmacode: \(ean))"
+                } else if name.isEmpty && !ean.isEmpty {
+                    // No name resolved, just show the code
+                    name = ean
+                }
+
                 if name.isEmpty { name = "?" }
                 if !medText.isEmpty { medText += "\n" }
                 medText += name
@@ -588,6 +671,20 @@ import MessageUI
         let fmt = DateFormatter()
         fmt.dateFormat = "yyyy-MM-dd"
         dateField.text = fmt.string(from: Date())
+    }
+
+    // MARK: - Medication Lookup
+
+    private func lookupMedNameByGTIN(_ gtin: String) -> String {
+        guard gtin.count == 13 else { return "" }
+        guard let rows = AmikoDBManager.shared().find(withGtin: gtin, type: "") as? [AmikoDBRow],
+              let row = rows.first else { return "" }
+        for pkg in row.parsedPackages() {
+            if pkg.gtin == gtin {
+                return pkg.name ?? row.title ?? ""
+            }
+        }
+        return row.title ?? ""
     }
 
     // MARK: - PDF

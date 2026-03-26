@@ -12,5 +12,6 @@
 #import "AmikoDatabase/AmikoDBManager.h"
 #import "AmikoDatabase/AmikoDBRow.h"
 #import "Receipt.h"
+#import "ReceiptManager.h"
 #import "UIImage+Cropping.h"
 #import "EPrescription.h"
