@@ -317,6 +317,10 @@
   _patient = nil;
   _products = nil;
   _diagnosis = nil;
+  _indikationscode = nil;
+  _indikationscodeTitle = nil;
+  _indikationscodeText = nil;
+  _indikationscodeOffLabel = nil;
 }
 
 #pragma mark - NSCoding Interface
@@ -419,7 +423,11 @@
     @"amkfile",  // RZ_`timestamp`.amk
     @"filename",  // RZ_YYYY-mm-ddTHHMMss.amk (expected)
     @"datetime",
-    @"diagnosis"
+    @"diagnosis",
+    @"indikationscode",
+    @"indikationscodeTitle",
+    @"indikationscodeText",
+    @"indikationscodeOffLabel"
   ];
   return [additionalKeys arrayByAddingObjectsFromArray:
     [[[self class] receiptKeyMaps] allKeys]];

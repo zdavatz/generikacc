@@ -97,6 +97,7 @@
 		CFB2A3EF2D0AB28D00014AFA /* swiss-zip-to-kanton.json in Resources */ = {isa = PBXBuildFile; fileRef = CFB2A3EE2D0AB28D00014AFA /* swiss-zip-to-kanton.json */; };
 		E63E3FFD8B6FC4841C9606EF /* SimpleUnzip.m in Sources */ = {isa = PBXBuildFile; fileRef = D06180A97F99670CF321843A /* SimpleUnzip.m */; };
 		KG00000001E99B7AD89059BA /* KostengutspracheViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = KG00000002429447A515AFBE /* KostengutspracheViewController.swift */; };
+		IC00000001E99B7AD89059BA /* IndCSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = IC00000002429447A515AFBE /* IndCSection.swift */; };
 		PS00000001PRESCSCANNER01 /* PrescriptionScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS00000002PRESCSCANNER02 /* PrescriptionScannerViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -238,6 +239,7 @@
 		CFFC02D62EA3DB1C00FFF3F9 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		D06180A97F99670CF321843A /* SimpleUnzip.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SimpleUnzip.m; sourceTree = "<group>"; };
 		KG00000002429447A515AFBE /* KostengutspracheViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KostengutspracheViewController.swift; sourceTree = "<group>"; };
+		IC00000002429447A515AFBE /* IndCSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndCSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -457,6 +459,7 @@
 				CF0E57642EB0FA9500D4313B /* PatinfoChapterTableViewController.m */,
 				7868D80F429447A515AFBEEF /* InteractionsViewController.swift */,
 				KG00000002429447A515AFBE /* KostengutspracheViewController.swift */,
+				IC00000002429447A515AFBE /* IndCSection.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -678,6 +681,7 @@
 				B3F84C8529D991D981754103 /* InteractionsManager.swift in Sources */,
 				55CD6216E99B7AD89059BA9F /* InteractionsViewController.swift in Sources */,
 				KG00000001E99B7AD89059BA /* KostengutspracheViewController.swift in Sources */,
+				IC00000001E99B7AD89059BA /* IndCSection.swift in Sources */,
 				19C007D7AE75A97B3D4BF9CF /* InsuranceCardScanner.swift in Sources */,
 				PS00000001PRESCSCANNER01 /* PrescriptionScannerViewController.swift in Sources */,
 				0585AF49F504750BCB71C432 /* UIImage+Cropping.m in Sources */,

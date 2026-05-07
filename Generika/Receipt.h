@@ -77,6 +77,12 @@
 @property (nonatomic, strong, readwrite) NSArray *products;
 @property (nonatomic, strong, readwrite) NSString *diagnosis;
 
+// Indikationscode (BAG XXXXX.NN) — issue #102
+@property (nonatomic, strong, readwrite) NSString *indikationscode;
+@property (nonatomic, strong, readwrite) NSString *indikationscodeTitle;
+@property (nonatomic, strong, readwrite) NSString *indikationscodeText;
+@property (nonatomic, strong, readwrite) NSString *indikationscodeOffLabel;
+
 @property (nonatomic, strong, readonly) NSString *issuedDate;
 @property (nonatomic, strong, readonly) NSString *issuedPlace;
 @property (nonatomic, strong, readonly) NSString *importedAt;

@@ -33,6 +33,14 @@
         if (row.count > 18) {
             self.type = row[18];
         }
+        if (row.count > 19) {
+            id v = row[19];
+            self.indikationscode = [v isKindOfClass:[NSString class]] ? v : nil;
+        }
+        if (row.count > 20) {
+            id v = row[20];
+            self.indikationscode_text = [v isKindOfClass:[NSString class]] ? v : nil;
+        }
     }
     return self;
 }

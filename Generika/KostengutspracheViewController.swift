@@ -8,7 +8,7 @@
 import UIKit
 import MessageUI
 
-@objc class KostengutspracheViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate, InsuranceCardScannerDelegate, PrescriptionScannerDelegate {
+@objc class KostengutspracheViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, MFMailComposeViewControllerDelegate, InsuranceCardScannerDelegate, PrescriptionScannerDelegate, IndCSectionViewDelegate {
 
     private var receipt: Receipt
     private var scrollView: UIScrollView!
@@ -30,6 +30,9 @@ import MessageUI
     // IBD specific
     private var diagnosisSegment: UISegmentedControl!
     private var medicationTextView: UITextView!
+
+    // Indikationscode (issue #102)
+    private var indcSection: IndCSectionView!
 
     // Physician
     private var physicianNameField: UITextField!
@@ -207,6 +210,19 @@ import MessageUI
         // Medication
         y = addSectionHeader("Medikament", below: y, margin: m)
         medicationTextView = addTextView(below: &y, margin: m, height: 100)
+        medicationTextView.delegate = self
+
+        // Indikationscode (issue #102) — between medication and physician
+        indcSection = IndCSectionView()
+        indcSection.delegate = self
+        indcSection.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(indcSection)
+        NSLayoutConstraint.activate([
+            indcSection.topAnchor.constraint(equalTo: y, constant: 18),
+            indcSection.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: m),
+            indcSection.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -m),
+        ])
+        y = indcSection.bottomAnchor
 
         // Physician
         y = addSectionHeader("Arzt / \u{00C4}rztin", below: y, margin: m)
@@ -538,6 +554,8 @@ import MessageUI
                 dateField.text = "\(year)-\(month)-\(day)"
             }
         }
+
+        refreshIndCFromMedication()
     }
 
     // MARK: - Insurance Card Scanner
@@ -689,6 +707,8 @@ import MessageUI
         let fmt = DateFormatter()
         fmt.dateFormat = "yyyy-MM-dd"
         dateField.text = fmt.string(from: Date())
+
+        refreshIndCFromMedication()
     }
 
     // MARK: - Medication Lookup
@@ -703,6 +723,59 @@ import MessageUI
             }
         }
         return row.title ?? ""
+    }
+
+    // MARK: - IndC (issue #102)
+
+    /// Re-run the SQLite lookup based on the first GTIN found on the receipt's
+    /// products. Called from `prefillFromReceipt`, after `applyPrescriptionScanResult`,
+    /// and on every change to the medication text view.
+    private func refreshIndCFromMedication() {
+        guard indcSection != nil else { return }
+        guard let products = receipt.products as? [Product], let first = products.first else {
+            indcSection.configure(productName: "", gtin: "", codeString: nil, textString: nil)
+            return
+        }
+        let ean = first.ean ?? ""
+        let name = first.pack ?? first.name ?? ""
+
+        if ean.count == 13,
+           let rows = AmikoDBManager.shared().find(withGtin: ean, type: "") as? [AmikoDBRow],
+           let row = rows.first {
+            indcSection.configure(productName: name,
+                                  gtin: ean,
+                                  codeString: row.indikationscode,
+                                  textString: row.indikationscode_text)
+        } else {
+            indcSection.configure(productName: name, gtin: ean,
+                                  codeString: nil, textString: nil)
+        }
+
+        // Round-trip a previously chosen code, if any.
+        if let savedCode = receipt.indikationscode, !savedCode.isEmpty {
+            indcSection.selectEntry(byCode: savedCode)
+        }
+        if let savedOff = receipt.indikationscodeOffLabel, !savedOff.isEmpty {
+            indcSection.setOffLabelText(savedOff)
+        }
+    }
+
+    func indcSectionView(_ view: IndCSectionView, didSelect entry: IndCEntry?) {
+        receipt.indikationscode = entry?.code
+        receipt.indikationscodeTitle = entry?.title
+        receipt.indikationscodeText = entry?.text
+    }
+
+    func indcSectionView(_ view: IndCSectionView, didChangeOffLabelText text: String) {
+        receipt.indikationscodeOffLabel = text
+    }
+
+    // MARK: - UITextViewDelegate
+
+    func textViewDidChange(_ textView: UITextView) {
+        if textView === medicationTextView {
+            refreshIndCFromMedication()
+        }
     }
 
     // MARK: - PDF
@@ -773,6 +846,42 @@ import MessageUI
             y = drawSectionHeader("Medikament", x: margin, y: y, width: w)
             y = drawMultiline(medicationTextView.text ?? "", x: margin, y: y, width: w)
             y += 10
+
+            // Indikationscode (IndC) — issue #102
+            if let code = receipt.indikationscode, !code.isEmpty {
+                y = drawSectionHeader("Indikationscode (IndC)", x: margin, y: y, width: w)
+                y = drawRow("Indikationscode:", code, x: margin, y: y, width: w)
+                y = drawRow("Indikation:", receipt.indikationscodeTitle, x: margin, y: y, width: w)
+                if let text = receipt.indikationscodeText, !text.isEmpty {
+                    y += 4
+                    let labelAttrs: [NSAttributedString.Key: Any] = [
+                        .font: UIFont.systemFont(ofSize: 9, weight: .medium),
+                        .foregroundColor: UIColor.darkGray,
+                    ]
+                    ("Limitations-Text:" as NSString).draw(at: CGPoint(x: margin, y: y),
+                                                            withAttributes: labelAttrs)
+                    y += 12
+                    let quoteX = margin + 8
+                    let quoteW = w - 8
+                    let qAttrs: [NSAttributedString.Key: Any] = [
+                        .font: UIFont.systemFont(ofSize: 10),
+                        .foregroundColor: UIColor.black,
+                    ]
+                    let sz = (text as NSString).boundingRect(
+                        with: CGSize(width: quoteW, height: .greatestFiniteMagnitude),
+                        options: .usesLineFragmentOrigin, attributes: qAttrs, context: nil)
+                    UIColor(red: 0.7, green: 0.32, blue: 0.0, alpha: 1.0).setFill()
+                    UIBezierPath(rect: CGRect(x: margin, y: y, width: 2, height: sz.height)).fill()
+                    (text as NSString).draw(in: CGRect(x: quoteX, y: y, width: quoteW, height: sz.height),
+                                            withAttributes: qAttrs)
+                    y += sz.height + 6
+                }
+                y += 10
+            } else if let off = receipt.indikationscodeOffLabel, !off.isEmpty {
+                y = drawSectionHeader("Off-Label (KVV 71b/c)", x: margin, y: y, width: w)
+                y = drawMultiline(off, x: margin, y: y, width: w)
+                y += 10
+            }
 
             // Physician
             y = drawSectionHeader("Behandelnder Arzt / \u{00C4}rztin", x: margin, y: y, width: w)

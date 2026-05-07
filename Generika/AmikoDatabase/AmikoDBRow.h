@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString* style_str;
 @property (nonatomic, strong) NSString* packages;
 @property (nonatomic, strong) NSString* type;
+@property (nonatomic, strong) NSString* indikationscode;
+@property (nonatomic, strong) NSString* indikationscode_text;
 
 - (instancetype)initWithRow:(NSArray *)row;
 
