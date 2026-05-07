@@ -25,7 +25,12 @@ struct IndCEntry {
 /// `INDIKATIONSCODE_TEXT` columns shipped by rust2xml >= 3.1.12.
 enum IndCParser {
     /// `codeStr`  — "18923.01,18923.02,..."
-    /// `textStr`  — "18923.01: <text>\n18923.02: <text>\n..."
+    /// `textStr`  — "18923.01: <text>\n18923.02: <text>\n..." where <text>
+    /// itself can span multiple lines (BAG limitations are often multi-paragraph).
+    /// Code sections start with `^\d+\.\d+: ` at the beginning of a line;
+    /// continuation lines are appended to the current code's text so the
+    /// "Kostengutsprache erforderlich" detector can see keywords below the
+    /// first line.
     static func parse(codeStr: String?, textStr: String?) -> [IndCEntry] {
         guard let codeStr = codeStr, !codeStr.isEmpty else { return [] }
         let codes = codeStr.components(separatedBy: ",")
@@ -34,26 +39,51 @@ enum IndCParser {
 
         var textByCode: [String: String] = [:]
         if let textStr = textStr {
+            var current: String? = nil
+            var buf: [String] = []
             for line in textStr.components(separatedBy: "\n") {
-                guard let colon = line.firstIndex(of: ":") else { continue }
-                let code = String(line[..<colon]).trimmingCharacters(in: .whitespaces)
-                let text = String(line[line.index(after: colon)...]).trimmingCharacters(in: .whitespaces)
-                if !code.isEmpty { textByCode[code] = text }
+                if let code = matchCodePrefix(line) {
+                    if let cur = current {
+                        textByCode[cur] = buf.joined(separator: "\n")
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+                    }
+                    current = code
+                    let bodyStart = line.index(line.startIndex, offsetBy: code.count + 2)
+                    buf = [String(line[bodyStart...])]
+                } else if current != nil {
+                    buf.append(line)
+                }
+            }
+            if let cur = current {
+                textByCode[cur] = buf.joined(separator: "\n")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
             }
         }
 
         return codes.map { code in
             let full = textByCode[code] ?? ""
+            let firstLine = full.components(separatedBy: "\n").first ?? full
             let title: String
-            if let dot = full.range(of: ". ") {
-                title = String(full[..<dot.lowerBound])
-            } else if full.count > 80 {
-                title = String(full.prefix(80)) + "\u{2026}"
+            if let dot = firstLine.range(of: ". ") {
+                title = String(firstLine[..<dot.lowerBound])
+            } else if firstLine.count > 80 {
+                title = String(firstLine.prefix(80)) + "\u{2026}"
             } else {
-                title = full
+                title = firstLine
             }
             return IndCEntry(code: code, title: title, text: full)
         }
+    }
+
+    private static let codePrefixRegex = try! NSRegularExpression(
+        pattern: #"^(\d+\.\d+): "#)
+
+    /// Returns the BAG IndC code if `line` starts with `<digits>.<digits>: `.
+    private static func matchCodePrefix(_ line: String) -> String? {
+        let range = NSRange(line.startIndex..., in: line)
+        guard let m = codePrefixRegex.firstMatch(in: line, range: range),
+              let codeRange = Range(m.range(at: 1), in: line) else { return nil }
+        return String(line[codeRange])
     }
 }
 

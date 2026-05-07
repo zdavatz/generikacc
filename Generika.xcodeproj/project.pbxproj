@@ -861,7 +861,7 @@
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 20260326;
+				CURRENT_PROJECT_VERSION = 20260507;
 				DEVELOPMENT_TEAM = 4B37356EGR;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
@@ -871,7 +871,7 @@
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 2.1.53;
+				MARKETING_VERSION = 2.1.54;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -900,7 +900,7 @@
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 20260326;
+				CURRENT_PROJECT_VERSION = 20260507;
 				DEVELOPMENT_TEAM = 4B37356EGR;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
@@ -910,7 +910,7 @@
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 2.1.53;
+				MARKETING_VERSION = 2.1.54;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1041,7 +1041,7 @@
 				CODE_SIGN_ENTITLEMENTS = Generika/Generika.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 20260326;
+				CURRENT_PROJECT_VERSION = 20260507;
 				DEVELOPMENT_TEAM = 4B37356EGR;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Generika/Generika-Prefix.pch";
@@ -1051,7 +1051,7 @@
 				INFOPLIST_FILE = "Generika/Generika-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 2.1.53;
+				MARKETING_VERSION = 2.1.54;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
